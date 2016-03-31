@@ -30,17 +30,18 @@ void setup() {
 }
 
 
-Message* recieveMessage(){
+Message recieveMessage(){
   Message message;
   if (radio.available()){
     radio.read(&message, sizeof(message));
     Serial.print("recived message:");
     Serial.println(message.data);
-    return &message;
+    return message;
   }
   else{
     Serial.println("nothing to read");
-    return NULL;
+    message.sensorType = 'z';
+    return message;
   }
 }
 
@@ -61,7 +62,7 @@ void sendMessage(Message message){
    }
 }
 
-void decodeMessage(Message* msg) {
+void decodeMessage(Message msg) {
   //TODO check from which layer the message came from
 
   //if the meesgae came from high layer
@@ -93,10 +94,11 @@ void decodeMessage(Message* msg) {
 
   //if the meesgae came from bottom layer
   //the layer should act/send up the hirarchy if needed
-  switch(msg->sensorType) {
+  switch(msg.sensorType) {
     
     //soil humidity data
     case 'S':
+
     //do nothing, just send to high level for image status
     //change msg src and dest
     //sendMessage(msg)
@@ -104,7 +106,17 @@ void decodeMessage(Message* msg) {
     
     //temparture data
     case 'T':
-    Serial.println("got data from temprature sensor");
+    Serial.println("sensorType");
+    Serial.println(msg.sensorType);
+    Serial.println("Destination");
+    Serial.println(msg.dest);
+        Serial.println("Data temperature");
+    Serial.println(msg.data[0], DEC);
+    Serial.println("Data humidity");
+    Serial.println(msg.data[2], DEC);
+    
+
+
     //do avreage from all temperatre messages that received
     //if (average < TEMP_LOWER_TRESHOLD) {
       //turn on heat lamp
@@ -165,11 +177,12 @@ void decodeMessage(Message* msg) {
 
 void loop() {
   //receive message from lower layer
-  Message* messageToRead = recieveMessage();
+  Message messageToRead = recieveMessage();
+
   //if we got data
-  if (NULL != messageToRead) {
+  if ('z' != messageToRead.sensorType) {
     decodeMessage(messageToRead);
   }
-  delay(1000);
+  delay(3000);
 
 }
