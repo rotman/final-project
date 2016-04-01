@@ -8,11 +8,11 @@ struct Message {
 	byte minimum_threshold;
 	byte maximum_threshold;
 	char sensorType;
-	  short int source; 
-	  short int dest;
-  short int part;
-  //time?
-  int data[6] ;
+	short int source; 
+	short int dest;
+  	short int part;
+  	//time?
+  	int data[8] ;
 };
 
 
