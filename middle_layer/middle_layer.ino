@@ -39,7 +39,6 @@ Message recieveMessage(){
   if (radio.available()){
     radio.read(&message, sizeof(message));
     Serial.print("recived message:");
-    Serial.println(message.data);
     return message;
   }
   else{
@@ -119,17 +118,14 @@ void decodeMessage(Message msg) {
       Serial.println(msg.dest);
       Serial.println("Data [0]");
       Serial.println(msg.data[0], DEC);
-      Serial.println("Data [2]");
+      Serial.println("Data [1]");
       Serial.println(msg.data[1], DEC);
-
+/*
       msg = prepareMessageToLower(msg);
-      msg.data[0] = 35;
-      msg.data[1] = 55;
-      msg.data[2] = 36;
-      msg.data[3] = 56;
-
+      msg.minimum_threshold = 35;
+      msg.maximum_threshold = 55;
       sendMessage(msg);
-      
+*/    
 
       
       
@@ -170,7 +166,7 @@ void decodeMessage(Message msg) {
       Serial.println("Destination");
       Serial.println(msg.dest);
       Serial.println("Data [0]");
-      Serial.println(msg.data[0], DEC);
+      Serial.println(msg.data[0],DEC);
       
       //do avreage from all light messages that received
       //if (average < LIGHT_LOWER_TRESHOLD && needLight) {
