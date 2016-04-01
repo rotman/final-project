@@ -51,13 +51,13 @@ Message recieveMessage(){
 
 
 void sendMessage(Message message){
-    bool ok;
+    bool ok = false;
     int retry_times = 30;
     radio.stopListening();
     while(!ok && --retry_times){  //if message fails , retry 30 times
         ok =  radio.write(&message, sizeof(message));
         if(ok){
-           Serial.println("send seccess");      
+           Serial.println("send success");      
         }
         else{
              Serial.println("send failed ");
@@ -117,9 +117,9 @@ void decodeMessage(Message msg) {
       Serial.println(msg.sensorType);
       Serial.println("Destination");
       Serial.println(msg.dest);
-      Serial.println("Data temperature");
+      Serial.println("Data [0]");
       Serial.println(msg.data[0], DEC);
-      Serial.println("Data humidity");
+      Serial.println("Data [2]");
       Serial.println(msg.data[2], DEC);
 
       msg = prepareMessageToLower(msg);
@@ -127,6 +127,11 @@ void decodeMessage(Message msg) {
       msg.data[1] = 55;
       msg.data[2] = 36;
       msg.data[3] = 56;
+
+      sendMessage(msg);
+      
+
+      
       
   
   
@@ -160,6 +165,16 @@ void decodeMessage(Message msg) {
       
       /***************************light data***********************/
       case 'L':
+      Serial.println("sensorType");
+      Serial.println(msg.sensorType);
+      Serial.println("Destination");
+      Serial.println(msg.dest);
+      Serial.println("Data [0]");
+      Serial.println(msg.data[0], DEC);
+      Serial.println("Data [2]");
+      Serial.println(msg.data[2], DEC);
+
+      
       //do avreage from all light messages that received
       //if (average < LIGHT_LOWER_TRESHOLD && needLight) {
         //turn on lamp
