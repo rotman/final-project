@@ -44,6 +44,8 @@ void setup() {
 
 void sendMessage(Message message){
   Serial.println("sendMessage()");
+  Serial.print("sizeof message= ");
+  Serial.println(sizeof(message));
   bool ok = false;
   int retry_times = 30;
   radio.stopListening();
@@ -72,7 +74,7 @@ bool receiveMessage(Message& message){
   if (radio.available()){
     radio.read(&message, sizeof(message));
     Serial.print("recived message:");
-    Serial.println(message.data);
+    //Serial.println(message.data);
     return true;
   }
   else {
@@ -95,13 +97,13 @@ void loop() {
   Serial.print("dest=");
   Serial.println(messageToSend.dest);
   Serial.print("data=");
-  Serial.print(messageToSend.data[0],DEC);
+  Serial.print(messageToSend.data[0]);
   Serial.print(".");
-  Serial.print(messageToSend.data[1],DEC);
+  Serial.print(messageToSend.data[1]);
   Serial.print(" ");
-  Serial.print(messageToSend.data[2],DEC);
+  Serial.print(messageToSend.data[2]);
   Serial.print(".");
-  Serial.println(messageToSend.data[3],DEC);
+  Serial.println(messageToSend.data[3]);
 
   sendMessage(messageToSend);                          //send message  
   Message messageToRead;
