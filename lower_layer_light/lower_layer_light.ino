@@ -41,7 +41,7 @@ void setup() {
   initConsole();
   initRadio();
   sensor= new SLight(4);              //create new temperature sensor instanse
-  Serial.println("STemptureHumidity created");
+  Serial.println("SLight created");
   
 }
 
@@ -60,6 +60,7 @@ void sendMessage(Message message){
     else {
       Serial.println("send failed");
     }
+  delay(500);
   }
   radio.startListening();
 }
@@ -97,14 +98,8 @@ void loop() {
   Serial.print("dest=");
   Serial.println(messageToSend.dest);
   Serial.print("data=");
-  Serial.print(messageToSend.data[0],DEC);
-  Serial.print(".");
-  Serial.print(messageToSend.data[1],DEC);
-  Serial.print(" ");
-  Serial.print(messageToSend.data[2],DEC);
-  Serial.print(".");
-  Serial.println(messageToSend.data[3],DEC);
-
+  Serial.println(messageToSend.data[0],DEC);
+ 
   sendMessage(messageToSend);                          //send message  
   Message messageToRead;
   if(receiveMessage(messageToRead)){                   //receive message
