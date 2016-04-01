@@ -120,7 +120,7 @@ void decodeMessage(Message msg) {
       Serial.println("Data [0]");
       Serial.println(msg.data[0], DEC);
       Serial.println("Data [2]");
-      Serial.println(msg.data[2], DEC);
+      Serial.println(msg.data[1], DEC);
 
       msg = prepareMessageToLower(msg);
       msg.data[0] = 35;
@@ -171,9 +171,6 @@ void decodeMessage(Message msg) {
       Serial.println(msg.dest);
       Serial.println("Data [0]");
       Serial.println(msg.data[0], DEC);
-      Serial.println("Data [2]");
-      Serial.println(msg.data[2], DEC);
-
       
       //do avreage from all light messages that received
       //if (average < LIGHT_LOWER_TRESHOLD && needLight) {
