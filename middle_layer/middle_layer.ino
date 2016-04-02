@@ -38,14 +38,15 @@ Message recieveMessage(){
   Message message;
   if (radio.available()){
     radio.read(&message, sizeof(message));
-    Serial.print("recived message:");
-    return message;
+    Serial.print("recived message: the data is:");
+     Serial.println(message.data[0]);
   }
   else{
     Serial.println("nothing to read");
     message.sensorType = 'z';
-    return message;
   }
+      return message;
+
 }
 
 
@@ -117,9 +118,9 @@ void decodeMessage(Message msg) {
       Serial.println("Destination");
       Serial.println(msg.dest);
       Serial.println("Data [0]");
-      Serial.println(msg.data[0], DEC);
-      Serial.println("Data [1]");
-      Serial.println(msg.data[1], DEC);
+      Serial.println(msg.data[0]);
+      Serial.println("Data [2]");
+      Serial.println(msg.data[2]);
 /*
       msg = prepareMessageToLower(msg);
       msg.minimum_threshold = 35;
@@ -166,7 +167,7 @@ void decodeMessage(Message msg) {
       Serial.println("Destination");
       Serial.println(msg.dest);
       Serial.println("Data [0]");
-      Serial.println(msg.data[0],DEC);
+      Serial.println(msg.data[0]);
       
       //do avreage from all light messages that received
       //if (average < LIGHT_LOWER_TRESHOLD && needLight) {
