@@ -40,8 +40,7 @@ void setup() {
   Serial.println("setup()");
   initConsole();
   initRadio();
-  sensor= new SLight(4);              //create new temperature sensor instanse
-  Serial.println("SLight created");
+  sensor= new SLight(4);              //create new temperature sensor instanse   
   
 }
 
