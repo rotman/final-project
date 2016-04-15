@@ -1,9 +1,8 @@
-
-#include <STemptureHumidity.h>
 #include <nRF24L01.h>
 #include <RF24.h>
 #include <message.h>
 #include <SPI.h>
+#include <SWater.h>
 
 
 #define MIDDLE_LAYER_ADDRESS 101  
@@ -12,7 +11,7 @@
 //globals
 //-------
 RF24 radio(7, 8);
-
+Sensor * sensor;
 int soil_humidity_threshold_minimum = 40;
 int soil_humidity_threshold_maximmum = 40;
 
@@ -40,12 +39,11 @@ void setup() {
   Serial.println("setup()");
   initConsole();
   initRadio();
+  sensor= new SWater(2);              //create new temperature sensor instanse   
 }
 
 void sendMessage(Message message){
   Serial.println("sendMessage()");
-  Serial.print("sizeof message= ");
-  Serial.println(sizeof(message));
   bool ok = false;
   int retry_times = 30;
   radio.stopListening();
@@ -59,7 +57,7 @@ void sendMessage(Message message){
     else {
       Serial.println("send failed");
     }
-    delay(400);
+  delay(500);
   }
   radio.startListening();
 }
@@ -75,7 +73,7 @@ bool receiveMessage(Message& message){
   if (radio.available()){
     radio.read(&message, sizeof(message));
     Serial.print("recived message:");
-    //Serial.println(message.data);
+//    Serial.println(message.data);
     return true;
   }
   else {
@@ -86,26 +84,15 @@ bool receiveMessage(Message& message){
 
 void loop() {
   Serial.println("loop()");
-  Sensor * th= new STemptureHumidity(2);              //create new temperature sensor instanse
-  Serial.println("STemptureHumidity created");
-  //  Sensor * sh= new SSoilHumidity(4); 
-  // sh->readSensorData();
-  //check threshhold();  
-  Message readSensor =  th->readSensorData();          //read sensor data
+  Message readSensor =  sensor->readSensorData();          //read sensor data
   Message messageToSend = prepareMessage(readSensor); //add sender id and receiver id to message
   Serial.print("sensorType=");
   Serial.println(messageToSend.sensorType);
   Serial.print("dest=");
   Serial.println(messageToSend.dest);
   Serial.print("data=");
-  Serial.print(messageToSend.data[0]);
-  Serial.print(".");
-  Serial.print(messageToSend.data[1]);
-  Serial.print(" ");
-  Serial.print(messageToSend.data[2]);
-  Serial.print(".");
-  Serial.println(messageToSend.data[3]);
-
+  Serial.println(messageToSend.data[0],DEC);
+ 
   sendMessage(messageToSend);                          //send message  
   Message messageToRead;
   if(receiveMessage(messageToRead)){                   //receive message
