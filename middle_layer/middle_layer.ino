@@ -7,12 +7,23 @@
 #define UPPER_LAYER_ADDRESS 201
 #define MY_ADDRESS 101
 
+int fanPin = 2;
+int temperatureThreshold = 20;    //TODO 
+
 //globals
 //-------
 RF24 radio(7, 8);
 
 const byte rxAddr[6] = "00002";
 const byte wxAddr[6] = "00001";
+
+
+void actuateFan(boolean on){
+  if(on)
+   digitalWrite(fanPin,HIGH);
+  else
+   digitalWrite(fanPin,LOW);
+  }
 
 void initConsole() {
   while (!Serial);
@@ -31,6 +42,8 @@ void initRadio() {
 void setup() {
   initConsole();
   initRadio();
+  pinMode(fanPin, OUTPUT);
+
 }
 
 
@@ -118,6 +131,12 @@ void decodeMessage(Message msg) {
       Serial.println("Destination");
       Serial.println(msg.dest);
       Serial.println("Data [0]");
+      if (msg.data[2] > temperatureThreshold)
+          actuateFan(true);
+      else    
+          actuateFan(false);
+
+      
       Serial.println(msg.data[0]);
       Serial.println("Data [2]");
       Serial.println(msg.data[2]);
