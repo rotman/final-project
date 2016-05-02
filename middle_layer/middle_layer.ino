@@ -114,6 +114,12 @@ void decodeMessage(Message msg) {
   //if the meesgae came from bottom layer
   //the layer should act/send up the hirarchy if needed
   if(msg.source >= 1 && msg.source < 100){
+    
+    Serial.println("sensorType");
+    Serial.println(msg.sensorType);
+    Serial.println("Destination");
+    Serial.println(msg.dest);
+    
     switch(msg.sensorType) {
       
       /******************soil humidity data*******************/
@@ -126,10 +132,7 @@ void decodeMessage(Message msg) {
       
       /******************temparture data*********************/
       case 'T':
-      Serial.println("sensorType");
-      Serial.println(msg.sensorType);
-      Serial.println("Destination");
-      Serial.println(msg.dest);
+      
       Serial.println("Data [0]");
       if (msg.data[2] > temperatureThreshold)
           actuateFan(true);
@@ -146,10 +149,6 @@ void decodeMessage(Message msg) {
       msg.maximum_threshold = 55;
       sendMessage(msg);
 */    
-
-      
-      
-  
   
       //do avreage from all temperatre messages that received
       //if (average < TEMP_LOWER_TRESHOLD) {
@@ -166,6 +165,7 @@ void decodeMessage(Message msg) {
       
       /***********************air humidity data***********************/
       case 'H':
+      
       //do avreage from all humidity messages that received
       //if (average < HUMIDITY_LOWER_TRESHOLD) {
         //check how to add humidity to greenhouse
@@ -181,10 +181,7 @@ void decodeMessage(Message msg) {
       
       /***************************light data***********************/
       case 'L':
-      Serial.println("sensorType");
-      Serial.println(msg.sensorType);
-      Serial.println("Destination");
-      Serial.println(msg.dest);
+      
       Serial.println("Data [0]");
       Serial.println(msg.data[0]);
       
@@ -207,8 +204,12 @@ void decodeMessage(Message msg) {
       //sendMessageToUpperLayer()
       break;
       
-      //TODO electricty consumption   
-  
+      /*********************electricity consumption data*****************/
+      case 'C':
+      //TODO sum the amount of electricity and send up
+      //sendMessageToUpperLayer()
+      break;
+      
       default:
       //TODO error
       break;
