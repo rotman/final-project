@@ -3,6 +3,7 @@
 #include <message.h>
 #include <SPI.h>
 #include <SSoil.h>
+#include <ExponentialBackoff.h>
 
 
 #define MIDDLE_LAYER_ADDRESS 101  
@@ -20,7 +21,7 @@ RF24 radio(7, 8);
 Sensor* sensor;
 int soil_humidity_threshold_minimum = 40;
 int soil_humidity_threshold_maximmum = 40;
-
+int soilPin = A0;
 //available addresses
 const byte rxAddr[6] = "00001"; 
 const byte wxAddr[6] = "00002";             
@@ -45,28 +46,30 @@ void setup() {
   Serial.println("setup()");
   initConsole();
   initRadio();
-  sensor= new SSoil(0);              //create new soil humidity sensor instanse   
+  sensor= new SSoil(soilPin);              //create new soil humidity sensor instanse   
 }
 
 void sendMessage(Message message){
-  Serial.println("sendMessage()");
-  bool ok = false;
-  int retry_times = 30;
-  radio.stopListening();
-  while(!ok && --retry_times){  //if message fails , retry 30 times
-    Serial.print("retry: ");  
-    Serial.println(retry_times  );  
-    ok =  radio.write(&message, sizeof(message));
-    if(ok){
-      Serial.println("send seccess");      
+        bool ok = false;
+        int iteration = 0;
+        int delayMili = 0;
+        ExponentialBackoff exponentialBackoff;
+        radio.stopListening();
+        while(!ok && delayMili != -1){  //if message fails 
+            ok =  radio.write(&message, sizeof(message));
+            if(ok)
+               Serial.println("send success");      
+            else{
+              Serial.println("send failed backing off");
+              delayMili = exponentialBackoff.getDelayTime(++iteration);
+              if(delayMili >= 0)
+                delay(delayMili);
+              else;   
+              //send failed (max retries)  TODO  
+            }
+       }
+        radio.startListening();
     }
-    else {
-      Serial.println("send failed");
-    }
-  delay(500);
-  }
-  radio.startListening();
-}
   
 Message prepareMessage(Message message){
   message.source = MY_ADDRESS;
@@ -99,7 +102,7 @@ void loop() {
   if (readSensor.data[0] > 700)  
     Serial.println(" Dry, you need to water"); 
     
-  Message messageToSend = prepareMessage(readSensor); //add sender id and receiver id to message
+//  Message messageToSend = prepareMessage(readSensor); //add sender id and receiver id to message
  
   /*sendMessage(messageToSend);                          //send message  
   Message messageToRead;

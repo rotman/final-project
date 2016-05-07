@@ -2,13 +2,17 @@
 #include <RF24.h>
 #include <message.h>
 #include <SPI.h>
+#include <ExponentialBackoff.h>
 
 #define LOWER_LAYER_ADDRESS 1
 #define UPPER_LAYER_ADDRESS 201
 #define MY_ADDRESS 101
-
+//boolean fanOn = false;
+//boolean lightOn = false;
 int fanPin = 2;
-int temperatureThreshold = 20;    //TODO 
+int lightpin = 4;
+int temperatureUpThreshold = 25;    //TODO 
+int temperatureDownThreshold = 21;
 
 //globals
 //-------
@@ -20,10 +24,16 @@ const byte wxAddr[6] = "00001";
 
 void actuateFan(boolean on){
   if(on)
-   digitalWrite(fanPin,HIGH);
+      digitalWrite(fanPin,HIGH);
   else
-   digitalWrite(fanPin,LOW);
-  }
+      digitalWrite(fanPin,LOW);
+}
+void actuateLight(boolean on){
+  if(on)
+      digitalWrite(lightpin,HIGH);
+  else
+      digitalWrite(lightpin,LOW);
+}
 
 void initConsole() {
   while (!Serial);
@@ -63,21 +73,27 @@ Message recieveMessage(){
 }
 
 
-void sendMessage(Message message){
-    bool ok = false;
-    int retry_times = 30;
-    radio.stopListening();
-    while(!ok && --retry_times){  //if message fails , retry 30 times
-        ok =  radio.write(&message, sizeof(message));
-        if(ok){
-           Serial.println("send success");      
-        }
-        else{
-             Serial.println("send failed ");
-        }
+    void sendMessage(Message message){
+        bool ok = false;
+        int iteration = 0;
+        int delayMili = 0;
+        ExponentialBackoff exponentialBackoff;
+        radio.stopListening();
+        while(!ok && delayMili != -1){  //if message fails 
+            ok =  radio.write(&message, sizeof(message));
+            if(ok)
+               Serial.println("send success");      
+            else{
+              Serial.println("send failed backing off");
+              delayMili = exponentialBackoff.getDelayTime(++iteration);
+              if(delayMili >= 0)
+                delay(delayMili);
+              else;   
+              //send failed (max retries)  TODO  
+            }
+       }
         radio.startListening();
-   }
-}
+    }
 
 void decodeMessage(Message msg) {
   if(msg.source >= 200 && msg.source < 300){   //from higer layer
@@ -134,12 +150,14 @@ void decodeMessage(Message msg) {
       case 'T':
       
       Serial.println("Data [0]");
-      if (msg.data[2] > temperatureThreshold)
+      if (msg.data[2] > temperatureUpThreshold)
           actuateFan(true);
       else    
           actuateFan(false);
-
-      
+       if (msg.data[2] < temperatureDownThreshold)
+         actuateLight(true);
+      else    
+          actuateLight(false);
       Serial.println(msg.data[0]);
       Serial.println("Data [2]");
       Serial.println(msg.data[2]);

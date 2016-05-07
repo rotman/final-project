@@ -4,6 +4,7 @@
 #include <RF24.h>
 #include <message.h>
 #include <SPI.h>
+#include <ExponentialBackoff.h>
 
 
 #define MIDDLE_LAYER_ADDRESS 101  
@@ -43,26 +44,26 @@ void setup() {
 }
 
 void sendMessage(Message message){
-  Serial.println("sendMessage()");
-  Serial.print("sizeof message= ");
-  Serial.println(sizeof(message));
-  bool ok = false;
-  int retry_times = 30;
-  radio.stopListening();
-  while(!ok && --retry_times){  //if message fails , retry 30 times
-    Serial.print("retry: ");  
-    Serial.println(retry_times  );  
-    ok =  radio.write(&message, sizeof(message));
-    if(ok){
-      Serial.println("send seccess");      
+        bool ok = false;
+        int iteration = 0;
+        int delayMili = 0;
+        ExponentialBackoff exponentialBackoff;
+        radio.stopListening();
+        while(!ok && delayMili != -1){  //if message fails 
+            ok =  radio.write(&message, sizeof(message));
+            if(ok)
+               Serial.println("send success");      
+            else{
+              Serial.println("send failed backing off");
+              delayMili = exponentialBackoff.getDelayTime(++iteration);
+              if(delayMili >= 0)
+                delay(delayMili);
+              else;   
+              //send failed (max retries)  TODO  
+            }
+       }
+        radio.startListening();
     }
-    else {
-      Serial.println("send failed");
-    }
-    delay(400);
-  }
-  radio.startListening();
-}
   
 Message prepareMessage(Message message){
   message.source = MY_ADDRESS;
