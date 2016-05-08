@@ -7,18 +7,14 @@
 #define LOWER_LAYER_ADDRESS 1
 #define UPPER_LAYER_ADDRESS 201
 #define MY_ADDRESS 101
-<<<<<<< HEAD
 //boolean fanOn = false;
 //boolean lightOn = false;
 int fanPin = 2;
 int lightpin = 4;
 int temperatureUpThreshold = 25;    //TODO 
 int temperatureDownThreshold = 21;
-=======
 
-int fanPin = 2;
 int temperatureThreshold = 20;    //TODO 
->>>>>>> parent of 35973e6... begin handle multiple temprature messages
 
 //globals
 //-------
@@ -99,12 +95,9 @@ Message recieveMessage(){
             }
        }
         radio.startListening();
-<<<<<<< HEAD
-    }
-=======
-   }
+    
+   
 }
->>>>>>> parent of 35973e6... begin handle multiple temprature messages
 
 void decodeMessage(Message msg) {
   if(msg.source >= 200 && msg.source < 300){   //from higer layer
@@ -161,7 +154,6 @@ void decodeMessage(Message msg) {
       case 'T':
       
       Serial.println("Data [0]");
-<<<<<<< HEAD
       if (msg.data[2] > temperatureUpThreshold)
           actuateFan(true);
       else    
@@ -170,14 +162,12 @@ void decodeMessage(Message msg) {
          actuateLight(true);
       else    
           actuateLight(false);
-=======
       if (msg.data[2] > temperatureThreshold)
           actuateFan(true);
       else    
           actuateFan(false);
 
       
->>>>>>> parent of 35973e6... begin handle multiple temprature messages
       Serial.println(msg.data[0]);
       Serial.println("Data [2]");
       Serial.println(msg.data[2]);
