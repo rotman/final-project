@@ -4,9 +4,16 @@
 #include <SPI.h>
 #include <ExponentialBackoff.h>
 
-#define LOWER_LAYER_ADDRESS 1
+#define LOWER_LAYER_ADDRESS_1 1
+#define LOWER_LAYER_ADDRESS_2 2
+#define LOWER_LAYER_ADDRESS_3 3
+
 #define UPPER_LAYER_ADDRESS 201
+
 #define MY_ADDRESS 101
+
+#define PRODUCERS_SIZE 3
+
 //boolean fanOn = false;
 //boolean lightOn = false;
 int fanPin = 2;
@@ -15,6 +22,9 @@ int temperatureUpThreshold = 25;    //TODO
 int temperatureDownThreshold = 21;
 
 int temperatureThreshold = 20;    //TODO 
+
+int producersAddress[] = {LOWER_LAYER_ADDRESS_1, LOWER_LAYER_ADDRESS_2, LOWER_LAYER_ADDRESS_3};
+int producersValues[PRODUCERS_SIZE] = {-1, -1, -1};
 
 //globals
 //-------
@@ -46,7 +56,7 @@ void initRadio() {
     radio.begin();
     radio.setRetries(15, 15);
     radio.openWritingPipe(wxAddr);
-    radio.openReadingPipe(1,rxAddr);
+    radio.openReadingPipe(3,rxAddr);
     radio.startListening();
 }
 
@@ -70,7 +80,7 @@ Message recieveMessage(){
     Serial.println("nothing to read");
     message.sensorType = 'z';
   }
-      return message;
+  return message;
 
 }
 
@@ -99,7 +109,27 @@ Message recieveMessage(){
    
 }
 
+boolean updateValue(int source, int value) {
+
+  boolean exist = false;
+
+  for (int i = 0; i < PRODUCERS_SIZE ; i++) {
+    if (source == producersAddress[i]) {
+      producersValues[i] = value;
+      exist = true;
+    }
+  }
+
+  return exist;
+}
+
 void decodeMessage(Message msg) {
+
+  if (msg.dest != MY_ADDRESS) {
+    Serial.println("not for me, ignore message");
+    return;
+  }
+  
   if(msg.source >= 200 && msg.source < 300){   //from higer layer
       //if the meesgae came from high layer
       //we should change policy in this layer/bottom layer
@@ -152,19 +182,26 @@ void decodeMessage(Message msg) {
       
       /******************temparture data*********************/
       case 'T':
+      {
       
-      Serial.println("Data [0]");
-      if (msg.data[2] > temperatureUpThreshold)
+        boolean isUpdated = updateValue(msg.source, msg.data[2]);
+        if (!isUpdated) {
+          //TODO 
+          Serial.println("value failed to update, the source isn't registered");
+          return;
+        }
+        Serial.println("Data [0]");
+        if (msg.data[2] > temperatureUpThreshold)
           actuateFan(true);
-      else    
+        else    
           actuateFan(false);
-       if (msg.data[2] < temperatureDownThreshold)
+        if (msg.data[2] < temperatureDownThreshold)
          actuateLight(true);
-      else    
+        else    
           actuateLight(false);
-      if (msg.data[2] > temperatureThreshold)
+        if (msg.data[2] > temperatureThreshold)
           actuateFan(true);
-      else    
+       else    
           actuateFan(false);
 
       
@@ -190,6 +227,9 @@ void decodeMessage(Message msg) {
       //}
       //send average to upper layer
       break;
+      }
+      
+
       
       /***********************air humidity data***********************/
       case 'H':
@@ -255,7 +295,7 @@ Message prepareMessageToUpper(Message message){
 
 Message prepareMessageToLower(Message message){
   message.source = MY_ADDRESS;
-  message.dest = LOWER_LAYER_ADDRESS;
+  message.dest = LOWER_LAYER_ADDRESS_1;
   return message;
 }
 
