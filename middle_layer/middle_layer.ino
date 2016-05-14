@@ -14,17 +14,15 @@
 
 #define PRODUCERS_SIZE 3
 
-//boolean fanOn = false;
-//boolean lightOn = false;
+#define VALID_TIME 5
+
+
 int fanPin = 2;
 int lightpin = 4;
 int temperatureUpThreshold = 25;    //TODO 
 int temperatureDownThreshold = 21;
 
-int temperatureThreshold = 20;    //TODO 
-
-int producersAddress[] = {LOWER_LAYER_ADDRESS_1, LOWER_LAYER_ADDRESS_2, LOWER_LAYER_ADDRESS_3};
-int producersValues[PRODUCERS_SIZE] = {-1, -1, -1};
+Message producers[PRODUCERS_SIZE];
 
 //globals
 //-------
@@ -33,6 +31,12 @@ RF24 radio(7, 8);
 const byte rxAddr[6] = "00002";
 const byte wxAddr[6] = "00001";
 
+enum actions {
+  fan,
+  light,
+  none
+};
+
 
 void actuateFan(boolean on){
   if(on)
@@ -40,6 +44,7 @@ void actuateFan(boolean on){
   else
       digitalWrite(fanPin,LOW);
 }
+
 void actuateLight(boolean on){
   if(on)
       digitalWrite(lightpin,HIGH);
@@ -84,43 +89,80 @@ Message recieveMessage(){
 
 }
 
-
-    void sendMessage(Message message){
-        bool ok = false;
-        int iteration = 0;
-        int delayMili = 0;
-        ExponentialBackoff exponentialBackoff;
-        radio.stopListening();
-        while(!ok && delayMili != -1){  //if message fails 
-            ok =  radio.write(&message, sizeof(message));
-            if(ok)
-               Serial.println("send success");      
-            else{
-              Serial.println("send failed backing off");
-              delayMili = exponentialBackoff.getDelayTime(++iteration);
-              if(delayMili >= 0)
-                delay(delayMili);
-              else;   
-              //send failed (max retries)  TODO  
-            }
-       }
-        radio.startListening();
-    
+void sendMessage(Message message){
+  bool ok = false;
+  int iteration = 0;
+  int delayMili = 0;
+  ExponentialBackoff exponentialBackoff;
+  radio.stopListening();
+  while(!ok && delayMili != -1){  //if message fails 
+    ok =  radio.write(&message, sizeof(message));
+    if(ok)
+      Serial.println("send success");      
+    else{
+      Serial.println("send failed backing off");
+      delayMili = exponentialBackoff.getDelayTime(++iteration);
+      if(delayMili >= 0)
+        delay(delayMili);
+        else;   
+        //send failed (max retries)  TODO  
+    }
+  }
+  radio.startListening();
    
 }
 
-boolean updateValue(int source, int value) {
+
+
+boolean updateValue(Message msg) {
 
   boolean exist = false;
 
   for (int i = 0; i < PRODUCERS_SIZE ; i++) {
-    if (source == producersAddress[i]) {
-      producersValues[i] = value;
+    if (msg.source == producers[i].source) {
+      producers.data = msg.data;
+      producers.dateTime = msg.dateTime;
       exist = true;
     }
   }
 
   return exist;
+}
+
+actions actuateIfNeeded(float data, char type) {
+  switch(type) {
+    case 'T':
+      if (data > temperatureUpThreshold) {
+        actuateFan(true);
+        return fan;
+      }
+      else {
+        actuateFan(false);
+        return none;
+      }
+
+      if (data < temperatureDownThreshold) {
+        actuateLight(true);
+        return light;
+      }
+
+      else {
+        actuateFan(false);
+        return none;
+      }
+      break;
+
+    case 'L':
+    //TDOO
+    break;
+    
+  }
+  
+
+}
+
+float checkForAverage() {
+  //TODO check for millis support
 }
 
 void decodeMessage(Message msg) {
@@ -130,7 +172,7 @@ void decodeMessage(Message msg) {
     return;
   }
   
-  if(msg.source >= 200 && msg.source < 300){   //from higer layer
+  if (msg.source >= 200 && msg.source < 300){   //from higer layer
       //if the meesgae came from high layer
       //we should change policy in this layer/bottom layer
       
@@ -183,49 +225,28 @@ void decodeMessage(Message msg) {
       /******************temparture data*********************/
       case 'T':
       {
-      
-        boolean isUpdated = updateValue(msg.source, msg.data[2]);
+        boolean isUpdated = updateValue(msg);
         if (!isUpdated) {
           //TODO 
           Serial.println("value failed to update, the source isn't registered");
           return;
         }
-        Serial.println("Data [0]");
-        if (msg.data[2] > temperatureUpThreshold)
-          actuateFan(true);
-        else    
-          actuateFan(false);
-        if (msg.data[2] < temperatureDownThreshold)
-         actuateLight(true);
-        else    
-          actuateLight(false);
-        if (msg.data[2] > temperatureThreshold)
-          actuateFan(true);
-       else    
-          actuateFan(false);
+        
+        float tempratureAverage = checkForAverage();
+        
+        if (tempratureAverage < 0) {
+          return;
+        }
+        
+        else {
+          boolean isActuatorEnabled = actuateIfNeeded(tempratureAverage, msg.sensorType);
+          if (isActuatorEnabled) {
+            Serial.println("fan turned on");
+            //TODO send message to upper
 
-      
-      Serial.println(msg.data[0]);
-      Serial.println("Data [2]");
-      Serial.println(msg.data[2]);
-/*
-      msg = prepareMessageToLower(msg);
-      msg.minimum_threshold = 35;
-      msg.maximum_threshold = 55;
-      sendMessage(msg);
-*/    
-  
-      //do avreage from all temperatre messages that received
-      //if (average < TEMP_LOWER_TRESHOLD) {
-        //turn on heat lamp
-      //}
-      //else if (average > TEMP_HIGHER_TRESHOLD) {
-        //turn on fan in
-      //}
-      //else {
-        //do nothing, just check that the actuators are off
-      //}
-      //send average to upper layer
+          }
+        }
+
       break;
       }
       
