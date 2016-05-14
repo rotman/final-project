@@ -5,6 +5,7 @@
 #include <ExponentialBackoff.h>
 #include <Clock.h>
 
+
 #define LOWER_LAYER_ADDRESS_1 1
 #define LOWER_LAYER_ADDRESS_2 2
 #define LOWER_LAYER_ADDRESS_3 3
@@ -329,6 +330,8 @@ void loop() {
   Serial.print(rtClock.seconds, DEC);
   Serial.print(" - Temp: ");
   Serial.println(rtClock.get3231Temp());
+  Serial.print("sizeeeeeeeeeeeeee of massage = " );
+  Serial.println(sizeof(Message));
 
   delay(1000);
 
