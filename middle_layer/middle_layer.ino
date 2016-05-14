@@ -3,6 +3,7 @@
 #include <message.h>
 #include <SPI.h>
 #include <ExponentialBackoff.h>
+#include <Clock.h>
 
 #define LOWER_LAYER_ADDRESS_1 1
 #define LOWER_LAYER_ADDRESS_2 2
@@ -32,7 +33,7 @@ RF24 radio(7, 8);
 
 const byte rxAddr[6] = "00002";
 const byte wxAddr[6] = "00001";
-
+Clock rtClock;
 
 void actuateFan(boolean on){
   if(on)
@@ -89,7 +90,7 @@ Message recieveMessage(){
         bool ok = false;
         int iteration = 0;
         int delayMili = 0;
-        ExponentialBackoff exponentialBackoff;
+        ExponentialBackoff exponentialBackoff(7);
         radio.stopListening();
         while(!ok && delayMili != -1){  //if message fails 
             ok =  radio.write(&message, sizeof(message));
@@ -302,6 +303,7 @@ Message prepareMessageToLower(Message message){
 
 
 void loop() {
+  
   //receive message from lower layer
   Message messageToRead = recieveMessage();
 
@@ -310,5 +312,24 @@ void loop() {
     decodeMessage(messageToRead);
   }
   delay(3000);
+  rtClock.watchConsole();
+  rtClock.get3231Date();
+  Serial.print(rtClock.weekDay);
+  Serial.print(", ");
+  Serial.print(rtClock.date, DEC);
+  Serial.print("/");
+  Serial.print(rtClock.month, DEC);
+  Serial.print("/");
+  Serial.print(rtClock.year, DEC);
+  Serial.print(" - ");
+  Serial.print(rtClock.hours, DEC);
+  Serial.print(":");
+  Serial.print(rtClock.minutes, DEC);
+  Serial.print(":");
+  Serial.print(rtClock.seconds, DEC);
+  Serial.print(" - Temp: ");
+  Serial.println(rtClock.get3231Temp());
+
+  delay(1000);
 
 }
