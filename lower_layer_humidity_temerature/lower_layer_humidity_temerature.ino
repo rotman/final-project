@@ -47,7 +47,7 @@ void sendMessage(Message message){
         bool ok = false;
         int iteration = 0;
         int delayMili = 0;
-        ExponentialBackoff exponentialBackoff;
+        ExponentialBackoff exponentialBackoff(5);
         radio.stopListening();
         while(!ok && delayMili != -1){  //if message fails 
             ok =  radio.write(&message, sizeof(message));
@@ -58,7 +58,7 @@ void sendMessage(Message message){
               delayMili = exponentialBackoff.getDelayTime(++iteration);
               if(delayMili >= 0)
                 delay(delayMili);
-              else;   
+              else break;   
               //send failed (max retries)  TODO  
             }
        }
