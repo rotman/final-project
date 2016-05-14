@@ -2,7 +2,7 @@
 
 #ifndef MESSAGE_H
 #define MESSAGE_H
-
+#include <DateTime.h>
 
 struct Message {
 	byte minimum_threshold;
@@ -12,8 +12,7 @@ struct Message {
 	short int source; 
 	short int dest;
   	short int part;
-
-  	//time?
+	DateTime dateTime;
   	int data[7];
 };
 

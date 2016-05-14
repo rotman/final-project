@@ -3,6 +3,8 @@
 #include <message.h>
 #include <SPI.h>
 #include <ExponentialBackoff.h>
+#include <Clock.h>
+
 
 #define LOWER_LAYER_ADDRESS_1 1
 #define LOWER_LAYER_ADDRESS_2 2
@@ -14,15 +16,17 @@
 
 #define PRODUCERS_SIZE 3
 
-#define VALID_TIME 5
-
-
+//boolean fanOn = false;
+//boolean lightOn = false;
 int fanPin = 2;
 int lightpin = 4;
 int temperatureUpThreshold = 25;    //TODO 
 int temperatureDownThreshold = 21;
 
-Message producers[PRODUCERS_SIZE];
+int temperatureThreshold = 20;    //TODO 
+
+int producersAddress[] = {LOWER_LAYER_ADDRESS_1, LOWER_LAYER_ADDRESS_2, LOWER_LAYER_ADDRESS_3};
+int producersValues[PRODUCERS_SIZE] = {-1, -1, -1};
 
 //globals
 //-------
@@ -30,13 +34,7 @@ RF24 radio(7, 8);
 
 const byte rxAddr[6] = "00002";
 const byte wxAddr[6] = "00001";
-
-enum actions {
-  fan,
-  light,
-  none
-};
-
+Clock rtClock;
 
 void actuateFan(boolean on){
   if(on)
@@ -44,7 +42,6 @@ void actuateFan(boolean on){
   else
       digitalWrite(fanPin,LOW);
 }
-
 void actuateLight(boolean on){
   if(on)
       digitalWrite(lightpin,HIGH);
@@ -89,80 +86,43 @@ Message recieveMessage(){
 
 }
 
-void sendMessage(Message message){
-  bool ok = false;
-  int iteration = 0;
-  int delayMili = 0;
-  ExponentialBackoff exponentialBackoff;
-  radio.stopListening();
-  while(!ok && delayMili != -1){  //if message fails 
-    ok =  radio.write(&message, sizeof(message));
-    if(ok)
-      Serial.println("send success");      
-    else{
-      Serial.println("send failed backing off");
-      delayMili = exponentialBackoff.getDelayTime(++iteration);
-      if(delayMili >= 0)
-        delay(delayMili);
-        else;   
-        //send failed (max retries)  TODO  
-    }
-  }
-  radio.startListening();
+
+    void sendMessage(Message message){
+        bool ok = false;
+        int iteration = 0;
+        int delayMili = 0;
+        ExponentialBackoff exponentialBackoff(7);
+        radio.stopListening();
+        while(!ok && delayMili != -1){  //if message fails 
+            ok =  radio.write(&message, sizeof(message));
+            if(ok)
+               Serial.println("send success");      
+            else{
+              Serial.println("send failed backing off");
+              delayMili = exponentialBackoff.getDelayTime(++iteration);
+              if(delayMili >= 0)
+                delay(delayMili);
+              else;   
+              //send failed (max retries)  TODO  
+            }
+       }
+        radio.startListening();
+    
    
 }
 
-
-
-boolean updateValue(Message msg) {
+boolean updateValue(int source, int value) {
 
   boolean exist = false;
 
   for (int i = 0; i < PRODUCERS_SIZE ; i++) {
-    if (msg.source == producers[i].source) {
-      producers.data = msg.data;
-      producers.dateTime = msg.dateTime;
+    if (source == producersAddress[i]) {
+      producersValues[i] = value;
       exist = true;
     }
   }
 
   return exist;
-}
-
-actions actuateIfNeeded(float data, char type) {
-  switch(type) {
-    case 'T':
-      if (data > temperatureUpThreshold) {
-        actuateFan(true);
-        return fan;
-      }
-      else {
-        actuateFan(false);
-        return none;
-      }
-
-      if (data < temperatureDownThreshold) {
-        actuateLight(true);
-        return light;
-      }
-
-      else {
-        actuateFan(false);
-        return none;
-      }
-      break;
-
-    case 'L':
-    //TDOO
-    break;
-    
-  }
-  
-
-}
-
-float checkForAverage() {
-  //TODO check for millis support
 }
 
 void decodeMessage(Message msg) {
@@ -172,7 +132,7 @@ void decodeMessage(Message msg) {
     return;
   }
   
-  if (msg.source >= 200 && msg.source < 300){   //from higer layer
+  if(msg.source >= 200 && msg.source < 300){   //from higer layer
       //if the meesgae came from high layer
       //we should change policy in this layer/bottom layer
       
@@ -225,28 +185,49 @@ void decodeMessage(Message msg) {
       /******************temparture data*********************/
       case 'T':
       {
-        boolean isUpdated = updateValue(msg);
+      
+        boolean isUpdated = updateValue(msg.source, msg.data[2]);
         if (!isUpdated) {
           //TODO 
           Serial.println("value failed to update, the source isn't registered");
           return;
         }
-        
-        float tempratureAverage = checkForAverage();
-        
-        if (tempratureAverage < 0) {
-          return;
-        }
-        
-        else {
-          boolean isActuatorEnabled = actuateIfNeeded(tempratureAverage, msg.sensorType);
-          if (isActuatorEnabled) {
-            Serial.println("fan turned on");
-            //TODO send message to upper
+        Serial.println("Data [0]");
+        if (msg.data[2] > temperatureUpThreshold)
+          actuateFan(true);
+        else    
+          actuateFan(false);
+        if (msg.data[2] < temperatureDownThreshold)
+         actuateLight(true);
+        else    
+          actuateLight(false);
+        if (msg.data[2] > temperatureThreshold)
+          actuateFan(true);
+       else    
+          actuateFan(false);
 
-          }
-        }
-
+      
+      Serial.println(msg.data[0]);
+      Serial.println("Data [2]");
+      Serial.println(msg.data[2]);
+/*
+      msg = prepareMessageToLower(msg);
+      msg.minimum_threshold = 35;
+      msg.maximum_threshold = 55;
+      sendMessage(msg);
+*/    
+  
+      //do avreage from all temperatre messages that received
+      //if (average < TEMP_LOWER_TRESHOLD) {
+        //turn on heat lamp
+      //}
+      //else if (average > TEMP_HIGHER_TRESHOLD) {
+        //turn on fan in
+      //}
+      //else {
+        //do nothing, just check that the actuators are off
+      //}
+      //send average to upper layer
       break;
       }
       
@@ -323,6 +304,7 @@ Message prepareMessageToLower(Message message){
 
 
 void loop() {
+  
   //receive message from lower layer
   Message messageToRead = recieveMessage();
 
@@ -331,5 +313,26 @@ void loop() {
     decodeMessage(messageToRead);
   }
   delay(3000);
+  rtClock.watchConsole();
+  rtClock.get3231Date();
+  Serial.print(rtClock.weekDay);
+  Serial.print(", ");
+  Serial.print(rtClock.date, DEC);
+  Serial.print("/");
+  Serial.print(rtClock.month, DEC);
+  Serial.print("/");
+  Serial.print(rtClock.year, DEC);
+  Serial.print(" - ");
+  Serial.print(rtClock.hours, DEC);
+  Serial.print(":");
+  Serial.print(rtClock.minutes, DEC);
+  Serial.print(":");
+  Serial.print(rtClock.seconds, DEC);
+  Serial.print(" - Temp: ");
+  Serial.println(rtClock.get3231Temp());
+  Serial.print("sizeeeeeeeeeeeeee of massage = " );
+  Serial.println(sizeof(Message));
+
+  delay(1000);
 
 }
