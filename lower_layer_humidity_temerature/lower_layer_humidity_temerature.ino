@@ -13,6 +13,7 @@
 //globals
 //-------
 RF24 radio(7, 8);
+Sensor * th;
 
 int soil_humidity_threshold_minimum = 40;
 int soil_humidity_threshold_maximmum = 40;
@@ -41,6 +42,8 @@ void setup() {
   Serial.println("setup()");
   initConsole();
   initRadio();
+  th= new STemptureHumidity(2);              //create new temperature sensor instanse
+  Serial.println("STemptureHumidity created");
 }
 
 void sendMessage(Message message){
@@ -87,27 +90,28 @@ bool receiveMessage(Message& message){
 
 void loop() {
   Serial.println("loop()");
-  Sensor * th= new STemptureHumidity(2);              //create new temperature sensor instanse
-  Serial.println("STemptureHumidity created");
-  //  Sensor * sh= new SSoilHumidity(4); 
-  // sh->readSensorData();
-  //check threshhold();  
-  Message readSensor =  th->readSensorData();          //read sensor data
+
+  Message readSensor =  th->readSensorData(false);          //read tempeture data
   Message messageToSend = prepareMessage(readSensor); //add sender id and receiver id to message
   Serial.print("sensorType=");
   Serial.println(messageToSend.sensorType);
   Serial.print("dest=");
   Serial.println(messageToSend.dest);
-  Serial.print("data=");
-  Serial.print(messageToSend.data[0]);
-  Serial.print(".");
-  Serial.print(messageToSend.data[1]);
-  Serial.print(" ");
-  Serial.print(messageToSend.data[2]);
-  Serial.print(".");
-  Serial.println(messageToSend.data[3]);
-
+  Serial.print("data temp=");
+  Serial.println(messageToSend.data);
   sendMessage(messageToSend);                          //send message  
+
+  readSensor =  th->readSensorData(true);          //read Humidity data
+  messageToSend = prepareMessage(readSensor); //add sender id and receiver id to message
+  Serial.print("sensorType=");
+  Serial.println(messageToSend.sensorType);
+  Serial.print("dest=");
+  Serial.println(messageToSend.dest);
+  Serial.print("data hunidity=");
+  Serial.print(messageToSend.data);
+   Serial.println("%");
+  sendMessage(messageToSend);                          //send message  
+  
   Message messageToRead;
   if(receiveMessage(messageToRead)){                   //receive message
     Serial.print("main loop, i got: ");

@@ -13,7 +13,7 @@ struct Message {
 	short int dest;
   	short int part;
 	DateTime dateTime;
-  	int data[7];
+  	float data;
 };
 
 

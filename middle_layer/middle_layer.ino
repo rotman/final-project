@@ -82,7 +82,7 @@ Message recieveMessage(){
   if (radio.available()){
     radio.read(&message, sizeof(message));
     Serial.print("recived message: the data is:");
-     Serial.println(message.data[0]);
+     Serial.println(message.data);
   }
   else{
     Serial.println("nothing to read");
@@ -122,8 +122,8 @@ boolean updateValue(Message msg) {
 
   for (int i = 0; i < PRODUCERS_SIZE ; i++) {
     if (msg.source == producers[i].source) {
-      producers.data = msg.data;
-      producers.dateTime = msg.dateTime;
+      producers[i].data = msg.data;
+      producers[i].dateTime = msg.dateTime;
       exist = true;
     }
   }
@@ -230,19 +230,19 @@ void decodeMessage(Message msg) {
           return;
         }
         
-        float tempratureAverage = checkForAverage();
+//        float tempratureAverage = checkForAverage();
         
-        if (tempratureAverage < 0) {
-          return;
-        }
+//        if (tempratureAverage < 0) {
+//          return;
+  //      }
         
-        else {
-          boolean isActuatorEnabled = actuateIfNeeded(tempratureAverage, msg.sensorType);
-          if (isActuatorEnabled) {
-            Serial.println("fan turned on");
+    //    else {
+      //    boolean isActuatorEnabled = actuateIfNeeded(tempratureAverage, msg.sensorType);
+        //  if (isActuatorEnabled) {
+          //  Serial.println("fan turned on");
             //TODO send message to upper
 
-          }
+        //  }
         }
 
       break;
@@ -266,8 +266,8 @@ void decodeMessage(Message msg) {
       /***************************light data***********************/
       case 'L':
       
-      Serial.println("Data [0]");
-      Serial.println(msg.data[0]);
+      Serial.println("Data ");
+      Serial.println(msg.data);
       
       //do avreage from all light messages that received
       //if (average < LIGHT_LOWER_TRESHOLD && needLight) {
