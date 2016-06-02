@@ -1,5 +1,8 @@
 
 #include <STemptureHumidity.h>
+#include <SLight.h>
+#include <SSoil.h>
+
 #include <nRF24L01.h>
 #include <RF24.h>
 #include <message.h>
@@ -13,7 +16,14 @@
 //globals
 //-------
 RF24 radio(7, 8);
-Sensor * th;
+Sensor* sensorsArray[3];
+Sensor * tempHumidity;
+Sensor * soil;
+Sensor * light;
+
+int tempHumidityPin = 2;
+int soilPin = A0;
+int lightPin = A1;
 
 int soil_humidity_threshold_minimum = 40;
 int soil_humidity_threshold_maximmum = 40;
@@ -42,8 +52,19 @@ void setup() {
   Serial.println("setup()");
   initConsole();
   initRadio();
-  th= new STemptureHumidity(2);              //create new temperature sensor instanse
+
+  tempHumidity= new STemptureHumidity(tempHumidityPin);              //create new temperature sensor instanse
   Serial.println("STemptureHumidity created");
+
+  light= new SLight(lightPin);              //create new light sensor instanse
+  Serial.println("Slight created");
+
+  soil= new SSoil(soilPin);              //create new soil sensor instanse
+  Serial.println("Ssoil created");
+sensorsArray[0] = tempHumidity;
+sensorsArray[1] = light;
+sensorsArray[2] = soil; 
+
 }
 
 void sendMessage(Message message){
@@ -74,6 +95,18 @@ Message prepareMessage(Message message){
   return message;
 }
 
+void readPrepareSend(Sensor * sensor,bool isHumidity){
+  Message readSensor =  sensor->readSensorData(isHumidity);          //read sensor data
+  Message messageToSend = prepareMessage(readSensor);             //add sender id and receiver id to message
+  Serial.print("sensorType=");
+  Serial.println(messageToSend.sensorType);
+  Serial.print("dest=");
+  Serial.println(messageToSend.dest);
+  Serial.print("data =");
+  Serial.println(messageToSend.data);
+ // sendMessage(messageToSend);                                   //send message  
+}
+
 bool receiveMessage(Message& message){
   Serial.println("receiveMessage()");
   if (radio.available()){
@@ -90,28 +123,12 @@ bool receiveMessage(Message& message){
 
 void loop() {
   Serial.println("loop()");
-
-  Message readSensor =  th->readSensorData(false);          //read tempeture data
-  Message messageToSend = prepareMessage(readSensor); //add sender id and receiver id to message
-  Serial.print("sensorType=");
-  Serial.println(messageToSend.sensorType);
-  Serial.print("dest=");
-  Serial.println(messageToSend.dest);
-  Serial.print("data temp=");
-  Serial.println(messageToSend.data);
-  sendMessage(messageToSend);                          //send message  
-
-  readSensor =  th->readSensorData(true);          //read Humidity data
-  messageToSend = prepareMessage(readSensor); //add sender id and receiver id to message
-  Serial.print("sensorType=");
-  Serial.println(messageToSend.sensorType);
-  Serial.print("dest=");
-  Serial.println(messageToSend.dest);
-  Serial.print("data hunidity=");
-  Serial.print(messageToSend.data);
-   Serial.println("%");
-  sendMessage(messageToSend);                          //send message  
-  
+for (int i = 0;i<3;++i){
+  readPrepareSend(sensorsArray[i],false);
+  if(i==0)
+  readPrepareSend(sensorsArray[i],true);
+}
+   
   Message messageToRead;
   if(receiveMessage(messageToRead)){                   //receive message
     Serial.print("main loop, i got: ");

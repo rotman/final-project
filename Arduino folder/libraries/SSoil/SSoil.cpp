@@ -8,7 +8,7 @@ SSoil::SSoil(int pin){
 
 }
 
-Message SSoil	::readSensorData(){
+Message SSoil	::readSensorData(bool isHumidity){
 	Message message;					//create new message
 
 	Serial.println("readSensorData called");
@@ -16,10 +16,10 @@ Message SSoil	::readSensorData(){
 	Serial.print("soil humidity:");
 	Serial.println(sensorValue);
 
-  message.data[0]= sensorValue;		//enter the data
+  message.data= sensorValue;		//enter the data
   message.sensorType = 'S';
   Serial.print("copied from sensor to messege: check: ");
-  Serial.println(message.data[0]);	
+  Serial.println(message.data);	
  
   return message;
 }
