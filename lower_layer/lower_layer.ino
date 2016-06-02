@@ -112,7 +112,7 @@ bool receiveMessage(Message& message){
   if (radio.available()){
     radio.read(&message, sizeof(message));
     Serial.print("recived message:");
-    //Serial.println(message.data);
+    Serial.println(message.data);
     return true;
   }
   else {

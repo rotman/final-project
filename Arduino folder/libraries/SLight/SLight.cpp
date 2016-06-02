@@ -4,6 +4,7 @@
 
 SLight::SLight(int pin){
 	this->pin = pin;
+	pinMode(pin, INPUT);
 	sensorValue = 0;
 }
 
