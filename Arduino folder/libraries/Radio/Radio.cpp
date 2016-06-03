@@ -9,19 +9,25 @@ void Radio::init(RF24 &radio, byte rxAddr[6], byte wxAddr[6]) {
 }
 
 void Radio::sendMessage(RF24 &radio, Message &message) {
-	  bool ok = false;
-	  radio.stopListening();
-	  while (!ok) {
-		ok = radio.write(&message, sizeof(message));
-		if (ok) {
+    bool ok = false;
+    int iteration = 0;
+    int delayMili = 0;
+    ExponentialBackoff exponentialBackoff(5);
+    radio.stopListening();
+    while(!ok && delayMili != -1){  //if message fails 
+		ok =  radio.write(&message, sizeof(message));
+        if(ok)
 			Serial.println("send success");      
-		}
-		else {
-			Serial.println("send failed");
-		}  
-	  }
-	radio.startListening();
- 
+        else {
+			Serial.println("send failed backing off");
+            delayMili = exponentialBackoff.getDelayTime(++iteration);
+            if(delayMili >= 0)
+              delay(delayMili);
+            else break;   
+            //send failed (max retries)  TODO  
+        }
+    }
+    radio.startListening();
 }
 
 Message Radio::receiveMessage(RF24 &radio) {

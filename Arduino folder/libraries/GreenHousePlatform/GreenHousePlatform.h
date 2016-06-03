@@ -3,13 +3,14 @@
 
 #include <Radio.h>
 #include <ISensorNetworkPlatform.h>
-
+#include <LinkedList.h>
 
 class GreenHousePlatform : public ISensorNetworkPlatform<RF24, Message> {
 	
 	public:
 		void init(RF24&, byte[6], byte[6]);
-		Message readSensorData();
+		void addSensor(Sensor*);
+		LinkedList<Message> readSensorsData();
 		void sendMessage(RF24&, Message&);
 		Message receiveMessage(RF24&);
 		void actuate();
@@ -17,9 +18,8 @@ class GreenHousePlatform : public ISensorNetworkPlatform<RF24, Message> {
 		
 	private:
 		Radio radioHelper;
+		LinkedList<Sensor*> sensors;
 		
-	
-	
 };
 
 #endif
