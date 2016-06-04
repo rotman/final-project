@@ -12,6 +12,15 @@ void GreenHousePlatform::addSensor(Sensor* sensor) {
 	sensors.add(sensor);
 }
 
+void GreenHousePlatform::removeSensor(Sensor* sensor) {
+	for (int i = 0; i < sensors.size(); i++) {
+		if (sensors.get(i) == sensor) {
+			sensors.remove(i);
+			break;
+		}
+	}
+}
+
 LinkedList<Message> GreenHousePlatform::readSensorsData() {
 	LinkedList<Message> messages = LinkedList<Message>();
 	for (int i = 0; i < sensors.size(); i++) {
@@ -21,19 +30,17 @@ LinkedList<Message> GreenHousePlatform::readSensorsData() {
 }
 
 void GreenHousePlatform::sendMessage(RF24 &radio, Message &message) {
-	
 	radioHelper.sendMessage(radio, message);
 }
 
 Message GreenHousePlatform::receiveMessage(RF24 &radio) {
-	
 	Message message;
 	message = radioHelper.receiveMessage(radio);
 	return message; 
 }
 
-void GreenHousePlatform::actuate() {
-	
+void GreenHousePlatform::actuate(Actuator* actuator, bool on) {
+	actuator->actuate(on);
 	
 }
 
