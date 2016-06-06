@@ -3,9 +3,7 @@
 
 #include <Communicationable.h>
 #include <ILowerLayer.h>
-#include <Actuator.h>
 #include <Radio.h>
-#include <Sensor.h>
 
 class LowerLayer : public Communicationable<RF24, Message>, public ILowerLayer<Message, Actuator> {
 	
@@ -18,7 +16,9 @@ class LowerLayer : public Communicationable<RF24, Message>, public ILowerLayer<M
 		//ILowerLayer implementation
 		void initLayer();
 		void addSensor(Sensor*);
-		void removeSensor(Sensor*);
+		void removeSensor(int);
+		void addActuator(Actuator*);
+		void removeActuator(int);
 		LinkedList<Message> readSensorsData();
 		void actuate(Actuator*, bool);
 		void onSensorFail();

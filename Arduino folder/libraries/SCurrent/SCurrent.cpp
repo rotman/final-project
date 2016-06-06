@@ -1,7 +1,6 @@
 #include <SCurrent.h>
 
-SCurrent::SCurrent(int id, int pin){
-	this->id = id;
+SCurrent::SCurrent(int id, int pin) : Sensor(id){
 	this->pin = pin;
 	sensorValue = 0;
 }

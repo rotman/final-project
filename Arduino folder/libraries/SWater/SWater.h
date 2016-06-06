@@ -13,7 +13,6 @@ public:
 	Message readSensorData(bool isHumidity = false);
 	static  void rpm();
 private:
-	int id;
 	int pin;
 	int sensorValue;
 	static volatile int NbTopsFan; //measuring the rising edges of the signal

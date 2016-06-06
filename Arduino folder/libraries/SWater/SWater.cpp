@@ -3,13 +3,11 @@
 
 volatile int SWater::NbTopsFan = 0;
 
-	void SWater:: rpm()     //This is the function that the interupt calls 
-{
+void SWater:: rpm() {     //This is the function that the interupt calls 
 	NbTopsFan++;  //This function measures the rising and falling edge of the hall effect sensors signal
 }
 
-SWater::SWater(int id, int pin){
-	this->id = id;
+SWater::SWater(int id, int pin) : Sensor(id){
 	this->pin = pin;
 	sensorValue = 0;
 	pinMode(pin, INPUT); //initializes digital pin 2 as an input
@@ -17,7 +15,7 @@ SWater::SWater(int id, int pin){
 	attachInterrupt(digitalPinToInterrupt(pin), rpm, RISING); //and the interrupt is 
 }
 
-Message SWater::readSensorData(bool isHumidity){
+Message SWater::readSensorData(bool isHumidity) {
 	Message message;					//create new message
 	Serial.println("readSensorData called");
 	NbTopsFan = 0;   //Set NbTops to 0 ready for calculations
@@ -32,8 +30,8 @@ Message SWater::readSensorData(bool isHumidity){
 	message.sensorType = 'W';
 	Serial.print("copied from sensor to messege: check: ");
 	Serial.println(message.data, DEC);
-
-  return message;
+	
+	return message;
 }
 
 

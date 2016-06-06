@@ -26,7 +26,7 @@ void initConsole() {
 }
 
 void createAndAddSensors() {
-  Serial.println("addSensors()");
+  Serial.println("createAndAddSensors()");
  
   current= new SCurrent(commonValues.currentSensorId, currentPin);              //create new current sensor instanse
   Serial.println("SCurrent created");
@@ -47,6 +47,7 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  Serial.println("loop()");
+  
 
 }

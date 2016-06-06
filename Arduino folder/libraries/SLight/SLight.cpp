@@ -1,7 +1,6 @@
 #include <SLight.h>
 
-SLight::SLight(int id, int pin){
-	this->id = id;
+SLight::SLight(int id, int pin) : Sensor(id){
 	this->pin = pin;
 	pinMode(pin, INPUT);
 	sensorValue = 0;
@@ -9,20 +8,17 @@ SLight::SLight(int id, int pin){
 
 Message SLight	::readSensorData(bool isHumidity){
 	Message message;					//create new message
-
 	Serial.println("readSensorData called");
 	sensorValue = analogRead(pin);
-
 	Serial.print("light:");
 	Serial.println(sensorValue, DEC);
-
-  message.data= sensorValue;		//enter the data
-  message.sensorType = 'L';
-  Serial.print("copied from sensor to messege: check: ");
-  Serial.println(message.data,DEC);	
- 
-  return message;
+	message.data= sensorValue;		//enter the data
+	message.sensorType = 'L';
+	Serial.print("copied from sensor to messege: check: ");
+	Serial.println(message.data,DEC);	 
+	return message;
 }
+
 
 
 

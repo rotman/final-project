@@ -9,7 +9,6 @@ public:
 	void actuate(bool);
 private:
 	int pin;
-	int id;
 };
 
 

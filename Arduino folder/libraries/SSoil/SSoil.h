@@ -12,7 +12,6 @@ public:
 	SSoil(int, int);
 	Message readSensorData(bool isHumidity = false);
 private:
-	int id;
 	int pin;
 	int sensorValue;
 };

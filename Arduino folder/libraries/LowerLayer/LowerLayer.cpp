@@ -25,10 +25,23 @@ void LowerLayer::addSensor(Sensor* sensor) {
 	sensors.add(sensor);
 }
 
-void LowerLayer::removeSensor(Sensor* sensor) {
+void LowerLayer::removeSensor(int id) {
 	for (int i = 0; i < sensors.size(); i++) {
-		if (sensors.get(i) == sensor) {
+		if (actuators.get(i)->getId() == id) {
 			sensors.remove(i);
+			break;
+		}
+	}
+}
+
+void LowerLayer::addActuator(Actuator* actuator) {
+	actuators.add(actuator);
+}
+
+void LowerLayer::removeActuator(int id) {
+	for (int i = 0; i < actuators.size(); i++) {
+		if (actuators.get(i)->getId() == id) {
+			actuators.remove(i);
 			break;
 		}
 	}

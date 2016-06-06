@@ -1,7 +1,6 @@
 #include <FanActuator.h>
 
-FanActuator::FanActuator(int id, int pin) {
-	this->id = id;
+FanActuator::FanActuator(int id, int pin) : Actuator(id){
 	this->pin = pin;
 }
 

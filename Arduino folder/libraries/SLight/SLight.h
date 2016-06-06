@@ -4,17 +4,14 @@
 #include <Sensor.h>
 #include <RF24.h>
 #include <SPI.h>
-#include <nRF24L01.h>
-
 
 class SLight : public Sensor {
-public:
-	SLight(int, int);
-	Message readSensorData(bool isHumidity = false);
-private:
-	int id;
-	int pin;
-	int sensorValue;
+	public:
+		SLight(int, int);
+		Message readSensorData(bool isHumidity = false);
+	private:
+		int pin;
+		int sensorValue;
 };
 
 

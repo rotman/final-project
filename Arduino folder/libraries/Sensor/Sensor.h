@@ -6,8 +6,18 @@
 //abstract class Sensor
 class Sensor {
     public:
+		Sensor(int id) {
+			this->id = id;
+		}
+		
+		int getId() {
+			return id;
+		}
+		
         //read function must be implemented
         //this is called a pure virtual function
         virtual Message readSensorData(bool) = 0; 
+	protected:
+		int id;
 };
 #endif

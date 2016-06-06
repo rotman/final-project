@@ -3,16 +3,22 @@
 
 class CommonValues {
 	public:
+		//addresses
+		static const int lowerLayerAddress 			 = 1;
+		static const int lowerLayerConsumptionAdress = 2;
+		static const int middleLayerAddress 		 = 101;
+		static const int highLayerAddress 			 = 201;
+
 		//sensors id
 		static const int humidityTemperatureSensorId = 1;
 		static const int lightSensorId 			  	 = 2;
-		static const int soilSensorId 				 = 3;
-		static const int currentSensorId			 = 4;
-		static const int waterFlowSensorId			 = 5;
+		static const int soil1SensorId 				 = 3;
+		static const int soil2SensorId 				 = 4;
+		static const int currentSensorId			 = 5;
+		static const int waterFlowSensorId			 = 6;
 
-		
 		//actuators id
-		static int const fan1ActuatorId 	= 1;
+		static const int fan1ActuatorId 	= 1;
 		static const int fan2ActuatorId 	= 2;
 		static const int fan3ActuatorId 	= 3;
 		static const int lampActuatorId 	= 4;

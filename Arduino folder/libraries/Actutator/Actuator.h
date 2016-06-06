@@ -6,7 +6,17 @@
 
 class Actuator {
 	public:
+		Actuator(int id) {
+			this->id = id;
+		}
+		
+		int getId() {
+			return id;
+		}
+		
 		virtual void actuate(bool) = 0;
+	protected:
+		int id;
 };
 
 

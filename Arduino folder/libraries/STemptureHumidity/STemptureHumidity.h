@@ -37,7 +37,6 @@ private:
 	byte dat[5];
 	float data;
 	uint8_t pin;
-	int id;
 #ifdef __AVR
 	// Use direct GPIO access on an 8-bit AVR so keep track of the port and bitmask
 	// for the digital pin connected to the DHT.  Other platforms will use digitalRead.
