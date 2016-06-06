@@ -87,34 +87,21 @@ void setup() {
 }
 
 //add source and destination to message
-Message prepareMessage(Message message) {
+Message prepareMessage(Message& message) {
   message.source = commonValues.lowerLayerAddress;
   message.dest = commonValues.middleLayerAddress;
   return message;
-}
-
-void readPrepareSend(Sensor * sensor,bool isHumidity){
-  Message readSensor =  sensor->readSensorData(isHumidity);          //read sensor data
-  Message messageToSend = prepareMessage(readSensor);             
-  Serial.print("sensorType=");
-  Serial.println(messageToSend.sensorType);
-  Serial.print("dest=");
-  Serial.println(messageToSend.dest);
-  Serial.print("data =");
-  Serial.println(messageToSend.data);
- // sendMessage(messageToSend);                                   //send message  
 }
 
 void loop() {
   Serial.println("loop()");
   LinkedList<Message> sensorsData = lowerLayer.readSensorsData();
   for (int i = 0; i<sensorsData.size(); ++i) {
-    Serial.println(sensorsData.get(i).sensorType);
-    Serial.println(sensorsData.get(i).data);
-    
-    readPrepareSend(sensorsArray[i],false);
-    if(i==0)
-    readPrepareSend(sensorsArray[i],true);
+    Message message = sensorsData.get(i);
+    Serial.println(message.sensorType);
+    Serial.println(message.data);
+    prepareMessage(message);
+    lowerLayer.sendMessage(radio, message);
   }
    
   Message messageToRead = lowerLayer.receiveMessage(radio);

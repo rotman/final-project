@@ -49,8 +49,14 @@ void LowerLayer::removeActuator(int id) {
 
 LinkedList<Message> LowerLayer::readSensorsData() {
 	LinkedList<Message> messages = LinkedList<Message>();
+	CommonValues commonValues;
 	for (int i = 0; i < sensors.size(); i++) {
-		messages.add(sensors.get(i)->readSensorData(false));
+		if (sensors.get(i)->getId() == commonValues.humidityTemperatureSensorId) {
+			messages.add(sensors.get(i)->readSensorData(true));
+		}
+		else {
+			messages.add(sensors.get(i)->readSensorData(false));
+		}
 	}
 	return messages; 
 }

@@ -4,6 +4,7 @@
 #include <Communicationable.h>
 #include <ILowerLayer.h>
 #include <Radio.h>
+#include <CommonValues.h>
 
 class LowerLayer : public Communicationable<RF24, Message>, public ILowerLayer<Message, Actuator> {
 	
