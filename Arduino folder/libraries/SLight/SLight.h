@@ -9,9 +9,10 @@
 
 class SLight : public Sensor {
 public:
-	SLight(int);
+	SLight(int, int);
 	Message readSensorData(bool isHumidity = false);
 private:
+	int id;
 	int pin;
 	int sensorValue;
 };

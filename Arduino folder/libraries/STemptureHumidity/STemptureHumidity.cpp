@@ -140,7 +140,8 @@ uint32_t STemptureHumidity::expectPulse(bool level) {
 	return count;
 }
 
-STemptureHumidity::STemptureHumidity(int pin){
+STemptureHumidity::STemptureHumidity(int id, int pin){
+	this->id = id;
 	this->pin = pin;
 #ifdef __AVR
 	_bit = digitalPinToBitMask(pin);

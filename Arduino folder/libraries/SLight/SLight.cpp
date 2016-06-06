@@ -1,8 +1,7 @@
 #include <SLight.h>
 
-
-
-SLight::SLight(int pin){
+SLight::SLight(int id, int pin){
+	this->id = id;
 	this->pin = pin;
 	pinMode(pin, INPUT);
 	sensorValue = 0;

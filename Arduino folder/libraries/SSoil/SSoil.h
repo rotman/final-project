@@ -9,9 +9,10 @@
 
 class SSoil : public Sensor {
 public:
-	SSoil(int);
+	SSoil(int, int);
 	Message readSensorData(bool isHumidity = false);
 private:
+	int id;
 	int pin;
 	int sensorValue;
 };

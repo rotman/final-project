@@ -9,10 +9,11 @@
 
 class SWater : public Sensor {
 public:
-	SWater(int);
-	Message readSensorData();
+	SWater(int, int);
+	Message readSensorData(bool isHumidity = false);
 	static  void rpm();
 private:
+	int id;
 	int pin;
 	int sensorValue;
 	static volatile int NbTopsFan; //measuring the rising edges of the signal

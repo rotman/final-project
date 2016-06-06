@@ -29,7 +29,7 @@
 #endif
 class STemptureHumidity : public Sensor {
 public:
-	STemptureHumidity(int);
+	STemptureHumidity(int, int);
 	Message readSensorData(bool);
 	boolean read(bool force = false);
 	uint32_t expectPulse(bool);
@@ -37,6 +37,7 @@ private:
 	byte dat[5];
 	float data;
 	uint8_t pin;
+	int id;
 #ifdef __AVR
 	// Use direct GPIO access on an 8-bit AVR so keep track of the port and bitmask
 	// for the digital pin connected to the DHT.  Other platforms will use digitalRead.

@@ -9,9 +9,10 @@
 
 class SCurrent: public Sensor {
 public:
-	SCurrent(int);
-	Message readSensorData();
+	SCurrent(int, int);
+	Message readSensorData(bool isHumidity = false);
 private:
+	int id;
 	int pin;
 	int sensorValue;
 };

@@ -2,7 +2,8 @@
 
 
 
-SSoil::SSoil(int pin){
+SSoil::SSoil(int id, int pin){
+	this->id = id;
 	this->pin = pin;
 	sensorValue = 0;
 

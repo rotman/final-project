@@ -1,11 +1,12 @@
 #include <SCurrent.h>
 
-SCurrent::SCurrent(int pin){
+SCurrent::SCurrent(int id, int pin){
+	this->id = id;
 	this->pin = pin;
 	sensorValue = 0;
 }
 
-Message SCurrent::readSensorData(){
+Message SCurrent::readSensorData(bool isHumidity){
 	
 	//create new message
 	Message message;					
@@ -40,13 +41,13 @@ Message SCurrent::readSensorData(){
 	delay(10);
 
 	//enter the data
-	message.data[0]= outputValue;
+	message.data= outputValue;
 
 	// set sensor type
 	message.sensorType = 'C';
 	
 	Serial.print("copied from sensor to messege: check: ");
-	Serial.println(message.data[0],DEC);	
+	Serial.println(message.data,DEC);	
  
   return message;
 }
