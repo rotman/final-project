@@ -15,7 +15,8 @@ Message MiddleLayer::receiveMessage(RF24 &radio) {
 	return message; 
 }
 
-void MiddleLayer::initLayer() {
+void MiddleLayer::initLayer(int address) {
+	this->address = address;
 	actuators = LinkedList<Actuator*>();
 	//more inits here
 }

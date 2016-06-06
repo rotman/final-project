@@ -4,6 +4,8 @@
 #include <SCurrent.h>
 #include <SWater.h>
 
+//globals
+//-------
 LowerLayer lowerLayer;
 RF24 radio(7, 8);
 CommonValues commonValues;
@@ -41,7 +43,7 @@ void createAndAddSensors() {
 void setup() {
   Serial.println("setup()");
   initConsole();
-  lowerLayer.initLayer();
+  lowerLayer.initLayer(commonValues.lowerLayerConsumptionAdress);
   lowerLayer.initCommunication(radio, rxAddr, wxAddr);
   createAndAddSensors();
 }

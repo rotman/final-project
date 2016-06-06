@@ -318,35 +318,39 @@ Message prepareMessageToLower(Message message){
 
 
 void loop() {
-  
-  //receive message from lower layer
-  Message messageToRead = recieveMessage();
+//  
+//  //receive message from lower layer
+//  Message messageToRead = recieveMessage();
+//
+//  //if we got data
+//  if ('z' != messageToRead.sensorType) {
+//    decodeMessage(messageToRead);
+//  }
+//  delay(3000);
+//  rtClock.watchConsole();
+//  rtClock.get3231Date();
+//  Serial.print(rtClock.weekDay);
+//  Serial.print(", ");
+//  Serial.print(rtClock.date, DEC);
+//  Serial.print("/");
+//  Serial.print(rtClock.month, DEC);
+//  Serial.print("/");
+//  Serial.print(rtClock.year, DEC);
+//  Serial.print(" - ");
+//  Serial.print(rtClock.hours, DEC);
+//  Serial.print(":");
+//  Serial.print(rtClock.minutes, DEC);
+//  Serial.print(":");
+//  Serial.print(rtClock.seconds, DEC);
+//  Serial.print(" - Temp: ");
+//  Serial.println(rtClock.get3231Temp());
+//  Serial.print("sizeeeeeeeeeeeeee of massage = " );
+//  Serial.println(sizeof(Message));
+Message msg;
+msg.sensorType = 'T';
+msg.data = 34.34;
+sendMessage(msg);
 
-  //if we got data
-  if ('z' != messageToRead.sensorType) {
-    decodeMessage(messageToRead);
-  }
-  delay(3000);
-  rtClock.watchConsole();
-  rtClock.get3231Date();
-  Serial.print(rtClock.weekDay);
-  Serial.print(", ");
-  Serial.print(rtClock.date, DEC);
-  Serial.print("/");
-  Serial.print(rtClock.month, DEC);
-  Serial.print("/");
-  Serial.print(rtClock.year, DEC);
-  Serial.print(" - ");
-  Serial.print(rtClock.hours, DEC);
-  Serial.print(":");
-  Serial.print(rtClock.minutes, DEC);
-  Serial.print(":");
-  Serial.print(rtClock.seconds, DEC);
-  Serial.print(" - Temp: ");
-  Serial.println(rtClock.get3231Temp());
-  Serial.print("sizeeeeeeeeeeeeee of massage = " );
-  Serial.println(sizeof(Message));
-
-  delay(1000);
+delay(1000);
 
 }

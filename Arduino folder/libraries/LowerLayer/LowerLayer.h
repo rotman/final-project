@@ -15,7 +15,7 @@ class LowerLayer : public Communicationable<RF24, Message>, public ILowerLayer<M
 		Message receiveMessage(RF24&);
 		
 		//ILowerLayer implementation
-		void initLayer();
+		void initLayer(int);
 		void addSensor(Sensor*);
 		void removeSensor(int);
 		void addActuator(Actuator*);
@@ -25,6 +25,7 @@ class LowerLayer : public Communicationable<RF24, Message>, public ILowerLayer<M
 		void onSensorFail();
 		
 	private:
+		int address;
 		Radio radioHelper;
 		LinkedList<Sensor*> sensors;
 		LinkedList<Actuator*> actuators;

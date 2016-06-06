@@ -16,10 +16,11 @@ class MiddleLayer : public Communicationable<RF24, Message>, public IMiddleLayer
 		Message receiveMessage(RF24&);
 		
 		//IMiddleLayer implementation
-		void initLayer();
+		void initLayer(int);
 		void actuate(Actuator*, bool);
 		
 	private:
+		int address;
 		Radio radioHelper;
 		LinkedList<Actuator*> actuators;
 		

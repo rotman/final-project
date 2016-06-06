@@ -8,7 +8,7 @@
 template <class E, class S>
 class ILowerLayer {
 	public:
-		virtual void initLayer() = 0;
+		virtual void initLayer(int) = 0;
 		virtual void addSensor(Sensor*) = 0;
 		virtual void removeSensor(int) = 0;
 		virtual void addActuator(Actuator*) = 0;

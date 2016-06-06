@@ -12,10 +12,11 @@ void LowerLayer::sendMessage(RF24 &radio, Message &message) {
 Message LowerLayer::receiveMessage(RF24 &radio) {
 	Message message;
 	message = radioHelper.receiveMessage(radio);
-	return message; 
+	return message;
 }
 
-void LowerLayer::initLayer() {
+void LowerLayer::initLayer(int address) {
+	this->address = address;
 	sensors = LinkedList<Sensor*>();
 	actuators = LinkedList<Actuator*>();
 	//more inits here

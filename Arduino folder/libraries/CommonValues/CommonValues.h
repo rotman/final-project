@@ -26,6 +26,20 @@ class CommonValues {
 		static const int pamp2ActuatorId 	= 7;
 		static const int humidityActuatorId = 8;
 		
+		//thresholds - not consts!
+		static int soilHumidityThresholdMin;
+		static int soilHumidityThresholdMax;
+		
+		static int airHumidityThresholdMin;
+		static int airHumidityThresholdMax;
+		
+		static int temperatureThresholdMin;
+		static int temperatureThresholdMax;
+		
+		static int lightThresholdMin;
+		static int lightThresholdMax;
+
+		
 };
 
 #endif

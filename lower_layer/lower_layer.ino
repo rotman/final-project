@@ -12,7 +12,6 @@ LowerLayer lowerLayer;
 RF24 radio(7, 8);
 CommonValues commonValues;
 
-Sensor* sensorsArray[3];
 Sensor * tempHumidity;
 Sensor * soil;
 Sensor * light;
@@ -26,9 +25,6 @@ int lightPin = A1;
 
 int pamp1Pin = 5;
 int pamp2Pin = 6;
-
-int soil_humidity_threshold_minimum = 40;
-int soil_humidity_threshold_maximmum = 40;
 
 //available addresses
 byte rxAddr[6] = "00001"; 
@@ -75,14 +71,10 @@ void createAndAddActuators() {
 void setup() {
   Serial.println("setup()");
   initConsole();
-  lowerLayer.initLayer();
+  lowerLayer.initLayer(commonValues.lowerLayerAddress);
   lowerLayer.initCommunication(radio, rxAddr, wxAddr);
   createAndAddSensors();
   createAndAddActuators();
-
-  sensorsArray[0] = tempHumidity;
-  sensorsArray[1] = light;
-  sensorsArray[2] = soil; 
 
 }
 
