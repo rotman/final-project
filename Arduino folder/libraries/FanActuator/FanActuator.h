@@ -5,10 +5,11 @@
 
 class FanActuator : public Actuator {
 public:
-	FanActuator(int);
+	FanActuator(int, int);
 	void actuate(bool);
 private:
 	int pin;
+	int id;
 };
 
 
