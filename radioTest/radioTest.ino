@@ -8,8 +8,6 @@ LowerLayer lowerLayer;
 CommonValues commonValues;
 FanActuator fan(commonValues.fan1ActuatorId, 2);
 
-byte rxAddr[6] = "00002";
-byte wxAddr[6] = "00001";
 
 void initConsole() {
   while (!Serial);
@@ -18,8 +16,8 @@ void initConsole() {
 
 void setup() {
   initConsole();
-  lowerLayer.initLayer(commonValues.lowerLayerAddress);
-  lowerLayer.initCommunication(radio, rxAddr, wxAddr);
+  lowerLayer.initLayer(commonValues.lowerLayerAddress1);
+  lowerLayer.initCommunication(radio, CommonValues::lowerLayerAddress1,CommonValues::middleLayerAddress);
   
 }
 

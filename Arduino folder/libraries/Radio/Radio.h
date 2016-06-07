@@ -8,7 +8,7 @@
 
 class Radio {
 public:
-	void init(RF24&, byte[6], byte[6]);
+	void init(RF24&, int, int);
 	void sendMessage(RF24&, Message&);
 	Message receiveMessage(RF24&);
 

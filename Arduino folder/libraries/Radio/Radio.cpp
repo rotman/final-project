@@ -1,14 +1,16 @@
 #include <Radio.h>
 
 
-void Radio::init(RF24 &radio, byte rxAddr[6], byte wxAddr[6]) {
+void Radio::init(RF24 &radio, int readingAddress, int writingAddress) {
 	radio.begin();
-    radio.setRetries(15, 15);
-    radio.openWritingPipe(wxAddr);
-    radio.openReadingPipe(1,rxAddr);
+    radio.setRetries(15, 15); // default
+    radio.openWritingPipe(writingAddress);
+    radio.openReadingPipe(1,readingAddress);
+	radio.startListening();
 }
 
 void Radio::sendMessage(RF24 &radio, Message &message) {
+	radio.openWritingPipe(message.dest); // open pipe for current destination
     bool ok = false;
     int iteration = 0;
     int delayMili = 0;
@@ -31,7 +33,6 @@ void Radio::sendMessage(RF24 &radio, Message &message) {
 }
 
 Message Radio::receiveMessage(RF24 &radio) {
-	radio.startListening();
 	Message message;
 	
 	if (radio.available()){
@@ -43,7 +44,5 @@ Message Radio::receiveMessage(RF24 &radio) {
 		Serial.println("nothing to read");
 		message.sensorType = 'z';
 	}
-	
-	radio.stopListening();
-	return message;
+		return message;
 }

@@ -10,7 +10,7 @@ class LowerLayer : public Communicationable<RF24, Message>, public ILowerLayer<M
 	
 	public:
 		//Communicationable implementation
-		void initCommunication(RF24&, byte[6], byte[6]);
+		void initCommunication(RF24&, int, int);
 		void sendMessage(RF24&, Message&);
 		Message receiveMessage(RF24&);
 		

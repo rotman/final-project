@@ -1,12 +1,14 @@
 #include <LowerLayer.h>
 
 
-void LowerLayer::initCommunication(RF24 &radio, byte rxAddr[6], byte wxAddr[6]) {
-	radioHelper.init(radio, rxAddr, wxAddr);
+void LowerLayer::initCommunication(RF24 &radio, int readingAddress, int writingAddress) {
+	radioHelper.init(radio, readingAddress, writingAddress);
 }
 
 void LowerLayer::sendMessage(RF24 &radio, Message &message) {
+	Serial.println(" LowerLayer::sendMessage called");
 	radioHelper.sendMessage(radio, message);
+	Serial.println(" LowerLayer::sendMessage returned");
 }
 
 Message LowerLayer::receiveMessage(RF24 &radio) {

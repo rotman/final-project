@@ -12,7 +12,7 @@ class MiddleLayer : public Communicationable<RF24, Message>, public IMiddleLayer
 	
 	public:
 		//Communicationable implementation
-		void initCommunication(RF24&, byte[6], byte[6]);
+		void initCommunication(RF24&, int, int);
 		void sendMessage(RF24&, Message&);
 		Message receiveMessage(RF24&);
 		

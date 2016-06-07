@@ -4,8 +4,10 @@
 class CommonValues {
 	public:
 		//addresses
-		static const int lowerLayerAddress 			 = 1;
-		static const int lowerLayerConsumptionAdress = 2;
+		static const int lowerLayerAddress1			 = 1;
+		static const int lowerLayerAddress2			 = 2;
+
+		static const int lowerLayerConsumptionAdress = 3;
 		static const int middleLayerAddress 		 = 101;
 		static const int highLayerAddress 			 = 201;
 

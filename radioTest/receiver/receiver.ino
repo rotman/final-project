@@ -6,8 +6,6 @@ MiddleLayer middleLayer;
 CommonValues commonValues;
 
 
-byte rxAddr[6] = "00001";
-byte wxAddr[6] = "00002";
 
 void initConsole() {
   while (!Serial);
@@ -17,7 +15,7 @@ void initConsole() {
 void setup() {
   initConsole();
   middleLayer.initLayer(commonValues.middleLayerAddress);
-  middleLayer.initCommunication(radio, rxAddr, wxAddr);
+  middleLayer.initCommunication(radio, CommonValues::middleLayerAddress,CommonValues::lowerLayerAddress1);
 }
 
 void loop() {
@@ -30,6 +28,6 @@ void loop() {
   else {
     Serial.println("message is null"); 
   }
-
+delay(3000);
 
 }

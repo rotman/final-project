@@ -1,8 +1,8 @@
 #include <MiddleLayer.h>
 
 
-void MiddleLayer::initCommunication(RF24 &radio, byte rxAddr[6], byte wxAddr[6]) {
-	radioHelper.init(radio, rxAddr, wxAddr);
+void MiddleLayer::initCommunication(RF24 &radio, int readingAddress, int writingAddress) {
+	radioHelper.init(radio, readingAddress, writingAddress);
 }
 
 void MiddleLayer::sendMessage(RF24 &radio, Message &message) {
