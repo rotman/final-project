@@ -8,8 +8,7 @@
 //globals
 //-------
 LowerLayer lowerLayer;
-RF24 radio(7, 8);
-CommonValues commonValues;
+RF24 radio(CommonValues::radioPin1, CommonValues::radioPin2);
 
 //sensors
 Sensor * tempHumidity;
@@ -20,10 +19,10 @@ Sensor * light;
 Actuator * pump;
 
 //pins
-int tempHumidityPin = 2;
-int soilPin = A0;
-int lightPin = A2;
-int pumpPin = 5;
+int tempHumidityPin = CommonValues::tempHumidityPin;
+int soilPin = CommonValues::soilPin;
+int lightPin = CommonValues::lightPin;
+int pumpPin = CommonValues::pumpPin;
 
 
 //available addresses
@@ -40,13 +39,13 @@ void initConsole() {
 void createAndAddSensors() {
   Serial.println("createAndAddSensors()");
  
-  tempHumidity= new STemptureHumidity(commonValues.humidityTemperatureSensorId, tempHumidityPin);              //create new temperature sensor instanse
+  tempHumidity= new STemptureHumidity(CommonValues::humidityTemperatureSensorId, tempHumidityPin);              //create new temperature sensor instanse
   Serial.println("STemptureHumidity created");
 
-  light= new SLight(commonValues.lightSensorId, lightPin);              //create new light sensor instanse
+  light= new SLight(CommonValues::lightSensorId, lightPin);              //create new light sensor instanse
   Serial.println("Slight created");
 
-  soil= new SSoil(commonValues.soil1SensorId, soilPin);              //create new soil sensor instanse
+  soil= new SSoil(CommonValues::soil1SensorId, soilPin);              //create new soil sensor instanse
   Serial.println("Ssoil created");
 
     
@@ -58,7 +57,7 @@ void createAndAddSensors() {
 void createAndAddActuators() {
   Serial.println("createAndAddActuators()");
   
-  pump = new PampActuator(commonValues.pumpActuatorId, pumpPin);
+  pump = new PampActuator(CommonValues::pumpActuatorId, pumpPin);
   Serial.println("PumpActuator created");
 
   lowerLayer.addActuator(pump);
@@ -69,23 +68,22 @@ void createAndAddActuators() {
 void setup() {
   Serial.println("setup()");
   initConsole();
-  lowerLayer.initLayer(commonValues.lowerLayerAddress);
+  lowerLayer.initLayer(CommonValues::lowerLayerAddress);
   lowerLayer.initCommunication(radio, rxAddr, wxAddr);
   createAndAddSensors();
   createAndAddActuators();
-
 }
 
 //add source and destination to message
 Message prepareMessage(Message& message, Actions action) {
-  message.source = commonValues.lowerLayerAddress;
-  message.dest = commonValues.middleLayerAddress;
+  message.source = CommonValues::lowerLayerAddress;
+  message.dest = CommonValues::middleLayerAddress;
   message.action = action;
   return message;
 }
 
 Actions actuateIfNeeded(float data, char which) {
-  if (data < commonValues.soilHumidityThresholdMin) {
+  if (data < CommonValues::soilHumidityThresholdMin) {
       lowerLayer.actuate(pump, true);
       return PUMP1;      
   }
@@ -103,7 +101,6 @@ void loop() {
     Serial.println(message.data);
     Actions action;
     if (message.sensorType == 'S') {
-      //TODO check from which soil humidity sensor the data came from
       action = actuateIfNeeded(message.data,message.messageType);
     }
     prepareMessage(message, action);

@@ -1,6 +1,6 @@
 #ifndef COMMONVALUES
 #define COMMONVALUES
-
+#include <Arduino.h>
 class CommonValues {
 	public:
 		//addresses
@@ -25,6 +25,15 @@ class CommonValues {
 		static const int pumpActuatorId 	= 6;
 		static const int humidityActuatorId = 7;
 		static const int heatActuatorId = 8;
+
+		//pins
+		static const int radioPin1 = 6;
+		static const int radioPin2 = 7;
+		static const int tempHumidityPin = 2;
+		static const int soilPin = A0;
+		static const int lightPin = A2;
+		static const int pumpPin = 5;
+
 
 		
 		//thresholds - not consts!
