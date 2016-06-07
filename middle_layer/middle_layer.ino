@@ -73,6 +73,7 @@ void createAndAddActuators() {
 }
 
 void initPins() {
+  Serial.println("initPins()");
   pinMode(fan1Pin, OUTPUT);
   pinMode(fan2Pin, OUTPUT);
   pinMode(fan3Pin, OUTPUT);
@@ -106,6 +107,7 @@ void setup() {
 //}
 
 Actions actuateIfNeeded(float data, char type) {
+  Serial.println("actuateIfNeeded()");
   switch(type) {
     case 'T':
       if (data > commonValues.temperatureThresholdMax) {
@@ -136,7 +138,7 @@ Actions actuateIfNeeded(float data, char type) {
 }
 
 void decodeMessage(Message msg) {
-
+  Serial.println("decodeMessage()");
   if (msg.dest != commonValues.middleLayerAddress) {
     Serial.println("not for me, ignore message");
     return;
@@ -275,13 +277,14 @@ void decodeMessage(Message msg) {
 }
 
 Message prepareMessage(Message message, int address){
+  Serial.println("prepareMessage()");
   message.source = commonValues.middleLayerAddress;
   message.dest = address;
   return message;
 }
 
 void loop() {
-//  
+  Serial.println("loop()");
 //  //receive message from lower layer
 //  Message messageToRead = recieveMessage();
 //

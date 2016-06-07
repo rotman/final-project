@@ -47,6 +47,7 @@ void setup() {
 }
 
 Message prepareMessage(Message& message) {
+  Serial.println("prepareMessage()");
   message.source = commonValues.lowerLayerConsumptionAdress;
   message.dest = commonValues.middleLayerAddress;
   return message;
