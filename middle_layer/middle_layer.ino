@@ -1,53 +1,35 @@
-#include <nRF24L01.h>
-#include <RF24.h>
-#include <message.h>
-#include <SPI.h>
-#include <ExponentialBackoff.h>
-#include <Clock.h>
-
-
-#define LOWER_LAYER_ADDRESS_1 1
-#define LOWER_LAYER_ADDRESS_2 2
-#define LOWER_LAYER_ADDRESS_3 3
-
-#define UPPER_LAYER_ADDRESS 201
-
-#define MY_ADDRESS 101
+#include <MiddleLayer.h>
+#include <CommonValues.h>
+#include <FanActuator.h>
+#include <Actions.h>
 
 #define PRODUCERS_SIZE 3
 
-//boolean fanOn = false;
-//boolean lightOn = false;
-int fanPin = 2;
-int lightpin = 4;
-int temperatureUpThreshold = 25;    //TODO 
-int temperatureDownThreshold = 21;
-
-int temperatureThreshold = 20;    //TODO 
-
-Message producers[PRODUCERS_SIZE]; 
-
 //globals
 //-------
+MiddleLayer middleLayer;
 RF24 radio(7, 8);
+CommonValues commonValues;
 
-const byte rxAddr[6] = "00002";
-const byte wxAddr[6] = "00001";
+//actuators
+Actuator * fan1;
+Actuator * fan2;
+Actuator * fan3;
+Actuator * lamp;
+Actuator * heater;
+Actuator * steamer;
 
-enum actions {
-  fan,
-  light,
-  none
-};
+//pins
+int fan1Pin = 2;
+int fan2Pin = 3;
+int fan3Pin = 4;
+int lightpin = 5;
+int heatpin = 6;
+int steampin = 7;
 
-Clock rtClock;
+byte rxAddr[6] = "00002";
+byte wxAddr[6] = "00001";
 
-void actuateFan(boolean on){
-  if(on)
-      digitalWrite(fanPin,HIGH);
-  else
-      digitalWrite(fanPin,LOW);
-}
 void actuateLight(boolean on){
   if(on)
       digitalWrite(lightpin,HIGH);
@@ -60,97 +42,89 @@ void initConsole() {
   Serial.begin(9600);
 }
 
-void initRadio() {
-    radio.begin();
-    radio.setRetries(15, 15);
-    radio.openWritingPipe(wxAddr);
-    radio.openReadingPipe(3,rxAddr);
-    radio.startListening();
+void createAndAddActuators() {
+  Serial.println("createAndAddActuators()");
+
+  fan1 = new FanActuator(commonValues.fan1ActuatorId, fan1Pin);
+  Serial.println("FanActuator 1 created");
+
+  fan2 = new FanActuator(commonValues.fan2ActuatorId, fan2Pin);
+  Serial.println("FanActuator 2 created");
+
+  fan3 = new FanActuator(commonValues.fan3ActuatorId, fan3Pin);
+  Serial.println("FanActuator 3 created");
+  
+//  lamp = new LampActuator(commonValues.lampActuatorId, lightpin);
+//  Serial.println("LampActuator created");
+//
+//  heater = new HeatActuator(commonValues.heatActuatorId, heatpin);
+//  Serial.println("HeatActuator created");
+//
+//  steamer = new SteamActuator(commonValues.humidityActuatorId, steamtpin);
+//  Serial.println("SteamActuator created");
+
+  middleLayer.addActuator(fan1);
+  middleLayer.addActuator(fan2);
+  middleLayer.addActuator(fan3);
+//  middleLayer.addActuator(lamp);
+//  middleLayer.addActuator(heater);
+//  middleLayer.addActuator(steamer);
+
 }
 
+void initPins() {
+  pinMode(fan1Pin, OUTPUT);
+  pinMode(fan2Pin, OUTPUT);
+  pinMode(fan3Pin, OUTPUT);
+  pinMode(lightpin, OUTPUT);
+  pinMode(heatpin, OUTPUT);
+  pinMode(steampin, OUTPUT);
+}
 
 void setup() {
+  Serial.println("setup()");
   initConsole();
-  initRadio();
-  pinMode(fanPin, OUTPUT);
+  middleLayer.initLayer(commonValues.middleLayerAddress);
+  middleLayer.initCommunication(radio, rxAddr, wxAddr);
+  createAndAddActuators();
+  initPins();
 
 }
 
+//boolean updateValue(Message msg) {
+//
+//  boolean exist = false;
+//
+//    if (msg.source == producers[i].source) {
+//      producers[i].data = msg.data;
+//      producers[i].dateTime = msg.dateTime;
+//      exist = true;
+//    }
+//  }
+//
+//  return exist;
+//}
 
-Message recieveMessage(){
-  Message message;
-  if (radio.available()){
-    radio.read(&message, sizeof(message));
-    Serial.print("recived message: the data is:");
-     Serial.println(message.data);
-  }
-  else{
-    Serial.println("nothing to read");
-    message.sensorType = 'z';
-  }
-  return message;
-
-}
-
-
-void sendMessage(Message message){
-  bool ok = false;
-  int iteration = 0;
-  int delayMili = 0;
-  ExponentialBackoff exponentialBackoff(7);
-  radio.stopListening();
-  while(!ok && delayMili != -1){  //if message fails 
-    ok =  radio.write(&message, sizeof(message));
-    if(ok)
-      Serial.println("send success");      
-    else{
-      Serial.println("send failed backing off");
-      delayMili = exponentialBackoff.getDelayTime(++iteration);
-      if(delayMili >= 0)
-        delay(delayMili);
-        else;   
-        //send failed (max retries)  TODO  
-    }
-  }
-  radio.startListening();
-   
-}
-
-boolean updateValue(Message msg) {
-
-  boolean exist = false;
-
-  for (int i = 0; i < PRODUCERS_SIZE ; i++) {
-    if (msg.source == producers[i].source) {
-      producers[i].data = msg.data;
-      producers[i].dateTime = msg.dateTime;
-      exist = true;
-    }
-  }
-
-  return exist;
-}
-
-actions actuateIfNeeded(float data, char type) {
+Actions actuateIfNeeded(float data, char type) {
   switch(type) {
     case 'T':
-      if (data > temperatureUpThreshold) {
-        actuateFan(true);
-        return fan;
+      if (data > commonValues.temperatureThresholdMax) {
+        middleLayer.actuate(fan1, true);
+        return FAN1;
       }
       else {
-        actuateFan(false);
-        return none;
+        middleLayer.actuate(fan1, false);
+        return NONE;
       }
 
-      if (data < temperatureDownThreshold) {
+      if (data < commonValues.temperatureThresholdMin) {
         actuateLight(true);
-        return light;
+        return LIGHT;
       }
 
       else {
-        actuateFan(false);
-        return none;
+        middleLayer.actuate(fan1, false);
+        return NONE;
       }
       break;
 
@@ -159,13 +133,11 @@ actions actuateIfNeeded(float data, char type) {
     break;
     
   }
-  
-
 }
 
 void decodeMessage(Message msg) {
 
-  if (msg.dest != MY_ADDRESS) {
+  if (msg.dest != commonValues.middleLayerAddress) {
     Serial.println("not for me, ignore message");
     return;
   }
@@ -217,18 +189,18 @@ void decodeMessage(Message msg) {
   
       //do nothing, just send to high level for image status
       //change msg src and dest
-      //sendMessage(msg)
+      prepareMessage(msg, commonValues.highLayerAddress);
+      middleLayer.sendMessage(radio, msg);
       break;
       
       /******************temparture data*********************/
       case 'T':
       {
-              boolean isUpdated = updateValue(msg);
-        if (!isUpdated) {
-          //TODO 
-          Serial.println("value failed to update, the source isn't registered");
-          return;
-        }
+//        boolean isUpdated = updateValue(msg);
+//        if (!isUpdated) {
+//          Serial.println("value failed to update, the source isn't registered");
+//          return;
+//        }
         
 //        float tempratureAverage = checkForAverage();
         
@@ -302,20 +274,11 @@ void decodeMessage(Message msg) {
   
 }
 
-Message prepareMessageToUpper(Message message){
-  message.source = MY_ADDRESS;
-  message.dest = UPPER_LAYER_ADDRESS;
+Message prepareMessage(Message message, int address){
+  message.source = commonValues.middleLayerAddress;
+  message.dest = address;
   return message;
 }
-
-
-Message prepareMessageToLower(Message message){
-  message.source = MY_ADDRESS;
-  message.dest = LOWER_LAYER_ADDRESS_1;
-  return message;
-}
-
-
 
 void loop() {
 //  
@@ -349,7 +312,7 @@ void loop() {
 Message msg;
 msg.sensorType = 'T';
 msg.data = 34.34;
-sendMessage(msg);
+middleLayer.sendMessage(radio, msg);
 
 delay(1000);
 

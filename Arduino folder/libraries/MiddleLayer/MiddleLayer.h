@@ -3,9 +3,10 @@
 
 #include <Communicationable.h>
 #include <IMiddleLayer.h>
-#include <Actuator.h>
 #include <Radio.h>
 #include <Sensor.h>
+#include <Clock.h>
+
 
 class MiddleLayer : public Communicationable<RF24, Message>, public IMiddleLayer<Actuator> {
 	
@@ -17,12 +18,18 @@ class MiddleLayer : public Communicationable<RF24, Message>, public IMiddleLayer
 		
 		//IMiddleLayer implementation
 		void initLayer(int);
+		void addActuator(Actuator*);
+		void removeActuator(int);
 		void actuate(Actuator*, bool);
+		
+		void startClock();
+		void getTime();
 		
 	private:
 		int address;
 		Radio radioHelper;
 		LinkedList<Actuator*> actuators;
+		Clock clock;
 		
 };
 

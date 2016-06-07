@@ -10,8 +10,7 @@ void LowerLayer::sendMessage(RF24 &radio, Message &message) {
 }
 
 Message LowerLayer::receiveMessage(RF24 &radio) {
-	Message message;
-	message = radioHelper.receiveMessage(radio);
+	Message message = radioHelper.receiveMessage(radio);
 	return message;
 }
 
@@ -52,13 +51,22 @@ LinkedList<Message> LowerLayer::readSensorsData() {
 	LinkedList<Message> messages = LinkedList<Message>();
 	CommonValues commonValues;
 	for (int i = 0; i < sensors.size(); i++) {
+		Message newMessage;
 		if (sensors.get(i)->getId() == commonValues.humidityTemperatureSensorId) {
-			messages.add(sensors.get(i)->readSensorData(true));
+			newMessage = sensors.get(i)->readSensorData(true);
 		}
 		else {
-			messages.add(sensors.get(i)->readSensorData(false));
+			newMessage = sensors.get(i)->readSensorData(false);
 		}
+		if (sensors.get(i)->getId() == commonValues.soil1SensorId) {
+			newMessage.messageType = 'a';
+		}
+		else if (sensors.get(i)->getId() == commonValues.soil2SensorId) {
+			newMessage.messageType = 'b';
+		}
+		messages.add(newMessage);
 	}
+	
 	return messages; 
 }
 

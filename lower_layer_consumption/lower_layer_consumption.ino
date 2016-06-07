@@ -1,6 +1,4 @@
 #include <LowerLayer.h>
-#include <message.h>
-#include <CommonValues.h>
 #include <SCurrent.h>
 #include <SWater.h>
 
@@ -48,8 +46,22 @@ void setup() {
   createAndAddSensors();
 }
 
+Message prepareMessage(Message& message) {
+  message.source = commonValues.lowerLayerConsumptionAdress;
+  message.dest = commonValues.middleLayerAddress;
+  return message;
+}
+
 void loop() {
   Serial.println("loop()");
+  LinkedList<Message> sensorsData = lowerLayer.readSensorsData();
+  for (int i = 0; i<sensorsData.size(); ++i) {
+    Message message = sensorsData.get(i);
+    Serial.println(message.sensorType);
+    Serial.println(message.data);
+    prepareMessage(message);
+    lowerLayer.sendMessage(radio, message);
+  }
   
 
 }
