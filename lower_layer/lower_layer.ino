@@ -24,11 +24,9 @@ int soilPin = CommonValues::soilPin;
 int lightPin = CommonValues::lightPin;
 int pumpPin = CommonValues::pumpPin;
 
-
 //available addresses
-byte rxAddr[6] = "00001"; 
-byte wxAddr[6] = "00002";             
-
+byte rxAddr[6] = "00002"; 
+byte wxAddr[6] = "00001";             
 
 void initConsole() {
   Serial.println("initConsole()");
@@ -108,9 +106,9 @@ void loop() {
   }
    
   Message messageToRead = lowerLayer.receiveMessage(radio);
-    Serial.print("main loop, i got: ");
-    Serial.println(messageToRead.minimum_threshold);
-    Serial.print("and: ");
-    Serial.println(messageToRead.maximum_threshold);
+    Serial.print("received message - type: ");
+    Serial.println(messageToRead.sensorType);
+    Serial.print("data : ");
+    Serial.println(messageToRead.data);
     delay(3000);
 }
