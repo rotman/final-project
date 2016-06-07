@@ -13,21 +13,18 @@ CommonValues commonValues;
 
 //sensors
 Sensor * tempHumidity;
-Sensor * soil1;
-Sensor * soil2;
+Sensor * soil;
 Sensor * light;
 
 //actuators
-Actuator * pamp1;
-Actuator * pamp2;
+Actuator * pump;
 
 //pins
 int tempHumidityPin = 2;
-int soil1Pin = A0;
-int soil2Pin = A1;
+int soilPin = A0;
 int lightPin = A2;
-int pamp1Pin = 5;
-int pamp2Pin = 6;
+int pumpPin = 5;
+
 
 //available addresses
 byte rxAddr[6] = "00001"; 
@@ -49,29 +46,23 @@ void createAndAddSensors() {
   light= new SLight(commonValues.lightSensorId, lightPin);              //create new light sensor instanse
   Serial.println("Slight created");
 
-  soil1= new SSoil(commonValues.soil1SensorId, soil1Pin);              //create new soil sensor instanse
-  Serial.println("Ssoil 1 created");
+  soil= new SSoil(commonValues.soil1SensorId, soilPin);              //create new soil sensor instanse
+  Serial.println("Ssoil created");
 
-  soil2= new SSoil(commonValues.soil1SensorId, soil2Pin);              //create new soil sensor instanse
-  Serial.println("Ssoil 2 created");
-  
+    
   lowerLayer.addSensor(tempHumidity);
-  lowerLayer.addSensor(soil1);
-  lowerLayer.addSensor(soil2);
+  lowerLayer.addSensor(soil);
   lowerLayer.addSensor(light);
 }
 
 void createAndAddActuators() {
   Serial.println("createAndAddActuators()");
   
-  pamp1 = new PampActuator(commonValues.pamp1ActuatorId, pamp1Pin);
-  Serial.println("PampActuator 1 created");
-  
-  pamp2 = new PampActuator(commonValues.pamp2ActuatorId, pamp2Pin);
-  Serial.println("PampActuator 2 created");
+  pump = new PampActuator(commonValues.pumpActuatorId, pumpPin);
+  Serial.println("PumpActuator created");
 
-  lowerLayer.addActuator(pamp1);
-  lowerLayer.addActuator(pamp2);
+  lowerLayer.addActuator(pump);
+  
 
   
 }
@@ -95,14 +86,8 @@ Message prepareMessage(Message& message, Actions action) {
 
 Actions actuateIfNeeded(float data, char which) {
   if (data < commonValues.soilHumidityThresholdMin) {
-    if (which == 'a') {
-      lowerLayer.actuate(pamp1, true);
-      return PAMP1;      
-    }
-    else if (which == 'b') {
-      lowerLayer.actuate(pamp2, true);
-      return PAMP2;   
-    }
+      lowerLayer.actuate(pump, true);
+      return PUMP1;      
   }
   else {
     return NONE;

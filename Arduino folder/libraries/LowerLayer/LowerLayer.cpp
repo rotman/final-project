@@ -58,15 +58,8 @@ LinkedList<Message> LowerLayer::readSensorsData() {
 		else {
 			newMessage = sensors.get(i)->readSensorData(false);
 		}
-		if (sensors.get(i)->getId() == commonValues.soil1SensorId) {
-			newMessage.messageType = 'a';
-		}
-		else if (sensors.get(i)->getId() == commonValues.soil2SensorId) {
-			newMessage.messageType = 'b';
-		}
 		messages.add(newMessage);
 	}
-	
 	return messages; 
 }
 

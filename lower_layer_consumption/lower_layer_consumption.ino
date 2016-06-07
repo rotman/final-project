@@ -7,7 +7,6 @@
 LowerLayer lowerLayer;
 RF24 radio(7, 8);
 CommonValues commonValues;
-
 Sensor * current;
 Sensor * water;
 

@@ -2,8 +2,8 @@
 #define ACTIONS_H
 
 enum Actions {
-	PAMP1,
-	PAMP2,
+	PUMP1,
+	PUMP2,
 	FAN1,
 	FAN2,
 	FAN3,
