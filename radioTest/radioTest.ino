@@ -1,8 +1,12 @@
-#include <GreenHousePlatform.h>
+#include <LowerLayer.h>
+#include <FanActuator.h>
+#include <CommonValues.h>
+
 
 RF24 radio(7, 8);
-GreenHousePlatform greenHousePlatform;
-
+LowerLayer lowerLayer;
+CommonValues commonValues;
+FanActuator fan(commonValues.fan1ActuatorId, 2);
 
 byte rxAddr[6] = "00002";
 byte wxAddr[6] = "00001";
@@ -14,13 +18,15 @@ void initConsole() {
 
 void setup() {
   initConsole();
-  greenHousePlatform.init(radio, rxAddr, wxAddr);
+  lowerLayer.initLayer(commonValues.lowerLayerAddress);
+  lowerLayer.initCommunication(radio, rxAddr, wxAddr);
+  
 }
 
 void loop() {
   Message msg;
   msg.sensorType = 'T';
   msg.data = 34.34;
-  greenHousePlatform.sendMessage(radio, msg);
+  lowerLayer.sendMessage(radio, msg);
 
 }

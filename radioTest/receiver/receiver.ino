@@ -1,7 +1,10 @@
-#include <GreenHousePlatform.h>
+#include <MiddleLayer.h>
+#include <CommonValues.h>
 
 RF24 radio(7, 8);
-GreenHousePlatform greenHousePlatform;
+MiddleLayer middleLayer;
+CommonValues commonValues;
+
 
 byte rxAddr[6] = "00001";
 byte wxAddr[6] = "00002";
@@ -13,13 +16,20 @@ void initConsole() {
 
 void setup() {
   initConsole();
-  greenHousePlatform.init(radio, rxAddr, wxAddr);
+  middleLayer.initLayer(commonValues.middleLayerAddress);
+  middleLayer.initCommunication(radio, rxAddr, wxAddr);
 }
 
 void loop() {
-  Message message;
-  message = greenHousePlatform.receiveMessage(radio);
-  Serial.println(message.sensorType);
-  Serial.println(message.data);
+  Message message = middleLayer.receiveMessage(radio);
+  if (message.sensorType != 'z') {
+    Serial.println("message is NOT null"); 
+    Serial.println(message.sensorType);
+    Serial.println(message.data);
+  }
+  else {
+    Serial.println("message is null"); 
+  }
+
 
 }
