@@ -17,7 +17,6 @@ Message MiddleLayer::receiveMessage(RF24 &radio) {
 void MiddleLayer::initLayer(int address) {
 	this->address = address;
 	actuators = LinkedList<Actuator*>();
-	startClock();
 	//more inits here
 }
 
@@ -25,9 +24,9 @@ void MiddleLayer::addActuator(Actuator* actuator) {
 	actuators.add(actuator);
 }
 
-void MiddleLayer::removeActuator(int id) {
+void MiddleLayer::removeActuator(int pin) {
 	for (int i = 0; i < actuators.size(); i++) {
-		if (actuators.get(i)->getId() == id) {
+		if (actuators.get(i)->getPin() == pin) {
 			actuators.remove(i);
 			break;
 		}
@@ -38,9 +37,7 @@ void MiddleLayer::actuate(Actuator* actuator, bool on) {
 	actuator->actuate(on);
 }
 
-void MiddleLayer::startClock() {
-	//	TODO
-}
+
 
 void MiddleLayer::getTime() {
 	//TODO

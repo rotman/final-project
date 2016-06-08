@@ -12,7 +12,8 @@ class IMiddleLayer {
 		virtual void initLayer(int) = 0;
 		virtual void addActuator(Actuator*) = 0;
 		virtual void removeActuator(int) = 0;
-		virtual void actuate(S*, bool) = 0;			
+		virtual void actuate(S*, bool) = 0;	
+		virtual void analyze() = 0;
 };
 
 #endif

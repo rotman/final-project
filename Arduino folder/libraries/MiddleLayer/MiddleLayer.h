@@ -21,8 +21,8 @@ class MiddleLayer : public Communicationable<RF24, Message>, public IMiddleLayer
 		void addActuator(Actuator*);
 		void removeActuator(int);
 		void actuate(Actuator*, bool);
-		
-		void startClock();
+		void analyze() {};//TODO
+
 		void getTime();
 		
 	private:

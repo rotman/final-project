@@ -1,6 +1,6 @@
 #include <MiddleLayer.h>
 #include <CommonValues.h>
-#include <FanActuator.h>
+#include <GreenHouseActuator.h>
 #include <Actions.h>
 
 #define PRODUCERS_SIZE 3
@@ -8,34 +8,23 @@
 //globals
 //-------
 MiddleLayer middleLayer;
-RF24 radio(7, 8);
-CommonValues commonValues;
+RF24 radio(CommonValues::radioPin1 , CommonValues::radioPin2);
 
 //actuators
-Actuator * fan1;
-Actuator * fan2;
-Actuator * fan3;
-Actuator * lamp;
-Actuator * heater;
-Actuator * steamer;
+Actuator * fan1Actuator;
+Actuator * fan2Actuator;
+Actuator * lightActuator;
+Actuator * heatActuator;
+Actuator * steamActuator;
+Actuator * steamerActuator;
 
 //pins
-int fan1Pin = 2;
-int fan2Pin = 3;
-int fan3Pin = 4;
-int lightpin = 5;
-int heatpin = 6;
-int steampin = 7;
+int fan1Pin = CommonValues::fan1Pin;
+int fan2Pin = CommonValues::fan2Pin;
+int lightPin = CommonValues::lightPin;
+int heatPin = CommonValues::heatPin;
+int steamPin = CommonValues::steamPin;
 
-byte rxAddr[6] = "00002";
-byte wxAddr[6] = "00001";
-
-void actuateLight(boolean on){
-  if(on)
-      digitalWrite(lightpin,HIGH);
-  else
-      digitalWrite(lightpin,LOW);
-}
 
 void initConsole() {
   while (!Serial);
@@ -44,52 +33,29 @@ void initConsole() {
 
 void createAndAddActuators() {
   Serial.println("createAndAddActuators()");
+ 
+  fan1Actuator = new GreenHouseActuator(CommonValues::fan1Pin);
+  fan2Actuator = new GreenHouseActuator(CommonValues::fan2Pin);
+  lightActuator = new GreenHouseActuator(CommonValues::lightPin);
+  heatActuator = new GreenHouseActuator(CommonValues::heatPin);
+  steamActuator = new GreenHouseActuator(CommonValues::steamPin);
 
-  fan1 = new FanActuator(commonValues.fan1ActuatorId, fan1Pin);
-  Serial.println("FanActuator 1 created");
-
-  fan2 = new FanActuator(commonValues.fan2ActuatorId, fan2Pin);
-  Serial.println("FanActuator 2 created");
-
-  fan3 = new FanActuator(commonValues.fan3ActuatorId, fan3Pin);
-  Serial.println("FanActuator 3 created");
-  
-//  lamp = new LampActuator(commonValues.lampActuatorId, lightpin);
-//  Serial.println("LampActuator created");
-//
-//  heater = new HeatActuator(commonValues.heatActuatorId, heatpin);
-//  Serial.println("HeatActuator created");
-//
-//  steamer = new SteamActuator(commonValues.humidityActuatorId, steamtpin);
-//  Serial.println("SteamActuator created");
-
-  middleLayer.addActuator(fan1);
-  middleLayer.addActuator(fan2);
-  middleLayer.addActuator(fan3);
-//  middleLayer.addActuator(lamp);
-//  middleLayer.addActuator(heater);
-//  middleLayer.addActuator(steamer);
+  middleLayer.addActuator(fan1Actuator);
+  middleLayer.addActuator(fan2Actuator);
+  middleLayer.addActuator(lightActuator);
+  middleLayer.addActuator(heatActuator);
+  middleLayer.addActuator(steamActuator);
 
 }
 
-void initPins() {
-  Serial.println("initPins()");
-  pinMode(fan1Pin, OUTPUT);
-  pinMode(fan2Pin, OUTPUT);
-  pinMode(fan3Pin, OUTPUT);
-  pinMode(lightpin, OUTPUT);
-  pinMode(heatpin, OUTPUT);
-  pinMode(steampin, OUTPUT);
-}
+
 
 void setup() {
   Serial.println("setup()");
   initConsole();
-  middleLayer.initLayer(commonValues.middleLayerAddress);
-  middleLayer.initCommunication(radio, rxAddr, wxAddr);
+  middleLayer.initLayer(CommonValues::middleLayerAddress);
+  middleLayer.initCommunication(radio, CommonValues::middleLayerAddress, CommonValues::highLayerAddress);
   createAndAddActuators();
-  initPins();
-
 }
 
 //boolean updateValue(Message msg) {
@@ -110,22 +76,22 @@ Actions actuateIfNeeded(float data, char type) {
   Serial.println("actuateIfNeeded()");
   switch(type) {
     case 'T':
-      if (data > commonValues.temperatureThresholdMax) {
-        middleLayer.actuate(fan1, true);
+      if (data > CommonValues::temperatureThresholdMax) {
+    //    middleLayer.actuate(fan1, true); TODO
         return FAN1;
       }
       else {
-        middleLayer.actuate(fan1, false);
+      //  middleLayer.actuate(fan1, false); TODO
         return NONE;
       }
 
-      if (data < commonValues.temperatureThresholdMin) {
-        actuateLight(true);
+      if (data < CommonValues::temperatureThresholdMin) {
+      //  actuateLight(true); TODO
         return LIGHT;
       }
 
       else {
-        middleLayer.actuate(fan1, false);
+       // middleLayer.actuate(fan1, false); TODO
         return NONE;
       }
       break;
@@ -139,14 +105,17 @@ Actions actuateIfNeeded(float data, char type) {
 
 void decodeMessage(Message msg) {
   Serial.println("decodeMessage()");
-  if (msg.dest != commonValues.middleLayerAddress) {
+  if (msg.dest != CommonValues::middleLayerAddress) {
     Serial.println("not for me, ignore message");
+    //TODO maybe think re-sending the message to its origin , ot dest.    
     return;
   }
   
   if(msg.source >= 200 && msg.source < 300){   //from higer layer
       //if the meesgae came from high layer
       //we should change policy in this layer/bottom layer
+
+      //TODO type of message handeling!!!!!!!!!!!!!!!!!!!!!!!
       
       /*switch(msg->sensorType) {
       //need to change soil humidity treshold in the bottom layer
@@ -191,7 +160,7 @@ void decodeMessage(Message msg) {
   
       //do nothing, just send to high level for image status
       //change msg src and dest
-      prepareMessage(msg, commonValues.highLayerAddress);
+      prepareMessage(msg, CommonValues::highLayerAddress);
       middleLayer.sendMessage(radio, msg);
       break;
       
@@ -278,7 +247,7 @@ void decodeMessage(Message msg) {
 
 Message prepareMessage(Message message, int address){
   Serial.println("prepareMessage()");
-  message.source = commonValues.middleLayerAddress;
+  message.source = CommonValues::middleLayerAddress;
   message.dest = address;
   return message;
 }

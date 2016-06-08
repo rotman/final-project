@@ -6,17 +6,11 @@
 
 class Actuator {
 	public:
-		Actuator(int id) {
-			this->id = id;
-		}
-		
-		int getId() {
-			return id;
-		}
-		
+		Actuator(int _pin):pin(_pin){}
+		int getPin() { return pin; }
 		virtual void actuate(bool) = 0;
 	protected:
-		int id;
+		int pin;
 };
 
 
