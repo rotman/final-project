@@ -1,5 +1,27 @@
 #include <LowerLayer.h>
+/*
+implement: 
+virtual void analyze() = 0;
+virtual void decodeMessage() = 0;
+virtual S prepareMessage(S, int) = 0;
+virtual void sendMessage(E&, S&) = 0;
+virtual S receiveMessage(E&) = 0;
+virtual void addActuator(Actuator*) = 0;
+virtual void removeActuator(int) = 0;
+virtual void actuate(int, bool) = 0;
+virtual void addSensor(Sensor*) = 0;
+virtual void removeSensor(int) = 0;
+virtual LinkedList<S> readSensorsData() = 0;
+virtual void onSensorFail() = 0;
+*/
 
+
+void LowerLayer::initLayer(int address) {
+	this->address = address;
+	sensors = LinkedList<Sensor*>();
+	actuators = LinkedList<Actuator*>();
+	//more inits here , think maybe to move the inits to relevant constractors
+}
 
 void LowerLayer::initCommunication(RF24 &radio, int readingAddress, int writingAddress) {
 	radioHelper.init(radio, readingAddress, writingAddress);
@@ -14,13 +36,6 @@ void LowerLayer::sendMessage(RF24 &radio, Message &message) {
 Message LowerLayer::receiveMessage(RF24 &radio) {
 	Message message = radioHelper.receiveMessage(radio);
 	return message;
-}
-
-void LowerLayer::initLayer(int address) {
-	this->address = address;
-	sensors = LinkedList<Sensor*>();
-	actuators = LinkedList<Actuator*>();
-	//more inits here
 }
 
 void LowerLayer::addSensor(Sensor* sensor) {
