@@ -13,7 +13,7 @@ template <class E, class S>
 class ILowerLayer :public ILayer<E,S>,public Actuatorable,public Sensorable<S>{
 	public:
 		/*ILayer methods*/
-		virtual ~ILayer() {}
+		virtual ~ILowerLayer() {}
 		virtual void initLayer(int) = 0;
 		virtual void analyze() = 0;
 		virtual void decodeMessage() = 0;
@@ -26,7 +26,7 @@ class ILowerLayer :public ILayer<E,S>,public Actuatorable,public Sensorable<S>{
 
 		virtual void addActuator(Actuator*) = 0;
 		virtual void removeActuator(int) = 0;
-		virtual void actuate(int, bool) = 0;
+		virtual Actuator* findActuatorById(int) = 0;
 
 		/*Sensorable methods*/
 

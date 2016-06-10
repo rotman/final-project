@@ -16,7 +16,7 @@ class Sensorable {
 		virtual LinkedList<S> readSensorsData() = 0;
 		virtual void onSensorFail() = 0;
 
-	private:
+	protected:
 		LinkedList<Sensor*> sensorsArray;
 
 };

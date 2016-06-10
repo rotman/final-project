@@ -14,12 +14,15 @@ virtual void removeSensor(int) = 0;
 virtual LinkedList<S> readSensorsData() = 0;
 virtual void onSensorFail() = 0;
 */
+Actuator* LowerLayer::findActuatorById(int){}
 
-
+void LowerLayer::decodeMessage(){}
+void LowerLayer::analyze(){}
+Message LowerLayer::prepareMessage(Message, int) {}
 void LowerLayer::initLayer(int address) {
 	this->address = address;
-	sensors = LinkedList<Sensor*>();
-	actuators = LinkedList<Actuator*>();
+	sensorsArray = LinkedList<Sensor*>();
+	actuatorsArray = LinkedList<Actuator*>();
 	//more inits here , think maybe to move the inits to relevant constractors
 }
 
@@ -39,26 +42,26 @@ Message LowerLayer::receiveMessage(RF24 &radio) {
 }
 
 void LowerLayer::addSensor(Sensor* sensor) {
-	sensors.add(sensor);
+	sensorsArray.add(sensor);
 }
 
 void LowerLayer::removeSensor(int pin) {
-	for (int i = 0; i < sensors.size(); i++) {
-		if (actuators.get(i)->getPin() == pin) {
-			sensors.remove(i);
+	for (int i = 0; i < sensorsArray.size(); i++) {
+		if (actuatorsArray.get(i)->getPin() == pin) {
+			sensorsArray.remove(i);
 			break;
 		}
 	}
 }
 
 void LowerLayer::addActuator(Actuator* actuator) {
-	actuators.add(actuator);
+	actuatorsArray.add(actuator);
 }
 
 void LowerLayer::removeActuator(int pin) {
-	for (int i = 0; i < actuators.size(); i++) {
-		if (actuators.get(i)->getPin() == pin) {
-			actuators.remove(i);
+	for (int i = 0; i < actuatorsArray.size(); i++) {
+		if (actuatorsArray.get(i)->getPin() == pin) {
+			actuatorsArray.remove(i);
 			break;
 		}
 	}
@@ -67,22 +70,19 @@ void LowerLayer::removeActuator(int pin) {
 LinkedList<Message> LowerLayer::readSensorsData() {
 	LinkedList<Message> messages = LinkedList<Message>();
 	CommonValues commonValues;
-	for (int i = 0; i < sensors.size(); i++) {
+	for (int i = 0; i < sensorsArray.size(); i++) {
 		Message newMessage;
-		if (sensors.get(i)->getId() == commonValues.humidityTemperatureSensorId) {
-			newMessage = sensors.get(i)->readSensorData(true);
+		if (sensorsArray.get(i)->getId() == commonValues.humidityTemperatureSensorId) {
+			newMessage = sensorsArray.get(i)->readSensorData(true);
 		}
 		else {
-			newMessage = sensors.get(i)->readSensorData(false);
+			newMessage = sensorsArray.get(i)->readSensorData(false);
 		}
 		messages.add(newMessage);
 	}
 	return messages; 
 }
 
-void LowerLayer::actuate(Actuator* actuator, bool on) {
-	actuator->actuate(on);
-}
 
 void LowerLayer::onSensorFail() {
 	

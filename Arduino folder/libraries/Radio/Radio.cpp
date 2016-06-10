@@ -1,7 +1,8 @@
 #include <Radio.h>
 
 
-void Radio::init(RF24 &radio, int readingAddress, int writingAddress) {
+void Radio::init(RF24 &radio1, int readingAddress, int writingAddress) {
+	radio = new RF24(3, 4);
 	radio.begin();
     radio.setRetries(15, 15); // default
     radio.openWritingPipe(writingAddress);

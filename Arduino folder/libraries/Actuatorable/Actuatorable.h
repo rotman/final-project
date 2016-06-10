@@ -10,8 +10,9 @@ class Actuatorable {
 		virtual ~Actuatorable() {}
 		virtual void addActuator(Actuator*) = 0;
 		virtual void removeActuator(int) = 0;
-		virtual void actuate(int, bool) = 0;
-	private:
+	//	virtual void actuate(int, bool) = 0;
+		virtual Actuator* findActuatorById(int) = 0;
+	protected:
 		LinkedList<Actuator*> actuatorsArray;
 
 };
