@@ -10,7 +10,7 @@
 class Wifi {
 private:
 	WiFiClient client;
-public:	
+public:
 	void init(String ssid, String password);
 	String post(JsonObject& json, String url);
 	String get(String url);
