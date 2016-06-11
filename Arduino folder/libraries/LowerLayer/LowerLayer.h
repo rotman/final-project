@@ -1,59 +1,50 @@
 #ifndef LOWERLAYER
 #define LOWERLAYER
 
-#include <ILowerLayer.h>
-#include <Radio.h>
-#include <CommonValues.h>
-#include <Message.h>
+#include <Sensor.h>
+#include <Actuator.h>
+#include <Layer.h>
+#include <Actuatorable.h>
+#include <Sensorable.h>
 
-class LowerLayer : public ILowerLayer<RF24, Message>{
-	
+
+template <class T,class E, class S>
+//in green house project,'T' stands for Message
+class LowerLayer :public Layer<T,E,S>,public Actuatorable,public Sensorable<T>{
 	public:
-		/*ILowerLayer methods*/
-		virtual ~ILayer() {}
+		/*Layer methods*/
+		virtual ~LowerLayer() {}
 		virtual void initLayer(int) = 0;
 		virtual void analyze() = 0;
-		virtual void decodeMessage() = 0;
-		virtual Message prepareMessage(Message, int) = 0;
-		virtual void initCommunication(RF24 &, int, int) = 0;
-		virtual void sendMessage(RF24 &, Message&) = 0;
-		virtual Message receiveMessage(RF24 &) = 0;
-		virtual void addActuator(Actuator*) = 0;
-		virtual void removeActuator(int) = 0;
-		virtual void actuate(int, bool) = 0;
+		virtual void decodeMessage(T) = 0;
+		virtual T prepareMessage(T, int) = 0;
+
+		/*Actuatorable methods*/
+
+		void addActuator(Actuator*);
+		virtual void removeActuator(int);
+		virtual Actuator* findActuatorById(int);
+
+		/*Sensorable methods*/
+
 		virtual void addSensor(Sensor*) = 0;
 		virtual void removeSensor(int) = 0;
-		virtual LinkedList<Message> readSensorsData() = 0;
+		virtual LinkedList<T> readSensorsData() = 0;
 		virtual void onSensorFail() = 0;
-	
-	private:
-		int address;
-		Radio radioHelper;
 
 
 
-		/*
-		//Communicationable implementation
-		void initCommunication(RF24&, int, int);
-		void sendMessage(RF24&, Message&);
-		Message receiveMessage(RF24&);
-		
-		//ILowerLayer implementation
-		void initLayer(int);
-		void addSensor(Sensor*);
-		void removeSensor(int);
-		void addActuator(Actuator*);
-		void removeActuator(int);
-		LinkedList<Message> readSensorsData();
-		void actuate(Actuator*, bool);
-		void onSensorFail();
-		
-	private:
-		int address;
-		Radio radioHelper;
-		LinkedList<Sensor*> sensors;
-		LinkedList<Actuator*> actuators;
-		*/
+
+		//virtual void initLayer(int) = 0;
+	//	virtual void addSensor(Sensor*) = 0;
+	//	virtual void removeSensor(int) = 0;
+	//	virtual LinkedList<E> readSensorsData() = 0;
+	//	virtual void onSensorFail() = 0;
+
+//		virtual void addActuator(Actuator*) = 0;
+//		virtual void removeActuator(int) = 0;
+//		virtual void actuate(S*, bool) = 0;
+
 };
 
 #endif

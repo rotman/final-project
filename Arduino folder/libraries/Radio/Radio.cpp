@@ -1,42 +1,45 @@
 #include <Radio.h>
 
 
-void Radio::init(RF24 &radio, int readingAddress, int writingAddress) {
-	radio.begin();
-    radio.setRetries(15, 15); // default
-    radio.openWritingPipe(writingAddress);
-    radio.openReadingPipe(1,readingAddress);
-	radio.startListening();
+void Radio::initCommunication(int readingAddress, int writingAddress) {
+	radio = new RF24(6, 7);
+	radio->begin();
+    radio->setRetries(15, 15); // default
+    radio->openWritingPipe(writingAddress);
+    radio->openReadingPipe(1,readingAddress);
+	radio->startListening();
 }
 
-void Radio::sendMessage(RF24 &radio, Message &message) {
-	radio.openWritingPipe(message.dest); // open pipe for current destination
+int Radio::sendMessage(Message &message) {
+	radio->openWritingPipe(message.dest); // open pipe for current destination
     bool ok = false;
     int iteration = 0;
     int delayMili = 0;
     ExponentialBackoff exponentialBackoff(5);
-    radio.stopListening();
-    while(!ok && delayMili != -1){  //if message fails 
-		ok =  radio.write(&message, sizeof(message));
+    radio->stopListening();
+    while(!ok && delayMili != -1){  //if message fails
+		ok =  radio->write(&message, sizeof(message));
         if(ok)
-			Serial.println("send success");      
+			Serial.println("send success");
+
         else {
 			Serial.println("send failed backing off");
             delayMili = exponentialBackoff.getDelayTime(++iteration);
             if(delayMili >= 0)
               delay(delayMili);
-            else break;   
-            //send failed (max retries)  TODO  
+            else break;
+            //send failed (max retries)  TODO
         }
     }
-    radio.startListening();
+    radio->startListening();
+		return ok;
 }
 
-Message Radio::receiveMessage(RF24 &radio) {
+Message Radio::receiveMessage() {
 	Message message;
-	
-	if (radio.available()){
-		radio.read(&message, sizeof(message));
+
+	if (radio->available()){
+		radio->read(&message, sizeof(message));
 		Serial.print("recived message: the data is:");
 		Serial.println(message.data);
 	}

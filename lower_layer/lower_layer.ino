@@ -2,9 +2,8 @@
 #include <STemptureHumidity.h>
 #include <SLight.h>
 #include <SSoil.h>
-#include <GreenHouseActuator.h>
 #include <Actions.h>
-
+#include <GreenHouseActuator.h>
 //globals
 //-------
 LowerLayer lowerLayer;
@@ -50,7 +49,7 @@ void createAndAddSensors() {
 
 void createAndAddActuators() {
   Serial.println("createAndAddActuators()");
-      pump = new GreenHouseActuator(CommonValues::pumpPin);
+//      pump = new GreenHouseActuator(CommonValues::pumpPin);
   Serial.println("PumpActuator created");
   lowerLayer.addActuator(pump);
 }
@@ -74,7 +73,7 @@ Message prepareMessage(Message& message, Actions action) {
 
 Actions actuateIfNeeded(float data, char which) {
   if (data < CommonValues::soilHumidityThresholdMin) {
-      lowerLayer.actuate(pump, true);
+//      lowerLayer.actuate(pump, true);
       return PUMP1;      
   }
   else {
