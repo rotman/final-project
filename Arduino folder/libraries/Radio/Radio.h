@@ -5,15 +5,16 @@
 #include <message.h>
 #include <ExponentialBackoff.h>
 #include <CommonValues.h>
+#include <ICommunicationable.h>
 
-class Radio {
+
+class Radio :public ICommunicationable<Message,int>{
 public:
-	void init (int, int);
-	void sendMessage(RF24&, Message&);
-	Message receiveMessage(RF24&);
+	void initCommunication (int, int);
+	int sendMessage(Message&);
+	Message receiveMessage();
 private:
 	RF24* radio;
 };
-
 
 #endif

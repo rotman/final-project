@@ -1,6 +1,6 @@
-#include <LowerLayer.h>
+#include <GreenHouseLowerLayer.h>
 /*
-implement: 
+implement:
 virtual void analyze() = 0;
 virtual void decodeMessage() = 0;
 virtual S prepareMessage(S, int) = 0;
@@ -14,38 +14,23 @@ virtual void removeSensor(int) = 0;
 virtual LinkedList<S> readSensorsData() = 0;
 virtual void onSensorFail() = 0;
 */
-Actuator* LowerLayer::findActuatorById(int){}
+Actuator* GreenHouseLowerLayer::findActuatorById(int){}
 
-void LowerLayer::decodeMessage(){}
-void LowerLayer::analyze(){}
-Message LowerLayer::prepareMessage(Message, int) {}
-void LowerLayer::initLayer(int address) {
+void GreenHouseLowerLayer::decodeMessage(Message message){}
+void GreenHouseLowerLayer::analyze(){}
+Message GreenHouseLowerLayer::prepareMessage(Message, int) {}
+void GreenHouseLowerLayer::initLayer(int address) {
 	this->address = address;
 	sensorsArray = LinkedList<Sensor*>();
 	actuatorsArray = LinkedList<Actuator*>();
 	//more inits here , think maybe to move the inits to relevant constractors
 }
 
-void LowerLayer::initCommunication(RF24 &radio, int readingAddress, int writingAddress) {
-	radioHelper.init(radio, readingAddress, writingAddress);
-}
-
-void LowerLayer::sendMessage(RF24 &radio, Message &message) {
-	Serial.println(" LowerLayer::sendMessage called");
-	radioHelper.sendMessage(radio, message);
-	Serial.println(" LowerLayer::sendMessage returned");
-}
-
-Message LowerLayer::receiveMessage(RF24 &radio) {
-	Message message = radioHelper.receiveMessage(radio);
-	return message;
-}
-
-void LowerLayer::addSensor(Sensor* sensor) {
+void GreenHouseLowerLayer::addSensor(Sensor* sensor) {
 	sensorsArray.add(sensor);
 }
 
-void LowerLayer::removeSensor(int pin) {
+void GreenHouseLowerLayer::removeSensor(int pin) {
 	for (int i = 0; i < sensorsArray.size(); i++) {
 		if (actuatorsArray.get(i)->getPin() == pin) {
 			sensorsArray.remove(i);
@@ -54,11 +39,11 @@ void LowerLayer::removeSensor(int pin) {
 	}
 }
 
-void LowerLayer::addActuator(Actuator* actuator) {
+void GreenHouseLowerLayer::addActuator(Actuator* actuator) {
 	actuatorsArray.add(actuator);
 }
 
-void LowerLayer::removeActuator(int pin) {
+void GreenHouseLowerLayer::removeActuator(int pin) {
 	for (int i = 0; i < actuatorsArray.size(); i++) {
 		if (actuatorsArray.get(i)->getPin() == pin) {
 			actuatorsArray.remove(i);
@@ -67,7 +52,7 @@ void LowerLayer::removeActuator(int pin) {
 	}
 }
 
-LinkedList<Message> LowerLayer::readSensorsData() {
+LinkedList<Message> GreenHouseLowerLayer::readSensorsData() {
 	LinkedList<Message> messages = LinkedList<Message>();
 	CommonValues commonValues;
 	for (int i = 0; i < sensorsArray.size(); i++) {
@@ -80,11 +65,10 @@ LinkedList<Message> LowerLayer::readSensorsData() {
 		}
 		messages.add(newMessage);
 	}
-	return messages; 
+	return messages;
 }
 
 
-void LowerLayer::onSensorFail() {
-	
-}
+void GreenHouseLowerLayer::onSensorFail() {
 
+}

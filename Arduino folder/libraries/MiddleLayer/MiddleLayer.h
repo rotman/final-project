@@ -1,36 +1,31 @@
-#ifndef MIDDLELAYER
-#define MIDDLELAYER
+#ifndef MIDDLE_LAYER
+#define MIDDLE_LAYER
 
-#include <Communicationable.h>
-#include <IMiddleLayer.h>
-#include <Radio.h>
-#include <Sensor.h>
-#include <Clock.h>
+#include <Layer.h>
+#include <Actuatorable.h>
 
+template <class T,class E, class S>
 
-class MiddleLayer : public Communicationable<RF24, Message>, public IMiddleLayer<Actuator> {
-	
+class MiddleLayer :public Layer<T,E,S>, public Actuatorable {
 	public:
-		//Communicationable implementation
-		void initCommunication(RF24&, int, int);
-		void sendMessage(RF24&, Message&);
-		Message receiveMessage(RF24&);
-		
-		//IMiddleLayer implementation
-		void initLayer(int);
-		void addActuator(Actuator*);
-		void removeActuator(int);
-		void actuate(Actuator*, bool);
-		void analyze() {};//TODO
 
-		void getTime();
-		
-	private:
-		int address;
-		Radio radioHelper;
-		LinkedList<Actuator*> actuators;
-		Clock clock;
-		
+		/*Layer methods*/
+		virtual ~MiddleLayer() {}
+		virtual void initLayer(int) = 0;
+		virtual void analyze() = 0;
+		virtual void decodeMessage(T) = 0;
+		virtual T prepareMessage(T, int) = 0;
+
+		/*Actuatorable methods*/
+
+		virtual void addActuator(Actuator*) = 0;
+		virtual void removeActuator(int) = 0;
+		virtual void actuate(int, bool) = 0;
+	//	virtual void initLayer(int) = 0;
+	//	virtual void addActuator(Actuator*) = 0;
+	//	virtual void removeActuator(int) = 0;
+	//	virtual void actuate(S*, bool) = 0;
+	//	virtual void analyze() = 0;
 };
 
 #endif
