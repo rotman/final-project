@@ -38,10 +38,9 @@ void createAndAddSensors() {
   light= new SLight(CommonValues::lightSensorId, lightPin);              //create new light sensor instanse
   Serial.println("Slight created");
 
-  soil= new SSoil(CommonValues::soil1SensorId, soilPin);              //create new soil sensor instanse
+  soil= new SSoil(CommonValues::soil2SensorId, soilPin);              //create new soil sensor instanse
   Serial.println("Ssoil created");
 
-    
   lowerLayer.addSensor(tempHumidity);
   lowerLayer.addSensor(soil);
   lowerLayer.addSensor(light);
@@ -57,7 +56,7 @@ void createAndAddActuators() {
 void setup() {
   Serial.println("setup()");
   initConsole();
-  lowerLayer.initLayer(CommonValues::lowerLayerAddress1);
+  lowerLayer.initLayer(CommonValues::middleLayerAddress);
   createAndAddSensors();
   createAndAddActuators();
   radio = (Radio*)lowerLayer.getCommunicationArray().get(0);
@@ -66,7 +65,7 @@ void setup() {
 void loop() {
   Serial.println("loop()");
   //analyze the data from all the sensors
-  lowerLayer.analyze();
+  //lowerLayer.analyze();
   
   //handle with received messages
   Message messageToRead = radio->receiveMessage();

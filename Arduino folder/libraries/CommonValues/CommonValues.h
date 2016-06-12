@@ -45,7 +45,7 @@ class CommonValues {
 		static const char policyChange = 'p';
 		static const char loopTimeChange = 'a';
 		static const char myAddressChange = 'b';
-		static const char yourAddressChange = 'd';
+		static const char yourAddressChange = 'y';
 		static const char arduinoMalfunction = 'e';
 		static const char dataType = 'd';
 		static const char emergencyType = 'e';

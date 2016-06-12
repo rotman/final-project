@@ -1,22 +1,19 @@
-#include <LowerLayer.h>
+#include <GreenHouseLowerLayer.h>
 #include <SCurrent.h>
 #include <SWater.h>
 
 //globals
 //-------
-LowerLayer lowerLayer;
-RF24 radio(7, 8);
-CommonValues commonValues;
-Sensor * current;
-Sensor * water;
+GreenHouseLowerLayer lowerLayer;
+Radio* radio;
 
-//this values are just for example
-int currentPin = 3;
-int waterPin = 4;
+//sensors
+Sensor * currentSensor;
+Sensor * waterSensor;
 
-//available addresses
-byte rxAddr[6] = "00001"; 
-byte wxAddr[6] = "00002";
+//pins
+int currentPin = CommonValues::currentConsumptionPin;
+int waterPin = CommonValues::waterConsumptionPin;
 
 void initConsole() {
   Serial.println("initConsole()");
@@ -27,41 +24,28 @@ void initConsole() {
 void createAndAddSensors() {
   Serial.println("createAndAddSensors()");
  
-  current= new SCurrent(commonValues.currentSensorId, currentPin);              //create new current sensor instanse
+  currentSensor = new SCurrent(CommonValues::currentSensorId, currentPin);              //create new current sensor instanse
   Serial.println("SCurrent created");
 
-  water= new SWater(commonValues.waterFlowSensorId, waterPin);              //create new water sensor instanse
+  waterSensor = new SWater(CommonValues::waterFlowSensorId, waterPin);              //create new water sensor instanse
   Serial.println("SWater created");
   
-  lowerLayer.addSensor(current);
-  lowerLayer.addSensor(water);
+  lowerLayer.addSensor(currentSensor);
+  lowerLayer.addSensor(waterSensor);
 }
 
 void setup() {
   Serial.println("setup()");
   initConsole();
-  lowerLayer.initLayer(commonValues.lowerLayerConsumptionAdress);
-  lowerLayer.initCommunication(radio, rxAddr, wxAddr);
+  lowerLayer.initLayer(CommonValues::lowerLayerConsumptionAdress);
   createAndAddSensors();
-}
-
-Message prepareMessage(Message& message) {
-  Serial.println("prepareMessage()");
-  message.source = commonValues.lowerLayerConsumptionAdress;
-  message.dest = commonValues.middleLayerAddress;
-  return message;
+  radio = (Radio*)lowerLayer.getCommunicationArray().get(0);
 }
 
 void loop() {
   Serial.println("loop()");
-  LinkedList<Message> sensorsData = lowerLayer.readSensorsData();
-  for (int i = 0; i<sensorsData.size(); ++i) {
-    Message message = sensorsData.get(i);
-    Serial.println(message.sensorType);
-    Serial.println(message.data);
-    prepareMessage(message);
-    lowerLayer.sendMessage(radio, message);
-  }
+  //analyze the data from all the sensors
+  lowerLayer.analyze();
   
-
+  delay(3000);
 }

@@ -2,6 +2,10 @@
 
 
 void Radio::initCommunication(int readingAddress, int writingAddress) {
+	Serial.print(" initCommunication() with readingAddress: ");
+	Serial.print(readingAddress);
+	Serial.print(" and writingAddress: ");
+	Serial.print(writingAddress);		
 	radio = new RF24(6, 7);
 	radio->begin();
     radio->setRetries(15, 15); // default

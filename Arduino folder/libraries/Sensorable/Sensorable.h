@@ -14,10 +14,12 @@ class Sensorable {
 		virtual ~Sensorable() {}
 		
 		void addSensor(Sensor* sensor) {
+			Serial.println("Sensorable, addSensor()");
 			sensorsArray.add(sensor);
 		}
 		
 		void removeSensor(int pin) { 
+			Serial.println("Sensorable, removeSensor()");
 			for (int i = 0; i < sensorsArray.size(); i++) {
 				if (sensorsArray.get(i)->getId() == pin) {
 					sensorsArray.remove(i);
@@ -27,6 +29,7 @@ class Sensorable {
 		}
 		
 		LinkedList<T> readSensorsData() {
+			Serial.println("Sensorable, readSensorsData()");
 			LinkedList<T> messages = LinkedList<T>();
 			for (int i = 0; i < sensorsArray.size(); i++) {
 				T newMessage;
@@ -41,7 +44,9 @@ class Sensorable {
 			return messages;
 		}
 		
-		virtual void onSensorFail() {}
+		virtual void onSensorFail() {
+			Serial.println("Sensorable, onSensorFail()");
+		}
 
 	protected:
 		LinkedList<Sensor*> sensorsArray = LinkedList<Sensor*>();
