@@ -12,6 +12,9 @@ float CommonValues::temperatureThresholdMax = 15;
 float CommonValues::lightThresholdMin = 15;
 float CommonValues::lightThresholdMax = 15;
 
+//set the default to once a day
+long CommonValues::whenTosendConsumption = 86400000;
+
 const char* CommonValues::ssid = "***";
 const char* CommonValues::password = "**";
 const char* CommonValues::host = "www.graphical-transformation.netau.net";

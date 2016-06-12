@@ -31,6 +31,9 @@ class CommonValues {
 		static const int fan2Pin = 4;
 		static const int steamPin = 6;
 		static const int heatPin = 9;
+		static const int currentConsumptionPin = 9;
+		static const int waterConsumptionPin = 9;
+
 
 		//Conventions
 		static const char emptyMessage = 'z';
@@ -44,6 +47,9 @@ class CommonValues {
 		static const char humidityType = 'H';
 		static const char soilHumidityType = 'S';
 		static const char lightType = 'L';
+		static const char currentType = 'C';
+		static const char waterType = 'W';
+
 
 		static const int producersSize = 3;
 		static const int EMERGENCY_TEMPERATURE = 40;
@@ -62,6 +68,8 @@ class CommonValues {
 
 		static float lightThresholdMin;
 		static float lightThresholdMax;
+		
+		static long whenTosendConsumption;
 
 		static const char* ssid;
 		static const char* password;
