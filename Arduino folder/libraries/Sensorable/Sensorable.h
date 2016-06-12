@@ -11,13 +11,40 @@ template <class T>
 class Sensorable {
 	public:
 		virtual ~Sensorable() {}
-		virtual void addSensor(Sensor*) = 0;
-		virtual void removeSensor(int) = 0;
-		virtual LinkedList<T> readSensorsData() = 0;
+		
+		void addSensor(Sensor* sensor) {
+			sensorsArray.add(sensor);
+		}
+		
+		void removeSensor(int pin) { 
+			for (int i = 0; i < sensorsArray.size(); i++) {
+				if (actuatorsArray.get(i)->getPin() == pin) {
+					sensorsArray.remove(i);
+					break;
+				}
+			}
+		}
+		
+		LinkedList<T> readSensorsData() {
+			LinkedList<T> messages = LinkedList<T>();
+			for (int i = 0; i < sensorsArray.size(); i++) {
+				T newMessage;
+				if (sensorsArray.get(i)->getId() == CommonValues::humidityTemperatureSensorId) {
+					newMessage = sensorsArray.get(i)->readSensorData(true);
+				}
+				else {
+					newMessage = sensorsArray.get(i)->readSensorData(false);
+				}
+				messages.add(newMessage);
+			}
+			return messages;
+		}
+		
 		virtual void onSensorFail() = 0;
 
 	protected:
-		LinkedList<Sensor*> sensorsArray;
+		LinkedList<Sensor*> sensorsArray = LinkedList<Sensor*>();
+
 
 };
 

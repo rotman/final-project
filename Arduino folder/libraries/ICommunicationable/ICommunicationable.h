@@ -3,14 +3,15 @@
 
 #include <Arduino.h>
 
-
-template <class T, class E>
 class ICommunicationable {
 	public:
 		virtual ~ICommunicationable() {}
-		virtual void initCommunication(E, E) = 0;
-		virtual E sendMessage(T&) = 0;
-		virtual T receiveMessage() = 0;
+		virtual void initCommunication(int, int) = 0;
+		virtual void initCommunication(String, String) = 0;
+		virtual void sendMessage(Message&) = 0;
+		virtual String sendMessage(JsonObject&) = 0;
+		virtual Message receiveMessage() = 0;
+		virtual String receiveMessage(String) = 0;
 
 };
 
