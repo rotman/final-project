@@ -41,7 +41,6 @@ void createAndAddSensors() {
   soil= new SSoil(CommonValues::soil1SensorId, soilPin);              //create new soil sensor instanse
   Serial.println("Ssoil created");
 
-    
   lowerLayer.addSensor(tempHumidity);
   lowerLayer.addSensor(soil);
   lowerLayer.addSensor(light);

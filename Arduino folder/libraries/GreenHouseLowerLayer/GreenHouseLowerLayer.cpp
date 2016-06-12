@@ -158,29 +158,15 @@ void GreenHouseLowerLayer::decodeMessage(Message& message){
 		return;
 	}
 	if (this->address != message.dest) {
-		//TODO resend message to it's true dest
-		//do nothing the message is not for me
+		//not for me, resend the message to it's original destination
+		communicationArray.get(0)->sendMessage(message);	
 		return;	
 	}
 	//means we got new policy from upper layer
 	if (message.messageType == CommonValues::policyChange) {
-		switch (message.sensorType) {
-			case CommonValues::temperatureType:
-				CommonValues::soilHumidityThresholdMin = message.data;
-				CommonValues::soilHumidityThresholdMax = message.additionalData;
-			break;
-			case CommonValues::humidityType:
-				CommonValues::soilHumidityThresholdMin = message.data;
-				CommonValues::soilHumidityThresholdMax = message.additionalData;
-			break;
-			case CommonValues::soilHumidityType:
-				CommonValues::soilHumidityThresholdMin = message.data;
-				CommonValues::soilHumidityThresholdMax = message.additionalData;
-			break;
-			case CommonValues::lightType:
-				CommonValues::lightThresholdMin = message.data;
-				CommonValues::lightThresholdMax = message.additionalData;
-			break;
+		if (message.sensorType == CommonValues::soilHumidityType) {
+			CommonValues::soilHumidityThresholdMin = message.data;
+			CommonValues::soilHumidityThresholdMax = message.additionalData;
 		}
 	}
 }
