@@ -153,7 +153,7 @@ void GreenHouseLowerLayer::decodeMessage(Message& message){
 	}
 }
 
-Message GreenHouseLowerLayer::prepareMessage(Message& message, int address) {
+Message& GreenHouseLowerLayer::prepareMessage(Message& message, int address) {
 	message.source = this->address;
 	message.dest = address;
 	return message;
