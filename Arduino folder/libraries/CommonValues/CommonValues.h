@@ -1,13 +1,18 @@
-#ifndef COMMONVALUES
-#define COMMONVALUES
+#ifndef COMMON_VALUES
+#define COMMON_VALUES
 #include <Arduino.h>
 class CommonValues {
 	public:
 		//addresses
+		static const int lowerLayerMinAddress		 = 1;
+		static const int lowerLayerMaxAddress		 = 99;
+		static const int middleLayerMinAddress		 = 100;
+		static const int middleLayerMaxAddress		 = 199;
+		static const int highLayerMinAddress		 = 200;
+		static const int highLayerMinAddress		 = 299;
 		static const int lowerLayerAddress1			 = 1;
 		static const int lowerLayerAddress2			 = 2;
 		static const int lowerLayerConsumptionAdress = 3;
-
 		static const int middleLayerAddress 		 = 101;
 		static const int highLayerAddress 			 = 201;
 
@@ -39,8 +44,9 @@ class CommonValues {
 		static const char emptyMessage = 'z';
 		static const char policyChange = 'p';
 		static const char loopTimeChange = 'a';
-		static const char Change = 'b';
-
+		static const char myAddressChange = 'b';
+		static const char yourAddressChange = 'd';
+		static const char arduinoMalfunction = 'e';
 		static const char dataType = 'd';
 		static const char emergencyType = 'e';
 		static const char temperatureType = 'T';
@@ -54,7 +60,7 @@ class CommonValues {
 		static const int producersSize = 3;
 		static const int EMERGENCY_TEMPERATURE = 40;
 
-
+		static const unsigned long day	 = 86400000;  //24 hour
 
 		//thresholds - not consts!
 		static float soilHumidityThresholdMin;

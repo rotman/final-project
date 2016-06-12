@@ -38,6 +38,7 @@ Message GreenHouseMiddleLayer::prepareMessage(Message message, int address) {
 
 void GreenHouseMiddleLayer::analyze() {
 }
+
 void GreenHouseMiddleLayer::decodeMessage(Message msg) {
 	Serial.println("decodeMessage()");
 	if (msg.dest != CommonValues::middleLayerAddress) {
@@ -45,54 +46,23 @@ void GreenHouseMiddleLayer::decodeMessage(Message msg) {
 		radioHelper.sendMessage(msg);
 		return;
 	}
-
-	else if (msg.source >= 200 && msg.source < 300) {   //from higer layer
-	//if the meesgae came from high layer
-	//we should change policy in this layer/bottom layer
-
-	//TODO type of message handeling!!!!!!!!!!!!!!!!!!!!!!!
-
-	/*switch(msg->sensorType) {
-	//need to change soil humidity treshold in the bottom layer
-	case 'S':
-	//maybe prepare diiferent message
-	//change msg src and dest
-	//sendMessage(msg);
-	break;
-	case 'T':
-	//set the temperature treshold in this layer
-	//no need to send down
-	break;
-
-	case 'H':
-	//set the humidity treshold in this layer
-	//no need to send down
-	break;
-
-	case 'L':
-	//set the light treshold in this layer
-	//no need to send down
-	break;
-
-	}*/
+	else if (msg.source >= highLayerMinAddress && msg.source < highLayerMaxAddress) {   //from higer layer
+		switch (msg.messageType) {
+		case CommonValues.emptyMessage:break;
+		case CommonValues.policyChange:break;
+		case CommonValues.loopTimeChange:break;
+		case CommonValues.myAddressChange:break;
+		case CommonValues.yourAddressChange: break;
+		case CommonValues.arduinoMalfunction: break;
+		default:break;
 		}
-
-
-
+	
 		//if the meesgae came from bottom layer
 		//the layer should act/send up the hirarchy if needed
-		if (msg.source >= 1 && msg.source < 100) {
-
-			Serial.println("sensorType");
-			Serial.println(msg.sensorType);
-			Serial.println("Destination");
-			Serial.println(msg.dest);
-
+		else if (msg.source >= lowerLayerMinAddress && msg.source < lowerLayerMaxAddress) {
 			switch (msg.sensorType) {
-
 				/******************soil humidity data*******************/
 			case 'S':
-
 				//do nothing, just send to high level for image status
 				//change msg src and dest
 				prepareMessage(msg, CommonValues::highLayerAddress);
@@ -109,7 +79,6 @@ void GreenHouseMiddleLayer::decodeMessage(Message msg) {
 				//        }
 
 				//        float tempratureAverage = checkForAverage();
-
 				//        if (tempratureAverage < 0) {
 				//          return;
 				//      }
