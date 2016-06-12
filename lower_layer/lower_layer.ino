@@ -1,13 +1,13 @@
-#include <LowerLayer.h>
+#include <GreenHouseLowerLayer.h>
 #include <STemptureHumidity.h>
 #include <SLight.h>
 #include <SSoil.h>
-#include <Actions.h>
 #include <GreenHouseActuator.h>
+
 //globals
 //-------
-LowerLayer lowerLayer;
-RF24 radio(CommonValues::radioPin1, CommonValues::radioPin2);
+GreenHouseLowerLayer lowerLayer;
+Radio* radio;
 
 //sensors
 Sensor * tempHumidity;
@@ -49,7 +49,7 @@ void createAndAddSensors() {
 
 void createAndAddActuators() {
   Serial.println("createAndAddActuators()");
-//      pump = new GreenHouseActuator(CommonValues::pumpPin);
+  pump = new GreenHouseActuator(CommonValues::pumpPin);
   Serial.println("PumpActuator created");
   lowerLayer.addActuator(pump);
 }
@@ -58,52 +58,19 @@ void setup() {
   Serial.println("setup()");
   initConsole();
   lowerLayer.initLayer(CommonValues::lowerLayerAddress1);
-  lowerLayer.initCommunication(radio, CommonValues::lowerLayerAddress1, CommonValues::middleLayerAddress);
   createAndAddSensors();
   createAndAddActuators();
-}
-
-//add source and destination to message
-Message prepareMessage(Message& message, Actions action) {
-  message.source = CommonValues::lowerLayerAddress1;
-  message.dest = CommonValues::middleLayerAddress;
-  message.action = action;
-  return message;
-}
-
-Actions actuateIfNeeded(float data, char which) {
-  if (data < CommonValues::soilHumidityThresholdMin) {
-//      lowerLayer.actuate(pump, true);
-      return PUMP1;      
-  }
-  else {
-    return NONE;
-  }
+  radio = (Radio*)lowerLayer.getCommunicationArray().get(0);
 }
 
 void loop() {
   Serial.println("loop()");
-//  LinkedList<Message> sensorsData = lowerLayer.readSensorsData();
- // for (int i = 0; i<sensorsData.size(); ++i) {
-  //  Message message = sensorsData.get(i);
-   // Serial.println(message.sensorType);
-    //Serial.println(message.data);
-    //Actions action;
-  //  if (message.sensorType == 'S') {
-  //    action = actuateIfNeeded(message.data,message.messageType);
- //   }
-  //  prepareMessage(message, action);
-  Message m;
-  m.data = 20.0;
-  m.sensorType='b';
-   // lowerLayer.sendMessage(radio, message);
-   lowerLayer.sendMessage(radio, m);
- // }
-   
-  Message messageToRead = lowerLayer.receiveMessage(radio);
-    Serial.print("received message - type: ");
-    Serial.println(messageToRead.sensorType);
-    Serial.print("data : ");
-    Serial.println(messageToRead.data);
-    delay(3000);
+  //analyze the data from all the sensors
+  lowerLayer.analyze();
+  
+  //handle with received messages
+  Message messageToRead = radio->receiveMessage();
+  lowerLayer.decodeMessage(messageToRead);
+  
+  delay(3000);
 }

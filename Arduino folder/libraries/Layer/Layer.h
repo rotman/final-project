@@ -26,6 +26,10 @@ class Layer {
 				}
 			}
 		}
+		
+		LinkedList<ICommunicationable*>& getCommunicationArray() {
+			return communicationArray;
+		}
 
 	protected:
 		LinkedList<ICommunicationable*> communicationArray = LinkedList<ICommunicationable*>();
