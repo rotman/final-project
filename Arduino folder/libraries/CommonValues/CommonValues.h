@@ -7,7 +7,7 @@ class CommonValues {
 		static const int lowerLayerAddress1			 = 1;
 		static const int lowerLayerAddress2			 = 2;
 		static const int lowerLayerConsumptionAdress = 3;
-		
+
 		static const int middleLayerAddress 		 = 101;
 		static const int highLayerAddress 			 = 201;
 
@@ -35,31 +35,36 @@ class CommonValues {
 		//Conventions
 		static const char emptyMessage = 'z';
 		static const char policyChange = 'p';
-		static const char dataType = 'd';	
-		static const char emergencyType = 'e';		
+		static const char dataType = 'd';
+		static const char emergencyType = 'e';
 		static const char temperatureType = 'T';
 		static const char humidityType = 'H';
 		static const char soilHumidityType = 'S';
 		static const char lightType = 'L';
-		
+
 		static const int producersSize = 3;
 		static const int EMERGENCY_TEMPERATURE = 40;
 
 
-		
+
 		//thresholds - not consts!
 		static float soilHumidityThresholdMin;
 		static float soilHumidityThresholdMax;
-		
+
 		static float airHumidityThresholdMin;
 		static float airHumidityThresholdMax;
-		
+
 		static float temperatureThresholdMin;
 		static float temperatureThresholdMax;
-		
+
 		static float lightThresholdMin;
 		static float lightThresholdMax;
-		
+
+		const char* CommonValues::ssid = "***";
+		const char* CommonValues::password = "**";
+		const char* CommonValues::host = "www.graphical-transformation.netau.net";
+		const char* CommonValues::key = "123456";
+
 };
 
 #endif

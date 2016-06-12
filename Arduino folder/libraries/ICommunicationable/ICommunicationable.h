@@ -9,7 +9,7 @@ class ICommunicationable {
 	public:
 		virtual ~ICommunicationable() {}
 		virtual void initCommunication(int, int) {};
-		virtual void initCommunication(String, String) {};
+		virtual void initCommunication(const char*, const char*) {};
 		virtual bool sendMessage(Message&) {};
 		virtual String sendMessage(JsonObject&,String) {return "";};
 		virtual Message receiveMessage() {Message message ; return message;};

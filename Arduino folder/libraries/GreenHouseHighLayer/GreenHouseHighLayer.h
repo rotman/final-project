@@ -11,6 +11,7 @@
 #include <CommonValues.h>
 #include <ICommunicationable.h>
 #include <Wifi.h>
+#include <Radio.h>
 
 template <class T>
 class GreenHouseHighLayer : public HighLayer<T> {
@@ -46,9 +47,11 @@ void GreenHouseHighLayer<T>::initLayer(int address) {
 	Wifi wifi;
 	Radio radio;
 	ICommunicationable* wifiPtr = &wifi;
+	wifiPtr->initCommunication();
 	this->addCommunication(wifiPtr);
 	ICommunicationable* radioPtr = &radio;
-	this->addCommunication(wifiPtr);
+	radioPtr->initCommunication();
+	this->addCommunication(radioPtr);
 
 }
 
