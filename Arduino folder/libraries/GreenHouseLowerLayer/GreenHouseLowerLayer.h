@@ -21,10 +21,18 @@ class GreenHouseLowerLayer : public LowerLayer<Message>{
 		 Message& prepareDataMessage(float, char);
 	private:
 		int address;
+		unsigned long currentMillis;
+		unsigned long previousMillis;		
+		
+		//lower layer data
 		LinkedList<float> temperatureData;
 		LinkedList<float> soilHumidityData;
 		LinkedList<float> airHumidityData;
-		LinkedList<float> lightData;		
+		LinkedList<float> lightData;
+
+		//lower layer consumption data
+		float currentConsumptionData;
+		float waterConsumptionData;
 
 };
 

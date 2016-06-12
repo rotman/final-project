@@ -9,7 +9,7 @@ class CommonValues {
 		static const int middleLayerMinAddress		 = 100;
 		static const int middleLayerMaxAddress		 = 199;
 		static const int highLayerMinAddress		 = 200;
-		static const int highLayerMinAddress		 = 299;
+		static const int highLayerMaxAddress		 = 299;
 		static const int lowerLayerAddress1			 = 1;
 		static const int lowerLayerAddress2			 = 2;
 		static const int lowerLayerConsumptionAdress = 3;
@@ -45,7 +45,7 @@ class CommonValues {
 		static const char policyChange = 'p';
 		static const char loopTimeChange = 'a';
 		static const char myAddressChange = 'b';
-		static const char yourAddressChange = 'd';
+		static const char yourAddressChange = 'y';
 		static const char arduinoMalfunction = 'e';
 		static const char dataType = 'd';
 		static const char emergencyType = 'e';
