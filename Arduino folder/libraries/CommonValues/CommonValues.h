@@ -60,10 +60,15 @@ class CommonValues {
 		static float lightThresholdMin;
 		static float lightThresholdMax;
 
-		const char* CommonValues::ssid = "***";
-		const char* CommonValues::password = "**";
-		const char* CommonValues::host = "www.graphical-transformation.netau.net";
-		const char* CommonValues::key = "123456";
+		static const char* ssid;
+		static const char* password;
+		static const char* host;
+		static const char* key;
+		static const unsigned long lastTimeSentToServer = 0;
+		static const long sendToServerInterval = 5000;
+		static const unsigned long lastTimeCheckedForNewSettings = 0;
+		static const long checkedForNewSettingsInterval = 10000;
+		static const int amountOfGreenHouses = 1;
 
 };
 
