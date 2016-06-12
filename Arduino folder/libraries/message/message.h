@@ -4,8 +4,6 @@
 #include <Actions.h>
 
 struct Message {
-	byte minimum_threshold;
-	byte maximum_threshold;
 	char sensorType;
 	char messageType;
 	short int source; 
@@ -13,6 +11,7 @@ struct Message {
   	short int part;
 	DateTime dateTime;
   	float data;
+	float additionalData;
 	Actions action;
 	
 };

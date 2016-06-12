@@ -6,8 +6,8 @@ class CommonValues {
 		//addresses
 		static const int lowerLayerAddress1			 = 1;
 		static const int lowerLayerAddress2			 = 2;
-
 		static const int lowerLayerConsumptionAdress = 3;
+		
 		static const int middleLayerAddress 		 = 101;
 		static const int highLayerAddress 			 = 201;
 
@@ -24,7 +24,7 @@ class CommonValues {
 		static const int radioPin1 = 7;
 		static const int radioPin2 = 8;
 		static const int tempHumidityPin = 2;
-		static const int soilPin = A0;
+		static const int soilPin1 = A0;
 		static const int lightPin = A2;
 		static const int pumpPin = 5;
 		static const int fan1Pin = 3;
@@ -32,21 +32,32 @@ class CommonValues {
 		static const int steamPin = 6;
 		static const int heatPin = 9;
 
+		//Conventions
+		static const char emptyMessage = 'z';
+		static const char policyChange = 'p';
+		static const char dataType = 'd';		
+		static const char temperateType = 'T';
+		static const char humidityType = 'H';
+		static const char soilHumidityType = 'S';
+		static const char lightType = 'L';
+		
+		static const int producersSize = 3;
+		static const int EMERGENCY_TEMPERATURE = 40;
 
 
 		
 		//thresholds - not consts!
-		static int soilHumidityThresholdMin;
-		static int soilHumidityThresholdMax;
+		static byte soilHumidityThresholdMin;
+		static byte soilHumidityThresholdMax;
 		
-		static int airHumidityThresholdMin;
-		static int airHumidityThresholdMax;
+		static byte airHumidityThresholdMin;
+		static byte airHumidityThresholdMax;
 		
-		static int temperatureThresholdMin;
-		static int temperatureThresholdMax;
+		static byte temperatureThresholdMin;
+		static byte temperatureThresholdMax;
 		
-		static int lightThresholdMin;
-		static int lightThresholdMax;
+		static byte lightThresholdMin;
+		static byte lightThresholdMax;
 		
 };
 

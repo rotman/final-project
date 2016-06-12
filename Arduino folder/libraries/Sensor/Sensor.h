@@ -1,6 +1,6 @@
 #ifndef SENSOR_H
 #define SENSOR_H
-#include <message.h>
+#include <Message.h>
 #include <RF24.h>
 
 //abstract class Sensor

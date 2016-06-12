@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <Sensor.h>
 #include <LinkedList.h>
+#include <CommonValues.h>
 
 template <class T>
 //in green house project,'T' stands for Message.
@@ -18,7 +19,7 @@ class Sensorable {
 		
 		void removeSensor(int pin) { 
 			for (int i = 0; i < sensorsArray.size(); i++) {
-				if (actuatorsArray.get(i)->getPin() == pin) {
+				if (sensorsArray.get(i)->getId() == pin) {
 					sensorsArray.remove(i);
 					break;
 				}

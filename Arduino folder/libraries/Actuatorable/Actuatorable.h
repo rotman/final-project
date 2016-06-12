@@ -13,7 +13,6 @@ class Actuatorable {
 		}
 		
 		void removeActuator(int pin) {
-			findActuatorById(pin)
 			for (int i = 0; i < actuatorsArray.size(); i++) {
 				if (actuatorsArray.get(i)->getPin() == pin) {
 					actuatorsArray.remove(i);
