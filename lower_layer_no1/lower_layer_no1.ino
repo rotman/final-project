@@ -67,9 +67,9 @@ void loop() {
   //analyze the data from all the sensors
   lowerLayer.analyze();
   
-  //handle with received messages
-  Message messageToRead = radio->receiveMessage();
-  lowerLayer.decodeMessage(messageToRead);
+//  //handle with received messages
+//  Message messageToRead = radio->receiveMessage();
+//  lowerLayer.decodeMessage(messageToRead);
   
   delay(3000);
 }

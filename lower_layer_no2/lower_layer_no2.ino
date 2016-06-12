@@ -56,7 +56,7 @@ void createAndAddActuators() {
 void setup() {
   Serial.println("setup()");
   initConsole();
-  lowerLayer.initLayer(CommonValues::lowerLayerAddress2);
+  lowerLayer.initLayer(CommonValues::middleLayerAddress);
   createAndAddSensors();
   createAndAddActuators();
   radio = (Radio*)lowerLayer.getCommunicationArray().get(0);
@@ -65,7 +65,7 @@ void setup() {
 void loop() {
   Serial.println("loop()");
   //analyze the data from all the sensors
-  lowerLayer.analyze();
+  //lowerLayer.analyze();
   
   //handle with received messages
   Message messageToRead = radio->receiveMessage();
