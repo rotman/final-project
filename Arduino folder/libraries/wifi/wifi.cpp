@@ -1,6 +1,6 @@
 #include <wifi.h>
 
-void wifi::init(String ssid, String password) {
+void Wifi::initCommunication(String ssid, String password) {
     Serial.println();
     Serial.print("connecting to ");
     Serial.println(ssid);
@@ -18,7 +18,7 @@ void wifi::init(String ssid, String password) {
     Serial.println(WiFi.localIP());
 }
 
-String wifi::post(JsonObject& json, String url) {
+String Wifi::sendMessage(JsonObject& json, String url) {
 
   Serial.print("Trying to Establish connection with  ");
   Serial.println(host);
@@ -70,7 +70,7 @@ String wifi::post(JsonObject& json, String url) {
   return line;
 }
 
-String wifi::get(String url) {
+String Wifi::receiveMessage(String url) {
   Serial.print("Trying to Establish connection with  ");
   Serial.println(host);
 

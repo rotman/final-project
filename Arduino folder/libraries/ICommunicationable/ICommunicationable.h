@@ -2,16 +2,18 @@
 #define ICOMMUNICATIONABLE
 
 #include <Arduino.h>
+#include <Message.h>
+#include <ArduinoJson.h>
 
 class ICommunicationable {
 	public:
 		virtual ~ICommunicationable() {}
-		virtual void initCommunication(int, int) = 0;
-		virtual void initCommunication(String, String) = 0;
-		virtual void sendMessage(Message&) = 0;
-		virtual String sendMessage(JsonObject&) = 0;
-		virtual Message receiveMessage() = 0;
-		virtual String receiveMessage(String) = 0;
+		virtual void initCommunication(int, int) {};
+		virtual void initCommunication(String, String) {};
+		virtual void sendMessage(Message&) {};
+		virtual String sendMessage(JsonObject&,String) {return "";};
+		virtual Message receiveMessage() {Message message ; return message;};
+		virtual String receiveMessage(String) {return "";};
 
 };
 

@@ -7,16 +7,14 @@
 
 
 
-class Wifi : public ICommunicationable<String, JsonObject>{
+class Wifi : public ICommunicationable{
 private:
 	WiFiClient client;
 	String url;
 public:
 	 void initCommunication(String, String);
 	 void sendMessage(JsonObject&);
-	 String receiveMessage();
-	 String getUrl();
-	 void setUrl(String);
+	 String receiveMessage(String);
 
 };
 
