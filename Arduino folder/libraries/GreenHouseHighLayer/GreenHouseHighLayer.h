@@ -24,7 +24,7 @@ public:
 		~GreenHouseHighLayer() {}
 		void initLayer(int);
 		void analyze();
-		void decodeMessage(Message);
+		void decodeMessage(Message&);
 		Message prepareMessage(Message, int);
 		void debug() {
 
@@ -44,7 +44,11 @@ void GreenHouseHighLayer<T>::initLayer(int address) {
 
 	//initialize communication
 	Wifi wifi;
+	Radio radio;
 	ICommunicationable* wifiPtr = &wifi;
+	this->addCommunication(wifiPtr);
+	ICommunicationable* radioPtr = &radio;
+	this->addCommunication(wifiPtr);
 
 }
 
@@ -52,7 +56,7 @@ template<class T>
 void GreenHouseHighLayer<T>::analyze() {}
 
 template <class T>
-void GreenHouseHighLayer<T>::decodeMessage(Message message) {
+void GreenHouseHighLayer<T>::decodeMessage(Message & message) {
 
 }
 

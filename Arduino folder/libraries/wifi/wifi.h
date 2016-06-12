@@ -4,16 +4,16 @@
 #include <ESP8266WiFi.h>
 #include <message.h>
 #include <ArduinoJson.h>
-
+#include <ICommunicationable.h>
+#include <CommonValues.h>
 
 
 class Wifi : public ICommunicationable{
 private:
 	WiFiClient client;
-	String url;
 public:
-	 void initCommunication(String, String);
-	 void sendMessage(JsonObject&);
+	 void initCommunication(const char* , const char*);
+	 String sendMessage(JsonObject&,String);
 	 String receiveMessage(String);
 
 };

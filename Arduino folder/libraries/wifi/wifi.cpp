@@ -1,6 +1,6 @@
-#include <wifi.h>
+#include <Wifi.h>
 
-void Wifi::initCommunication(String ssid, String password) {
+void Wifi::initCommunication(const char* ssid, const char* password) {
     Serial.println();
     Serial.print("connecting to ");
     Serial.println(ssid);
@@ -13,32 +13,32 @@ void Wifi::initCommunication(String ssid, String password) {
     }
 
     Serial.println("");
-    Serial.println("WiFi connected");
+    Serial.println("WiFi connected"); 
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
 }
 
 String Wifi::sendMessage(JsonObject& json, String url) {
 
+  String line = "";
+
   Serial.print("Trying to Establish connection with  ");
-  Serial.println(host);
+  Serial.println(CommonValues::host);
 
   const int httpPort = 80;
 
-  if (!client.connect(host, httpPort)) {
+  if (!client.connect(CommonValues::host, httpPort)) {
     Serial.println("connection failed");
-    return;
+    return "";
   }
 
   int length = json.measureLength();
 
   Serial.println("connection successs");
 
-  String url = "/test.php";
-
   // POST URI
   client.print(String("POST ") + url + " HTTP/1.1\r\n" +
-               "Host: " + host + "\r\n" +
+               "Host: " + CommonValues::host + "\r\n" +
                "Connection: close\r\n" +
                "Content-Type: application/json\r\n" +
                "Content-Length:" + String(length) + "\r\n\r\n");
@@ -55,13 +55,13 @@ String Wifi::sendMessage(JsonObject& json, String url) {
     if (millis() - timeout > 5000) {
       Serial.println(">>> Client Timeout !");
       client.stop();
-      return;
+      return "";
     }
   }
 
   // Read all the lines of the reply from server and print them to Serial
   while(client.available()){
-    String line = client.readStringUntil('\r');
+    line = client.readStringUntil('\r');
   }
 
   Serial.println();
@@ -72,11 +72,11 @@ String Wifi::sendMessage(JsonObject& json, String url) {
 
 String Wifi::receiveMessage(String url) {
   Serial.print("Trying to Establish connection with  ");
-  Serial.println(host);
+  Serial.println(CommonValues::host);
 
   const int httpPort = 80;
 
-  if (!client.connect(host, httpPort)) {
+  if (!client.connect(CommonValues::host, httpPort)) {
     Serial.println("connection failed");
     return "";
   }
@@ -85,7 +85,7 @@ String Wifi::receiveMessage(String url) {
 
   // This will send the request to the server
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-                "Host: " + host + "\r\n" +
+                "Host: " + CommonValues::host + "\r\n" +
                 "Connection: close\r\n\r\n");
   unsigned long timeout = millis();
   while (client.available() == 0) {
