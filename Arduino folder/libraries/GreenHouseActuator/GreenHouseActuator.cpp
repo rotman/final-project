@@ -10,6 +10,6 @@ void GreenHouseActuator::actuate(bool on) {
 	if(on)
 		pinMode(this->pin,HIGH);
 	else
-	pinMode(this->pin,LOW);
+		pinMode(this->pin,LOW);
 }
 

@@ -6,8 +6,8 @@ class CommonValues {
 		//addresses
 		static const int lowerLayerAddress1			 = 1;
 		static const int lowerLayerAddress2			 = 2;
-
 		static const int lowerLayerConsumptionAdress = 3;
+		
 		static const int middleLayerAddress 		 = 101;
 		static const int highLayerAddress 			 = 201;
 
@@ -32,21 +32,33 @@ class CommonValues {
 		static const int steamPin = 6;
 		static const int heatPin = 9;
 
+		//Conventions
+		static const char emptyMessage = 'z';
+		static const char policyChange = 'p';
+		static const char dataType = 'd';	
+		static const char emergencyType = 'e';		
+		static const char temperatureType = 'T';
+		static const char humidityType = 'H';
+		static const char soilHumidityType = 'S';
+		static const char lightType = 'L';
+		
+		static const int producersSize = 3;
+		static const int EMERGENCY_TEMPERATURE = 40;
 
 
 		
 		//thresholds - not consts!
-		static int soilHumidityThresholdMin;
-		static int soilHumidityThresholdMax;
+		static float soilHumidityThresholdMin;
+		static float soilHumidityThresholdMax;
 		
-		static int airHumidityThresholdMin;
-		static int airHumidityThresholdMax;
+		static float airHumidityThresholdMin;
+		static float airHumidityThresholdMax;
 		
-		static int temperatureThresholdMin;
-		static int temperatureThresholdMax;
+		static float temperatureThresholdMin;
+		static float temperatureThresholdMax;
 		
-		static int lightThresholdMin;
-		static int lightThresholdMax;
+		static float lightThresholdMin;
+		static float lightThresholdMax;
 		
 };
 
