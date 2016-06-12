@@ -1,6 +1,14 @@
 #include <GreenHouseMiddleLayer.h>
 
 
+int GreenHouseMiddleLayer::findIdAndType(int id,char type){
+	for (int i = 0; i < lastMessagePerType.size(); ++i) {
+		if (lastMessagePerType.get(i).source == id && lastMessagePerType.get(i).sensorType == type) {
+			return i;
+		}
+	}
+	return -1;
+}
 
 void GreenHouseMiddleLayer::initLayer(int address) {
 	this->address = address;
@@ -36,11 +44,34 @@ Message GreenHouseMiddleLayer::prepareMessage(Message message, int address) {
 	return message;
 }
 
-void GreenHouseMiddleLayer::analyze() {
+void GreenHouseMiddleLayer::analyze(){
+	int sensorsNumber = lowersIds.size();
+	int temperatureAverage=0;
+	int soilHumidityAverage=0;
+	int lightAverage=0;
+	int currentAverage=0;
+	int waterAverage = 0;
+	for (int i = 0; i < lowersIds.size(); ++i) {
+		temperatureAverage += findIdAndType(lowersIds.get(i),CommonValues::temperatureType).data;
+		soilHumidityAverage += findIdAndType(lowersIds.get(i),CommonValues::soilHumidityType).data;
+		lightAverage += findIdAndType(lowersIds.get(i),CommonValues::lightType).data;
+		currentAverage += findIdAndType(lowersIds.get(i),CommonValues::currentType).data;
+		waterAverage += findIdAndType(lowersIds.get(i),CommonValues::waterType).data;
+		//TODO check if the time of messages are within the sensorTypeNotRespondingTime threshold
+	}
+
+	temperatureAverage /= sensorsNumber;
+	soilHumidityAverage /= sensorsNumber;
+	lightAverage /= sensorsNumber;
+	currentAverage /= sensorsNumber;
+	waterAverage /= sensorsNumber;
+	//TODO check threshold
 }
 
 void GreenHouseMiddleLayer::decodeMessage(Message msg) {
 	Serial.println("decodeMessage()");
+	DateTime dateTime;
+	msg.dateTime = clock.createDateTime();             //add time to message
 	if (msg.dest != CommonValues::middleLayerAddress) {
 		Serial.println("not for me, be a good friend and pass it on");
 		radioHelper.sendMessage(msg);
@@ -48,104 +79,27 @@ void GreenHouseMiddleLayer::decodeMessage(Message msg) {
 	}
 	else if (msg.source >= highLayerMinAddress && msg.source < highLayerMaxAddress) {   //from higer layer
 		switch (msg.messageType) {
-		case CommonValues.emptyMessage:break;
-		case CommonValues.policyChange:break;
-		case CommonValues.loopTimeChange:break;
-		case CommonValues.myAddressChange:break;
-		case CommonValues.yourAddressChange: break;
-		case CommonValues.arduinoMalfunction: break;
+		case CommonValues.emptyMessage:break;//TODO
+		case CommonValues.policyChange:break;//TODO
+		case CommonValues.loopTimeChange:break;//TODO
+		case CommonValues.myAddressChange:break;//TODO
+		case CommonValues.yourAddressChange: break;//TODO
+		case CommonValues.arduinoMalfunction: break;//TODO
 		default:break;
+			 
 		}
-	
-		//if the meesgae came from bottom layer
-		//the layer should act/send up the hirarchy if needed
-		else if (msg.source >= lowerLayerMinAddress && msg.source < lowerLayerMaxAddress) {
-			switch (msg.sensorType) {
-				/******************soil humidity data*******************/
-			case 'S':
-				//do nothing, just send to high level for image status
-				//change msg src and dest
-				prepareMessage(msg, CommonValues::highLayerAddress);
-				middleLayer.sendMessage(radio, msg);
-				break;
-
-				/******************temparture data*********************/
-			case 'T':
-			{
-				//        boolean isUpdated = updateValue(msg);
-				//        if (!isUpdated) {
-				//          Serial.println("value failed to update, the source isn't registered");
-				//          return;
-				//        }
-
-				//        float tempratureAverage = checkForAverage();
-				//        if (tempratureAverage < 0) {
-				//          return;
-				//      }
-
-				//    else {
-				//    boolean isActuatorEnabled = actuateIfNeeded(tempratureAverage, msg.sensorType);
-				//  if (isActuatorEnabled) {
-				//  Serial.println("fan turned on");
-				//TODO send message to upper
-
-				//  }
-			}
-
-			break;
-
-			/***********************air humidity data***********************/
-			case 'H':
-
-				//do avreage from all humidity messages that received
-				//if (average < HUMIDITY_LOWER_TRESHOLD) {
-				//check how to add humidity to greenhouse
-				//}
-				//else if (average > HUMIDITY_HIGHER_TRESHOLD) {
-				//turn on fan out
-				//}
-				//else {
-				//do nothing, just check that the actuators are off
-				//}
-				//send average to upper layer
-				break;
-
-				/***************************light data***********************/
-			case 'L':
-
-				Serial.println("Data ");
-				Serial.println(msg.data);
-
-				//do avreage from all light messages that received
-				//if (average < LIGHT_LOWER_TRESHOLD && needLight) {
-				//turn on lamp
-				//}
-				//else if (average > LIGHT_HIGHER_TRESHOLD && !needLight) {
-				//turn off lump
-				//}
-				//else {
-				//do nothing, just check that the actuators are off
-				//}
-				//send average to upper layer  
-				break;
-
-				/*********************water consumption data*****************/
-			case 'W':
-				//TODO sum the amount of water and send up
-				//sendMessageToUpperLayer()
-				break;
-
-				/*********************electricity consumption data*****************/
-			case 'C':
-				//TODO sum the amount of electricity and send up
-				//sendMessageToUpperLayer()
-				break;
-
-			default:
-				//TODO error
-				break;
-			}
-		}
-
 	}
-}
+	//if the meesgae came from bottom layer
+	//the layer should act/send up the hirarchy if needed
+	else if (msg.source >= lowerLayerMinAddress && msg.source < lowerLayerMaxAddress) {
+		int idPosition = findIdAndType(msg.source, msg.sensorType);
+		if (idPosition == -1)				//at the first time
+			lastMessagePerType.add(msg);
+		else {
+			lastMessagePerType.get(idPosition).data = msg.data;			//update last data
+			lastMessagePerType.get(idPosition).dateTime = msg.dateTime; //update last data
+		}
+		analyze();
+		}
+	}
+

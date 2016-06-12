@@ -10,6 +10,7 @@
 class GreenHouseMiddleLayer :  public MiddleLayer<Message,Message,int> {
 
 	public:
+		int findId(int id); 
 
 		//IMiddleLayer implementation
 		void initLayer(int);
@@ -21,10 +22,15 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message,Message,int> {
 		Message prepareMessage(Message, int);
 
 	private:
+		
+		int loopTime;
+		int sendDataTime;
+		int sensorTypeNotRespondingTime;
 		Clock clock;
 		int address;
 		Radio radioHelper;
 		LinkedList<Actuator*> actuators;
+		LinkedList<Message>lastMessagePerType;
 		Clock clock;
 
 };
