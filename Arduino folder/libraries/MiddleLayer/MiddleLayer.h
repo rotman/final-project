@@ -4,9 +4,9 @@
 #include <Layer.h>
 #include <Actuatorable.h>
 
-template <class T,class E, class S>
+template <class T>
 
-class MiddleLayer :public Layer<T,E,S>, public Actuatorable {
+class MiddleLayer :public Layer<T>, public Actuatorable {
 	public:
 
 		/*Layer methods*/

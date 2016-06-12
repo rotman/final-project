@@ -3,10 +3,10 @@
 #include <Layer.h>
 #include <ICommunicationable.h>
 
-template <class T,class E, class S>
+template <class T>
 //in green house project,'T' stands for Message
 
-class HighLayer :public Layer<T,E,S> {
+class HighLayer :public Layer<T> {
 	public:
 
 		/*Layer methods*/
@@ -16,8 +16,6 @@ class HighLayer :public Layer<T,E,S> {
 		virtual void decodeMessage(T) = 0;
 		virtual T prepareMessage(T, int) = 0;
 
-		virtual void addCommunication(ICommunicationable<E,S>*) = 0;
-		virtual void removeCommunication(int) = 0;
 
 };
 
