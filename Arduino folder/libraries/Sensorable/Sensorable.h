@@ -41,7 +41,7 @@ class Sensorable {
 			return messages;
 		}
 		
-		virtual void onSensorFail() = 0;
+		virtual void onSensorFail() {}
 
 	protected:
 		LinkedList<Sensor*> sensorsArray = LinkedList<Sensor*>();

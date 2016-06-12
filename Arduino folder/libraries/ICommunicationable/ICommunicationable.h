@@ -10,7 +10,7 @@ class ICommunicationable {
 		virtual ~ICommunicationable() {}
 		virtual void initCommunication(int, int) {};
 		virtual void initCommunication(String, String) {};
-		virtual void sendMessage(Message&) {};
+		virtual bool sendMessage(Message&) {};
 		virtual String sendMessage(JsonObject&,String) {return "";};
 		virtual Message receiveMessage() {Message message ; return message;};
 		virtual String receiveMessage(String) {return "";};

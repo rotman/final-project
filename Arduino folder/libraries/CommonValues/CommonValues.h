@@ -24,7 +24,7 @@ class CommonValues {
 		static const int radioPin1 = 7;
 		static const int radioPin2 = 8;
 		static const int tempHumidityPin = 2;
-		static const int soilPin1 = A0;
+		static const int soilPin = A0;
 		static const int lightPin = A2;
 		static const int pumpPin = 5;
 		static const int fan1Pin = 3;
@@ -35,8 +35,9 @@ class CommonValues {
 		//Conventions
 		static const char emptyMessage = 'z';
 		static const char policyChange = 'p';
-		static const char dataType = 'd';		
-		static const char temperateType = 'T';
+		static const char dataType = 'd';	
+		static const char emergencyType = 'e';		
+		static const char temperatureType = 'T';
 		static const char humidityType = 'H';
 		static const char soilHumidityType = 'S';
 		static const char lightType = 'L';
@@ -47,17 +48,17 @@ class CommonValues {
 
 		
 		//thresholds - not consts!
-		static byte soilHumidityThresholdMin;
-		static byte soilHumidityThresholdMax;
+		static float soilHumidityThresholdMin;
+		static float soilHumidityThresholdMax;
 		
-		static byte airHumidityThresholdMin;
-		static byte airHumidityThresholdMax;
+		static float airHumidityThresholdMin;
+		static float airHumidityThresholdMax;
 		
-		static byte temperatureThresholdMin;
-		static byte temperatureThresholdMax;
+		static float temperatureThresholdMin;
+		static float temperatureThresholdMax;
 		
-		static byte lightThresholdMin;
-		static byte lightThresholdMax;
+		static float lightThresholdMin;
+		static float lightThresholdMax;
 		
 };
 

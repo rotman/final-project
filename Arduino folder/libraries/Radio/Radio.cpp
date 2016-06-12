@@ -10,7 +10,7 @@ void Radio::initCommunication(int readingAddress, int writingAddress) {
 	radio->startListening();
 }
 
-int Radio::sendMessage(Message &message) {
+bool Radio::sendMessage(Message &message) {
 	radio->openWritingPipe(message.dest); // open pipe for current destination
     bool ok = false;
     int iteration = 0;
@@ -32,7 +32,7 @@ int Radio::sendMessage(Message &message) {
         }
     }
     radio->startListening();
-		return ok;
+	return ok;
 }
 
 Message Radio::receiveMessage() {
