@@ -35,6 +35,9 @@ class CommonValues {
 		//Conventions
 		static const char emptyMessage = 'z';
 		static const char policyChange = 'p';
+		static const char loopTimeChange = 'a';
+		static const char Change = 'b';
+
 		static const char dataType = 'd';
 		static const char emergencyType = 'e';
 		static const char temperatureType = 'T';

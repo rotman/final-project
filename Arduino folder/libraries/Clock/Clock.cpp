@@ -5,8 +5,6 @@ Clock::Clock() {
 }
 
 
-
-
 // Convert normal decimal numbers to binary coded decimal
 byte Clock::decToBcd(byte val){
 	return ((val / 10 * 16) + (val % 10));

@@ -16,12 +16,12 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message,Message,int> {
 		void addActuator(Actuator*);
 		void removeActuator(int);
 		void actuate(Actuator*, bool);
-		void analyze() {};//TODO
+		void analyze();//TODO
 		void decodeMessage(Message);
 		Message prepareMessage(Message, int);
-		void getTime();
 
 	private:
+		Clock clock;
 		int address;
 		Radio radioHelper;
 		LinkedList<Actuator*> actuators;
