@@ -35,6 +35,7 @@ void GreenHouseLowerLayer::analyze() {
 				break;
 			}
 		}
+		//set the timer for sending consumption data to once a day
 		if ((unsigned long)(currentMillis - previousMillis) >= CommonValues::day) {
 			Message currentMessage = prepareDataMessage(currentConsumptionData, CommonValues::currentType);
 			Message waterMessage = prepareDataMessage(waterConsumptionData, CommonValues::waterType);
@@ -47,8 +48,6 @@ void GreenHouseLowerLayer::analyze() {
 				bool isWaterSent = communicationArray.get(0)->sendMessage(waterMessage);
 			}
 			previousMillis = currentMillis;
-		}
-		else {
 		}
 	}
 	else {
@@ -89,9 +88,11 @@ void GreenHouseLowerLayer::analyze() {
 					Message newMessage;
 					//before doing average, check if need to actuate first
 					if (sensorsData.get(i).data <= CommonValues::soilHumidityThresholdMin) {
+						Serial.println("GreenHouseLowerLayer, actuate needed");
 						for (int i = 0; i<actuatorsArray.size() ; i++) {
 							if (actuatorsArray.get(i)->getPin() == CommonValues::soilPin) {
 								actuatorsArray.get(i)->actuate(true);
+								Serial.println("GreenHouseLowerLayer, PUMP1 actuate");									
 								if (this->address == CommonValues::lowerLayerAddress1) {
 									newMessage.action = PUMP1;
 								}	

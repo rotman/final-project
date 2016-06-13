@@ -25,17 +25,12 @@ class MiddleLayer :public Layer<T>, public Actuatorable {
 		virtual ~MiddleLayer() {}
 		virtual void initLayer(int) = 0;
 		virtual void analyze() = 0;
-		virtual void decodeMessage(T) = 0;
-		virtual T prepareMessage(T, int) = 0;
+		virtual void decodeMessage(T&) = 0;
+		virtual T& prepareMessage(T&, int) = 0;
 
-		/*Actuatorable methods*/
-
-		virtual void addActuator(Actuator*) = 0;
-		virtual void removeActuator(int) = 0;
-		virtual void actuate(int, bool) = 0;
 
 protected:
-	LinkedList<int> lowersIds;
+	LinkedList<int> lowersIds = LinkedList<int>();
 };
 
 #endif

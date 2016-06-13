@@ -58,9 +58,11 @@ class CommonValues {
 
 
 		static const int producersSize = 3;
+		static const int lowerLayerRegisteredNum = 2;
 		static const int EMERGENCY_TEMPERATURE = 40;
 
 		static const unsigned long day	 = 86400000;  //24 hour
+		static const unsigned long minute= 60000;
 
 		//thresholds - not consts!
 		static float soilHumidityThresholdMin;

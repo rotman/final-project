@@ -4,9 +4,7 @@
 enum Actions {
 	PUMP1,
 	PUMP2,
-	FAN1,
-	FAN2,
-	FAN3,
+	FAN,
 	LIGHT,
 	HEATER,
 	STEAMER,

@@ -15,6 +15,9 @@ class Layer {
 		virtual void analyze() = 0;
 		virtual void decodeMessage(T&) = 0;
 		virtual T& prepareMessage(T&, int) = 0;
+		Layer() {
+			communicationArray = LinkedList<ICommunicationable*>();	
+		}
 		void addCommunication(ICommunicationable* type) {
 			communicationArray.add(type);
 		}
@@ -32,7 +35,7 @@ class Layer {
 		}
 
 	protected:
-		LinkedList<ICommunicationable*> communicationArray = LinkedList<ICommunicationable*>();
+		LinkedList<ICommunicationable*> communicationArray;
 
 };
 

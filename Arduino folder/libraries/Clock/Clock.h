@@ -1,5 +1,9 @@
+#ifndef CLOCK
+#define CLOCK
+
 #include <Arduino.h>
 #include <Wire.h>
+#include <DateTime.h>
 
 #define DS3231_I2C_ADDRESS 104
 
@@ -32,6 +36,6 @@ public:
 	void get3231Date();
 	float get3231Temp();
 	DateTime createDateTime();
-
-
 };
+
+#endif
