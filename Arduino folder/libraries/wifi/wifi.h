@@ -2,7 +2,7 @@
 #define WIFI_H
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-#include <message.h>
+#include <Message.h>
 #include <ArduinoJson.h>
 #include <ICommunicationable.h>
 #include <CommonValues.h>

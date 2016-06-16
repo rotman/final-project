@@ -2,7 +2,7 @@
 #define RADIO_H
 #include <Arduino.h>
 #include <RF24.h>
-#include <message.h>
+#include <Message.h>
 #include <ExponentialBackoff.h>
 #include <CommonValues.h>
 #include <ICommunicationable.h>
