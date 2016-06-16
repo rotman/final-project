@@ -14,7 +14,7 @@ class HighLayer :public Layer<T> {
 		virtual void initLayer(int) = 0;
 		virtual void analyze() = 0;
 		virtual void decodeMessage(T&) = 0;
-		virtual T prepareMessage(T, int) = 0;
+		virtual T& prepareMessage(T&, int) = 0;
 
 
 };
