@@ -4,9 +4,6 @@ Clock::Clock() {
 	Wire.begin();
 }
 
-
-
-
 // Convert normal decimal numbers to binary coded decimal
 byte Clock::decToBcd(byte val){
 	return ((val / 10 * 16) + (val % 10));
@@ -22,7 +19,7 @@ void Clock::watchConsole(){
 	}
 }
 
-	void Clock::set3231Date(){
+void Clock::set3231Date(){
 	//T(sec)(min)(hour)(dayOfWeek)(dayOfMonth)(month)(year)
 	//T(00-59)(00-59)(00-23)(1-7)(01-31)(01-12)(00-99)
 	//Example: 02-Feb-09 @ 19:57:11 for the 3rd day of the week -> T1157193020209
@@ -45,7 +42,6 @@ void Clock::watchConsole(){
 	Wire.write(decToBcd(year));
 	Wire.endTransmission();
 }
-
 
 void Clock::get3231Date()
 {
@@ -120,4 +116,15 @@ float Clock::get3231Temp(){
 	}
 
 	return temp3231;
+}
+
+DateTime Clock::createDateTime() {
+	DateTime dt;
+	dt.seconds = this->seconds;
+	dt.minutes = this->minutes;
+	dt.hours = this->hours;
+	dt.date = this->date;
+	dt.month = this->month;
+	dt.year = this->year;
+	return dt;
 }

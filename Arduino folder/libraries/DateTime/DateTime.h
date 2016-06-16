@@ -1,3 +1,5 @@
+#ifndef DATETIME
+#define DATETIME
 #include <Arduino.h>
 
 struct DateTime
@@ -9,3 +11,5 @@ struct DateTime
 	byte month;
 	byte year;
 };
+
+#endif

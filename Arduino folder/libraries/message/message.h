@@ -8,7 +8,6 @@ struct Message {
 	char messageType;
 	short int source; 
 	short int dest;
-  	short int part;
 	DateTime dateTime;
   	float data;
 	float additionalData;

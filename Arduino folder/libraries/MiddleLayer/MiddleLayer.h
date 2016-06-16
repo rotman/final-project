@@ -9,23 +9,28 @@ template <class T>
 class MiddleLayer :public Layer<T>, public Actuatorable {
 	public:
 
+		void addLowerId(int id) {
+			lowersIds.add(id);
+		}
+
+		void removeLowerId(int id) {
+			for (int i = 0; i < lowersIds.size(); ++i) {
+				if (lowersIds.get(i) == id) {
+					lowersIds.remove(i);
+					break;
+				}
+			}
+		}
 		/*Layer methods*/
 		virtual ~MiddleLayer() {}
 		virtual void initLayer(int) = 0;
 		virtual void analyze() = 0;
-		virtual void decodeMessage(T) = 0;
-		virtual T prepareMessage(T, int) = 0;
+		virtual void decodeMessage(T&) = 0;
+		virtual T& prepareMessage(T&, int) = 0;
 
-		/*Actuatorable methods*/
 
-		virtual void addActuator(Actuator*) = 0;
-		virtual void removeActuator(int) = 0;
-		virtual void actuate(int, bool) = 0;
-	//	virtual void initLayer(int) = 0;
-	//	virtual void addActuator(Actuator*) = 0;
-	//	virtual void removeActuator(int) = 0;
-	//	virtual void actuate(S*, bool) = 0;
-	//	virtual void analyze() = 0;
+protected:
+	LinkedList<int> lowersIds = LinkedList<int>();
 };
 
 #endif

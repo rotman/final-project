@@ -14,17 +14,25 @@ class GreenHouseLowerLayer : public LowerLayer<Message>{
 		 void initLayer(int);
 		 void analyze();
 		 void decodeMessage(Message&);
-		 Message prepareMessage(Message&, int);
+		 Message& prepareMessage(Message&, int);
 
 		 void initDataArrays();
 		 float doAverage(LinkedList<float>);
 		 Message& prepareDataMessage(float, char);
 	private:
 		int address;
+		unsigned long currentMillis;
+		unsigned long previousMillis;		
+		
+		//lower layer data
 		LinkedList<float> temperatureData;
 		LinkedList<float> soilHumidityData;
 		LinkedList<float> airHumidityData;
-		LinkedList<float> lightData;		
+		LinkedList<float> lightData;
+
+		//lower layer consumption data
+		float currentConsumptionData;
+		float waterConsumptionData;
 
 };
 
