@@ -12,9 +12,9 @@
 #include <ICommunicationable.h>
 #include <Wifi.h>
 #include <Radio.h>
+#include <float.h>
 
-template <class T>
-class GreenHouseHighLayer : public HighLayer<T> {
+class GreenHouseHighLayer : public HighLayer<Message> {
 
 private:
 		GreenHouseHighLayerData greenHouseData[CommonValues::amountOfGreenHouses];
@@ -26,46 +26,24 @@ public:
 		void initLayer(int);
 		void analyze();
 		void decodeMessage(Message&);
-		Message prepareMessage(Message, int);
-		void debug() {
+		Message& prepareMessage(Message&, int);
+		Message recieveRFMessage();
+		int findGreenHouseDataIndex(int id);
+		int findGreenHouseThresholdsIndex(int id);
+		void sendDataToServer(JsonObject& json);
+		void getNewSettings();
 
+		void printSettings() {
+			int i;
+			for (i = 0 ; i < greenHouseData[0].getValuesSize(); i++) {
+				DataValue val;
+				val = greenHouseData[0].getValue(i);
+				Serial.print(val.name);
+				Serial.print(val.value);
+				Serial.print('\n');
+			}
 		}
 
 };
-
-template <class T>
-void GreenHouseHighLayer<T>::initLayer(int address) {
-	int i;
-
-	//initialize greenhouse data
-	for (i = 0 ; i < CommonValues::amountOfGreenHouses ; i++ ) {
-			greenHouseData[i].setId(101 + i) ;
-			greenHouseThresholds[i].setId(101 + i);
-	}
-
-	//initialize communication
-	Wifi wifi;
-	Radio radio;
-	ICommunicationable* wifiPtr = &wifi;
-	wifiPtr->initCommunication();
-	this->addCommunication(wifiPtr);
-	ICommunicationable* radioPtr = &radio;
-	radioPtr->initCommunication();
-	this->addCommunication(radioPtr);
-
-}
-
-template<class T>
-void GreenHouseHighLayer<T>::analyze() {}
-
-template <class T>
-void GreenHouseHighLayer<T>::decodeMessage(Message & message) {
-
-}
-
-template <class T>
-Message GreenHouseHighLayer<T>::prepareMessage(Message message , int address) {
-	return message;
-}
 
 #endif

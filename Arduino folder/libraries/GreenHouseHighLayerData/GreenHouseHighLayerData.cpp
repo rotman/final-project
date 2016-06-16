@@ -36,3 +36,11 @@ int GreenHouseHighLayerData::getId() {
 void GreenHouseHighLayerData::setId(int id) {
   this->id = id;
 }
+
+int GreenHouseHighLayerData::getValuesSize() {
+  return values.size();
+}
+
+DataValue GreenHouseHighLayerData::getValue(int i) {
+  return values.get(i);
+}

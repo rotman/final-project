@@ -19,6 +19,8 @@ public:
   void updateValue(String,float);
   int getId();
   void setId(int);
+  int getValuesSize();
+  DataValue getValue(int i);
 };
 
 #endif
