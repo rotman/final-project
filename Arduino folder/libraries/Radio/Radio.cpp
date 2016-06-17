@@ -5,8 +5,13 @@ void Radio::initCommunication(int readingAddress, int writingAddress) {
 	Serial.print(" initCommunication() with readingAddress: ");
 	Serial.print(readingAddress);
 	Serial.print(" and writingAddress: ");
-	Serial.print(writingAddress);		
-	radio = new RF24(6, 7);
+	Serial.print(writingAddress);
+	if ( readingAddress == CommonValues::highLayerAddress) {
+		radio = new RF24(CommonValues::higherLayerRadioPin1, CommonValues::higherLayerRadioPin2);
+	}
+	else {
+		radio = new RF24(CommonValues::radioPin1, CommonValues::radioPin1);
+	}
 	radio->begin();
     radio->setRetries(15, 15); // default
     radio->openWritingPipe(writingAddress);

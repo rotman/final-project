@@ -7,7 +7,7 @@ void GreenHouseLowerLayer::initLayer(int address) {
 	previousMillis = 0;
 	ICommunicationable* radio = new Radio();
 	radio->initCommunication(this->address, CommonValues::middleLayerAddress);
-	communicationArray.add(radio);
+	communicationList.add(radio);
 	initDataArrays();
 	//more inits here , think maybe to move the inits to relevant constractors
 }
@@ -39,13 +39,13 @@ void GreenHouseLowerLayer::analyze() {
 		if ((unsigned long)(currentMillis - previousMillis) >= CommonValues::day) {
 			Message currentMessage = prepareDataMessage(currentConsumptionData, CommonValues::currentType);
 			Message waterMessage = prepareDataMessage(waterConsumptionData, CommonValues::waterType);
-			bool isCurrentSent = communicationArray.get(0)->sendMessage(currentMessage);
+			bool isCurrentSent = communicationList.get(0)->sendMessage(currentMessage);
 			if (!isCurrentSent) {
-				bool isCurrentSent = communicationArray.get(0)->sendMessage(currentMessage);
+				bool isCurrentSent = communicationList.get(0)->sendMessage(currentMessage);
 			}
-			bool isWaterSent = communicationArray.get(0)->sendMessage(waterMessage);
+			bool isWaterSent = communicationList.get(0)->sendMessage(waterMessage);
 			if (!isWaterSent) {
-				bool isWaterSent = communicationArray.get(0)->sendMessage(waterMessage);
+				bool isWaterSent = communicationList.get(0)->sendMessage(waterMessage);
 			}
 			previousMillis = currentMillis;
 		}
@@ -57,10 +57,10 @@ void GreenHouseLowerLayer::analyze() {
 					//this is emergency state - send message to middle layer immidietly
 					if (sensorsData.get(i).data >= CommonValues::EMERGENCY_TEMPERATURE) {
 						Message newMessage = prepareDataMessage(sensorsData.get(i).data, CommonValues::emergencyType);
-						bool isSent = communicationArray.get(0)->sendMessage(newMessage);
+						bool isSent = communicationList.get(0)->sendMessage(newMessage);
 						if (!isSent) {
 							//TODO maybe resent until received
-							bool isSent = communicationArray.get(0)->sendMessage(newMessage);
+							bool isSent = communicationList.get(0)->sendMessage(newMessage);
 						}
 					}
 					//add data to data array for average
@@ -68,7 +68,7 @@ void GreenHouseLowerLayer::analyze() {
 					if (temperatureData.size() == CommonValues::producersSize) {
 						float average = doAverage(temperatureData);
 						Message newMessage = prepareDataMessage(average, CommonValues::temperatureType);
-						communicationArray.get(0)->sendMessage(newMessage);
+						communicationList.get(0)->sendMessage(newMessage);
 						//clear array after doing average
 						temperatureData.clear();
 					}
@@ -79,7 +79,7 @@ void GreenHouseLowerLayer::analyze() {
 					if (airHumidityData.size() == CommonValues::producersSize) {
 						float average = doAverage(airHumidityData);
 						Message newMessage = prepareDataMessage(average, CommonValues::humidityType);
-						communicationArray.get(0)->sendMessage(newMessage);
+						communicationList.get(0)->sendMessage(newMessage);
 						//clear array after doing average
 						airHumidityData.clear();
 					}
@@ -108,7 +108,7 @@ void GreenHouseLowerLayer::analyze() {
 					if (soilHumidityData.size() == CommonValues::producersSize) {
 						float average = doAverage(soilHumidityData);
 						newMessage = prepareDataMessage(average, CommonValues::soilHumidityType);
-						communicationArray.get(0)->sendMessage(newMessage);
+						communicationList.get(0)->sendMessage(newMessage);
 						//clear array after doing average
 						soilHumidityData.clear();
 
@@ -120,7 +120,7 @@ void GreenHouseLowerLayer::analyze() {
 					if (lightData.size() == CommonValues::producersSize) {
 						float average = doAverage(lightData);
 						Message newMessage = prepareDataMessage(average, CommonValues::lightType);
-						communicationArray.get(0)->sendMessage(newMessage);
+						communicationList.get(0)->sendMessage(newMessage);
 						//clear array after doing average
 						lightData.clear();
 					}
@@ -161,7 +161,7 @@ void GreenHouseLowerLayer::decodeMessage(Message& message){
 	}
 	if (this->address != message.dest) {
 		//not for me, resend the message to it's original destination
-		communicationArray.get(0)->sendMessage(message);	
+		communicationList.get(0)->sendMessage(message);	
 		return;	
 	}
 	//means we got new policy from upper layer
