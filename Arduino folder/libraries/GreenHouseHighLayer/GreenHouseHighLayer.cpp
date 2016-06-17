@@ -50,26 +50,43 @@ void GreenHouseHighLayer::decodeMessage(Message & message) {
     return;
   }
 
-  switch(message.sensorType) {
-      case 'T':
-        data = message.data;
-        greenHouseData[i].updateValue(String("temperature"),data);
-        break;
-      case 'H':
-        data = message.data;
-        greenHouseData[i].updateValue(String('airHumidity'),data);
-        break;
-      case 'L':
-        data = message.data;
-        greenHouseData[i].updateValue(String('luminance'),data);
-        break;
-      case 'S':
-        data = message.data;
-        greenHouseData[i].updateValue(String('soilHumidity'),data);
-        break;
-      default:
-        break;
-  }
+	switch(message.messageType) {
+		case CommonValues::emergencyType:
+
+			break;
+		case CommonValues::dataType:
+			DateTime dateTime = message.dateTime;
+		  switch(message.sensorType) {
+		      case CommonValues::temperatureType:
+		        data = message.data;
+		        greenHouseData[i].updateValue(String("temperature"),data,dateTime);
+		        break;
+		      case CommonValues::humidityType:
+		        data = message.data;
+		        greenHouseData[i].updateValue(String('airHumidity'),data,dateTime);
+		        break;
+		      case CommonValues::lightType:
+		        data = message.data;
+		        greenHouseData[i].updateValue(String('luminance'),data,dateTime);
+		        break;
+		      case CommonValues::soilHumidityType:
+		        data = message.data;
+		        greenHouseData[i].updateValue(String('soilHumidity'),data,dateTime);
+		        break;
+					case CommonValues::currentType:
+						data = message.data;
+						greenHouseData[i].updateValue(String('current'),data,dateTime);
+						break;
+					case CommonValues::waterType:
+						data = message.data;
+						greenHouseData[i].updateValue(String('water'),data,dateTime);
+						break;
+		      default:
+		        break;
+		  }
+			greenHouseData[i].setLastChecked(millis());
+			break;
+	}
 
 }
 
@@ -80,15 +97,12 @@ Message& GreenHouseHighLayer::prepareMessage(Message & message , int address) {
 }
 
 Message GreenHouseHighLayer::recieveRFMessage() {
-  return this->communicationArray.get(0)->receiveMessage();
+  return this->communicationList.get(0)->receiveMessage();
 };
 
 void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
   JsonArray& jGreenHouses = json.createNestedArray("greenHouses");
   int i,j;
-
-	this->greenHouseData[0].updateValue("temperature",12.02);
-	this->greenHouseData[0].updateValue("soil_humidity",1.02);
 
   for (i = 0 ; i < CommonValues::amountOfGreenHouses ; i++ ) {
 
@@ -102,9 +116,17 @@ void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
           JsonObject& jsonData = dataArray.createNestedObject();
           jsonData["key"] = data.name;
           jsonData["value"] = data.value;
+
+					JsonObject& dateTime = jsonData.createNestedObject("dateTime");
+					dateTime["year"] = data.dateTime.year;
+					dateTime["month"] = data.dateTime.month;
+					dateTime["date"] = data.dateTime.date;
+					dateTime["hour"] = data.dateTime.hours;
+					dateTime["minutes"] = data.dateTime.minutes;
+					dateTime["seconds"] = data.dateTime.seconds;
       }
 
-      this->communicationArray.get(1)->sendMessage(json,"/test.php");
+      this->communicationList.get(1)->sendMessage(json,"/data.php");
 
   }
 }
@@ -121,7 +143,7 @@ void GreenHouseHighLayer::getNewSettings() {
     String response;
     String url = "/options-updated.php?greenhouse=";
     url += greenhouse ;
-    String last_updated = this->communicationArray.get(1)->receiveMessage(url);
+    String last_updated = this->communicationList.get(1)->receiveMessage(url);
 
     index = this->findGreenHouseThresholdsIndex(greenhouse);
 
@@ -133,7 +155,7 @@ void GreenHouseHighLayer::getNewSettings() {
       this->greenHouseThresholds[index].setLastUpdated(last_updated);
       url = "/options.php?greenhouse=";
       url += greenhouse ;
-      response = this->communicationArray.get(1)->receiveMessage(url);
+      response = this->communicationList.get(1)->receiveMessage(url);
 
       StaticJsonBuffer<600> jsonBuffer;
       JsonObject& root = jsonBuffer.parseObject(response);
@@ -196,10 +218,33 @@ void GreenHouseHighLayer::getNewSettings() {
 			//send the messages
 			for (j = 0 ; j < 4 ; j++ ) {
 				this->prepareMessage(messageArr[j],greenhouse);
-				this->communicationArray.get(0)->sendMessage(messageArr[j]);
+				this->communicationList.get(0)->sendMessage(messageArr[j]);
 				delay(500);
 			}
 
     }
   }
+}
+
+void GreenHouseHighLayer::checkMiddleLayer() {
+	int i;
+	StaticJsonBuffer<200> jsonBuffer;
+	JsonObject& root = jsonBuffer.createObject();
+
+	for (i = 0 ; i < CommonValues::amountOfGreenHouses; i++ ) {
+		root["greenhouse"] = findGreenHouseDataIndex(i);
+		//if the greenhouse has not contacted in the defined time
+		if (millis() - greenHouseData[i].getLastChecked() >= CommonValues::MiddleLayerLostConnectionTime ) {
+			//set it to not working state
+			greenHouseData[i].setWorking(false);
+			this->communicationList.get(0)->sendMessage(root, "/status.php");
+		}
+		else {
+			if (!greenHouseData[i].getWorking()) {
+				//set it back to working state
+				greenHouseData[i].setWorking(true);
+				this->communicationList.get(0)->sendMessage(root, "/status.php");
+			}
+		}
+	}
 }

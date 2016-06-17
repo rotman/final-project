@@ -16,22 +16,22 @@ class Layer {
 		virtual void decodeMessage(T&) = 0;
 		virtual T& prepareMessage(T&, int) = 0;
 		Layer() {
-			communicationArray = LinkedList<ICommunicationable*>();	
+			communicationList = LinkedList<ICommunicationable*>();	
 		}
 		void addCommunication(ICommunicationable* type) {
-			communicationArray.add(type);
+			communicationList.add(type);
 		}
 		void removeCommunication(int index) {
-			for (int i = 0; i < communicationArray.size(); i++) {
+			for (int i = 0; i < communicationList.size(); i++) {
 				if (i == index) {
-					communicationArray.remove(i);
+					communicationList.remove(i);
 					break;
 				}
 			}
 		}
 		
 		LinkedList<ICommunicationable*>& getCommunicationArray() {
-			return communicationArray;
+			return communicationList;
 		}
 
 		int getLoopTime(){
@@ -41,8 +41,13 @@ class Layer {
 			this->loopTime = time;
 		}
 	protected:
+<<<<<<< HEAD
 		LinkedList<ICommunicationable*> communicationArray;
 		int loopTime;
+=======
+		LinkedList<ICommunicationable*> communicationList;
+
+>>>>>>> a72e40ef809fc6cbf40ca95d5b9066c004fa11b0
 };
 
 #endif

@@ -29,8 +29,8 @@ class CommonValues {
 		static const int radioPin1 = 7;
 		static const int radioPin2 = 8;
 		static const int tempHumidityPin = 2;
-		static const int soilPin = A0;
-		static const int lightPin = A2;
+		//static const int soilPin = A0;
+		//tatic const int lightPin = A2;
 		static const int pumpPin = 5;
 		static const int fan1Pin = 3;
 		static const int fan2Pin = 4;
@@ -38,6 +38,8 @@ class CommonValues {
 		static const int heatPin = 9;
 		static const int currentConsumptionPin = 9;
 		static const int waterConsumptionPin = 9;
+		static const int higherLayerRadioPin1 = 2;
+		static const int higherLayerRadioPin2 = 15;
 
 
 		//Conventions
@@ -76,7 +78,7 @@ class CommonValues {
 
 		static float lightThresholdMin;
 		static float lightThresholdMax;
-		
+
 		static long whenTosendConsumption;
 
 		static const char* ssid;
@@ -88,6 +90,7 @@ class CommonValues {
 		static const unsigned long lastTimeCheckedForNewSettings = 0;
 		static const long checkedForNewSettingsInterval = 10000;
 		static const int amountOfGreenHouses = 1;
+		static const int MiddleLayerLostConnectionTime = 50000;
 
 };
 

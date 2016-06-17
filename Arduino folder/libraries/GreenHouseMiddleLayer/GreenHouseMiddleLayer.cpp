@@ -29,7 +29,7 @@ void GreenHouseMiddleLayer::initLayer(int address) {
 	//init radio
 	ICommunicationable* radio = new Radio();
 	radio->initCommunication(this->address, CommonValues::highLayerAddress);
-	communicationArray.add(radio);
+	communicationList.add(radio);
 	initDataArrays();
 
 	//more inits here
@@ -77,13 +77,15 @@ void GreenHouseMiddleLayer::analyze() {
 		}
 		else if (temperatureAverage < CommonValues::temperatureThresholdMin) {
 			actuate(CommonValues::heatPin);
+			newMessage.action = HEATER;
+
 		}
 		//prepare message and send to high layer
 		prepareMessage(newMessage, CommonValues::highLayerAddress);
 		newMessage.data = temperatureAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::temperatureType;
-		communicationArray.get(0)->sendMessage(newMessage);
+		communicationList.get(0)->sendMessage(newMessage);
 		//clear the array after done
 		temperatureData.clear();
 	}
@@ -100,7 +102,7 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = airHumidityAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::humidityType;
-		communicationArray.get(0)->sendMessage(newMessage);
+		communicationList.get(0)->sendMessage(newMessage);
 		//clear the array after done
 		temperatureData.clear();
 	}
@@ -113,7 +115,7 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = lightAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::lightType;
-		communicationArray.get(0)->sendMessage(newMessage);
+		communicationList.get(0)->sendMessage(newMessage);
 		//clear the array after done
 		lightData.clear();
 	}	
@@ -130,7 +132,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 	DateTime dateTime;
 	msg.dateTime = clock.createDateTime();             //add time to message
 	if (msg.dest != CommonValues::middleLayerAddress) {
-		communicationArray.get(0)->sendMessage(msg);	
+		communicationList.get(0)->sendMessage(msg);	
 		return;
 	}
 	//from higer layer
@@ -149,7 +151,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 								Serial.print("GreenHouseMiddleLayer, sending new thresholds to address ");
 								Serial.println(i);
 								prepareMessage(msg, i);
-								communicationArray.get(0)->sendMessage(msg);
+								communicationList.get(0)->sendMessage(msg);
 							}
 						}			
 					break;
@@ -191,7 +193,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 				actuate(CommonValues::fan1Pin);
 				actuate(CommonValues::fan2Pin);
 				prepareMessage(msg, CommonValues::highLayerAddress);
-				communicationArray.get(0)->sendMessage(msg);	
+				communicationList.get(0)->sendMessage(msg);	
 			break;
 			case CommonValues::dataType:
 				switch (msg.sensorType) {
@@ -199,17 +201,17 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						//if it's soil Humidity data, send it to the high layer
 						//not using prepare message here because we want to know from which lower layer the data was sent
 						msg.dest = CommonValues::highLayerAddress;
-						communicationArray.get(0)->sendMessage(msg);
+						communicationList.get(0)->sendMessage(msg);
 					break;
 					case CommonValues::currentType:
 						//if it's current consumption data, send it to the high layer
 						prepareMessage(msg, CommonValues::highLayerAddress);
-						communicationArray.get(0)->sendMessage(msg);
+						communicationList.get(0)->sendMessage(msg);
 					break;
 					case CommonValues::waterType:
 						//if it's water consumption data, send it to the high layer
 						prepareMessage(msg, CommonValues::highLayerAddress);
-						communicationArray.get(0)->sendMessage(msg);
+						communicationList.get(0)->sendMessage(msg);
 					break;
 					case CommonValues::temperatureType:
 						temperatureData.add(msg);

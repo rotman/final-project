@@ -13,6 +13,8 @@
 #include <Wifi.h>
 #include <Radio.h>
 #include <float.h>
+#include <DateTime.h>
+
 
 class GreenHouseHighLayer : public HighLayer<Message> {
 
@@ -32,17 +34,8 @@ public:
 		int findGreenHouseThresholdsIndex(int id);
 		void sendDataToServer(JsonObject& json);
 		void getNewSettings();
-
-		void printSettings() {
-			int i;
-			for (i = 0 ; i < greenHouseData[0].getValuesSize(); i++) {
-				DataValue val;
-				val = greenHouseData[0].getValue(i);
-				Serial.print(val.name);
-				Serial.print(val.value);
-				Serial.print('\n');
-			}
-		}
+		void checkMiddleLayer();
+		String dateTimeToString(DateTime);
 
 };
 
