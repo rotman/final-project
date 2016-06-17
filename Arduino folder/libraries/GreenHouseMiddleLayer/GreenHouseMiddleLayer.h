@@ -11,21 +11,23 @@
 class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 
 	public:
-		//IMiddleLayer implementation
-		void initLayer(int);
-		void analyze();//TODO
-		void decodeMessage(Message&);
-		Message& prepareMessage(Message&, int);
-		
-		void actuate(int);
+
 		void initDataArrays();
 		float doAverage(LinkedList<Message>&);
 		bool isTimeConsistency(LinkedList<Message>&, int);
 		bool isArrayFullAndUnique(LinkedList<Message>&);
+		void actuate(int);
+
+		//MiddleLayer implementation
+		void initLayer(int);
+		void analyze();
+		void decodeMessage(Message&);
+		Message& prepareMessage(Message&, int);
+		void sendMessage(Message&);
+		Message receiveMessage();
 		
 	private:
-		
-		int loopTime;
+	
 		int sendDataTime;
 		int sensorTypeNotRespondingTime;
 		Clock clock;

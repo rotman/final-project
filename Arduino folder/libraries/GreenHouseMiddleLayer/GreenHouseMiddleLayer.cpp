@@ -10,6 +10,13 @@
 	return -1;
 }*/
 
+void GreenHouseMiddleLayer::sendMessage(Message& message) {
+	this->getCommunicationArray().get(0)->	sendMessage(message);
+};
+Message GreenHouseMiddleLayer::receiveMessage() {
+	return (this->getCommunicationArray().get(0)->receiveMessage());
+};
+
 void GreenHouseMiddleLayer::initLayer(int address) {
 	Serial.print("GreenHouseMiddleLayer, initLayer() with address ");
 	this->address = address;
@@ -24,6 +31,7 @@ void GreenHouseMiddleLayer::initLayer(int address) {
 	radio->initCommunication(this->address, CommonValues::highLayerAddress);
 	communicationArray.add(radio);
 	initDataArrays();
+
 	//more inits here
 }
 
@@ -56,7 +64,6 @@ void GreenHouseMiddleLayer::analyze() {
 	float airHumidityAverage = 0;
 	float lightAverage = 0;
 	Message newMessage;
-	prepareMessage(newMessage, CommonValues::highLayerAddress);
 	
 	//we have some data to analyze
 	if (isTemperatureReadyToAnalyze) {
@@ -72,6 +79,7 @@ void GreenHouseMiddleLayer::analyze() {
 			actuate(CommonValues::heatPin);
 		}
 		//prepare message and send to high layer
+		prepareMessage(newMessage, CommonValues::highLayerAddress);
 		newMessage.data = temperatureAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::temperatureType;
@@ -125,7 +133,8 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 		communicationArray.get(0)->sendMessage(msg);	
 		return;
 	}
-	else if (msg.source >= CommonValues::highLayerMinAddress && msg.source < CommonValues::highLayerMaxAddress) {   //from higer layer
+	//from higer layer
+	else if (msg.source >= CommonValues::highLayerMinAddress && msg.source < CommonValues::highLayerMaxAddress) {   
 		switch (msg.messageType) {
 			case CommonValues::emptyMessage:
 				//this can't happen, we've already check if the message is empty
@@ -138,8 +147,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						for (int i = 1; i< lowersIds.size()+1 ; i++) {
 							if (lowersIds.get(i) != CommonValues::lowerLayerConsumptionAdress) {
 								Serial.print("GreenHouseMiddleLayer, sending new thresholds to address ");
-								Serial.print(i);
-								Serial.println();
+								Serial.println(i);
 								prepareMessage(msg, i);
 								communicationArray.get(0)->sendMessage(msg);
 							}

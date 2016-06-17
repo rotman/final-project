@@ -14,7 +14,6 @@ class ICommunicationable {
 		virtual String sendMessage(JsonObject&,String) {return "";};
 		virtual Message receiveMessage() {Message message ; return message;};
 		virtual String receiveMessage(String) {return "";};
-
 };
 
 #endif
