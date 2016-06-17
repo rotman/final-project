@@ -70,6 +70,8 @@ void GreenHouseMiddleLayer::analyze() {
 		}
 		else if (temperatureAverage < CommonValues::temperatureThresholdMin) {
 			actuate(CommonValues::heatPin);
+			newMessage.action = HEATER;
+
 		}
 		//prepare message and send to high layer
 		newMessage.data = temperatureAverage;
