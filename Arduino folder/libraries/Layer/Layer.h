@@ -41,13 +41,8 @@ class Layer {
 			this->loopTime = time;
 		}
 	protected:
-<<<<<<< HEAD
-		LinkedList<ICommunicationable*> communicationArray;
 		int loopTime;
-=======
 		LinkedList<ICommunicationable*> communicationList;
-
->>>>>>> a72e40ef809fc6cbf40ca95d5b9066c004fa11b0
 };
 
 #endif
