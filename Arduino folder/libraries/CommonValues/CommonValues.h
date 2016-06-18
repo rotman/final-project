@@ -80,6 +80,7 @@ class CommonValues {
 		static float lightThresholdMax;
 
 		static long whenTosendConsumption;
+		static int minutesInInterval;
 
 		static const char* ssid;
 		static const char* password;

@@ -12,6 +12,8 @@ float CommonValues::temperatureThresholdMax = 15;
 float CommonValues::lightThresholdMin = 15;
 float CommonValues::lightThresholdMax = 15;
 
+int CommonValues::minutesInInterval = 3;
+
 const char* CommonValues::ssid = "***";
 const char* CommonValues::password = "**";
 const char* CommonValues::host = "www.graphical-transformation.netau.net";

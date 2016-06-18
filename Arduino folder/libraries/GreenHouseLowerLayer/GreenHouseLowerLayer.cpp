@@ -45,8 +45,10 @@ void GreenHouseLowerLayer::analyze() {
 		}
 		//set the timer for sending consumption data to once a day
 		if ((unsigned long)(currentMillis - previousMillis) >= CommonValues::day) {
-			Message currentMessage = prepareDataMessage(currentConsumptionData, CommonValues::currentType);
-			Message waterMessage = prepareDataMessage(waterConsumptionData, CommonValues::waterType);
+			Message currentMessage;
+			prepareDataMessage(currentMessage, currentConsumptionData, CommonValues::currentType);
+			Message waterMessage;
+			prepareDataMessage(waterMessage, waterConsumptionData, CommonValues::waterType);
 			bool isCurrentSent = communicationList.get(0)->sendMessage(currentMessage);
 			if (!isCurrentSent) {
 				bool isCurrentSent = communicationList.get(0)->sendMessage(currentMessage);
@@ -64,7 +66,8 @@ void GreenHouseLowerLayer::analyze() {
 				case CommonValues::temperatureType:
 					//this is emergency state - send message to middle layer immidietly
 					if (sensorsData.get(i).data >= CommonValues::EMERGENCY_TEMPERATURE) {
-						Message newMessage = prepareDataMessage(sensorsData.get(i).data, CommonValues::emergencyType);
+						Message newMessage;
+						prepareDataMessage(newMessage, sensorsData.get(i).data, CommonValues::emergencyType);
 						bool isSent = communicationList.get(0)->sendMessage(newMessage);
 						if (!isSent) {
 							//TODO maybe resent until received
@@ -75,7 +78,8 @@ void GreenHouseLowerLayer::analyze() {
 					temperatureData.add(sensorsData.get(i).data);
 					if (temperatureData.size() == CommonValues::producersSize) {
 						float average = doAverage(temperatureData);
-						Message newMessage = prepareDataMessage(average, CommonValues::temperatureType);
+						Message newMessage;
+						prepareDataMessage(newMessage, average, CommonValues::temperatureType);
 						communicationList.get(0)->sendMessage(newMessage);
 						//clear array after doing average
 						temperatureData.clear();
@@ -86,7 +90,8 @@ void GreenHouseLowerLayer::analyze() {
 					airHumidityData.add(sensorsData.get(i).data);
 					if (airHumidityData.size() == CommonValues::producersSize) {
 						float average = doAverage(airHumidityData);
-						Message newMessage = prepareDataMessage(average, CommonValues::humidityType);
+						Message newMessage;
+						prepareDataMessage(newMessage, average, CommonValues::humidityType);
 						communicationList.get(0)->sendMessage(newMessage);
 						//clear array after doing average
 						airHumidityData.clear();
@@ -115,7 +120,7 @@ void GreenHouseLowerLayer::analyze() {
 					soilHumidityData.add(sensorsData.get(i).data);
 					if (soilHumidityData.size() == CommonValues::producersSize) {
 						float average = doAverage(soilHumidityData);
-						newMessage = prepareDataMessage(average, CommonValues::soilHumidityType);
+						prepareDataMessage(newMessage, average, CommonValues::soilHumidityType);
 						communicationList.get(0)->sendMessage(newMessage);
 						//clear array after doing average
 						soilHumidityData.clear();
@@ -127,7 +132,8 @@ void GreenHouseLowerLayer::analyze() {
 					lightData.add(sensorsData.get(i).data);
 					if (lightData.size() == CommonValues::producersSize) {
 						float average = doAverage(lightData);
-						Message newMessage = prepareDataMessage(average, CommonValues::lightType);
+						Message newMessage;
+						prepareDataMessage(newMessage, average, CommonValues::lightType);
 						communicationList.get(0)->sendMessage(newMessage);
 						//clear array after doing average
 						lightData.clear();
@@ -139,18 +145,16 @@ void GreenHouseLowerLayer::analyze() {
 	}
 }
 
-Message& GreenHouseLowerLayer::prepareDataMessage(float data, char type) {
-	Message newMessage;
-	newMessage.data = data;
+void GreenHouseLowerLayer::prepareDataMessage(Message& message, float data, char type) {
+	message.data = data;
 	if (type == CommonValues::emergencyType) {
-		newMessage.messageType = CommonValues::emergencyType;		
+		message.messageType = CommonValues::emergencyType;		
 	}
 	else {
-		newMessage.messageType = CommonValues::dataType;
-		newMessage.sensorType = type;	
+		message.messageType = CommonValues::dataType;
+		message.sensorType = type;	
 	}
-	prepareMessage(newMessage, CommonValues::middleLayerAddress);
-	return newMessage;
+	prepareMessage(message, CommonValues::middleLayerAddress);
 }
 
 float GreenHouseLowerLayer::doAverage(LinkedList<float> data) {
