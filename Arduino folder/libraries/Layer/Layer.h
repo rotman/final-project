@@ -30,7 +30,7 @@ class Layer {
 			}
 		}
 		
-		LinkedList<ICommunicationable*>& getCommunicationArray() {
+		LinkedList<ICommunicationable*>& getCommunicationList() {
 			return communicationList;
 		}
 

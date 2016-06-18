@@ -11,10 +11,10 @@
 }*/
 
 void GreenHouseMiddleLayer::sendMessage(Message& message) {
-	this->getCommunicationArray().get(0)->	sendMessage(message);
+	radio.sendMessage(message);
 };
-Message GreenHouseMiddleLayer::receiveMessage() {
-	return (this->getCommunicationArray().get(0)->receiveMessage());
+Message& GreenHouseMiddleLayer::receiveMessage() {
+	return radio.receiveMessage();
 };
 
 void GreenHouseMiddleLayer::initLayer(int address) {
@@ -27,9 +27,9 @@ void GreenHouseMiddleLayer::initLayer(int address) {
 	addLowerId(CommonValues::lowerLayerAddress2);
 	addLowerId(CommonValues::lowerLayerConsumptionAdress);	//maybe remove the consumption layer from the low layers array
 	//init radio
-	ICommunicationable* radio = new Radio();
-	radio->initCommunication(this->address, CommonValues::highLayerAddress);
-	communicationList.add(radio);
+	//ICommunicationable* radio = new Radio();
+	radio.initCommunication(this->address, CommonValues::lowerLayerAddress1);
+	//communicationList.add(radio);
 	initDataArrays();
 
 	//more inits here
@@ -43,10 +43,9 @@ void GreenHouseMiddleLayer::initDataArrays() {
 	waterData = LinkedList<Message>();
 }
 
-Message& GreenHouseMiddleLayer::prepareMessage(Message& message, int address) {
-	Serial.println("GreenHouseMiddleLayer, prepareMessage()");
-	message.source = CommonValues::middleLayerAddress;
-	message.dest = address;
+Message& GreenHouseMiddleLayer::prepareMessage(Message& message, int add) {
+	message.source = this->address;
+	message.dest = add;	
 	return message;
 }
 

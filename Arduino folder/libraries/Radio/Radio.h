@@ -8,13 +8,14 @@
 #include <ICommunicationable.h>
 
 
-class Radio :public ICommunicationable{
+class Radio : public ICommunicationable{
 public:
 	void initCommunication (int, int);
 	bool sendMessage(Message&);
-	Message receiveMessage();
+	Message& receiveMessage();
 private:
-	RF24* radio;
+	RF24* radio = new RF24(7,8);
+
 };
 
 #endif

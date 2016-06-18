@@ -12,7 +12,7 @@ class ICommunicationable {
 		virtual void initCommunication(const char*, const char*) {};
 		virtual bool sendMessage(Message&) {};
 		virtual String sendMessage(JsonObject&,String) {return "";};
-		virtual Message receiveMessage() {Message message ; return message;};
+		virtual Message& receiveMessage() {Message message ; return message;};
 		virtual String receiveMessage(String) {return "";};
 };
 

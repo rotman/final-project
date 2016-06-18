@@ -6,12 +6,6 @@ void Radio::initCommunication(int readingAddress, int writingAddress) {
 	Serial.print(readingAddress);
 	Serial.print(" and writingAddress: ");
 	Serial.print(writingAddress);
-	if ( readingAddress == CommonValues::highLayerAddress) {
-		radio = new RF24(CommonValues::higherLayerRadioPin1, CommonValues::higherLayerRadioPin2);
-	}
-	else {
-		radio = new RF24(CommonValues::radioPin1, CommonValues::radioPin1);
-	}
 	radio->begin();
     radio->setRetries(15, 15); // default
     radio->openWritingPipe(writingAddress);
@@ -44,12 +38,12 @@ bool Radio::sendMessage(Message &message) {
 	return ok;
 }
 
-Message Radio::receiveMessage() {
+Message& Radio::receiveMessage() {
 	Message message;
-
 	if (radio->available()){
 		radio->read(&message, sizeof(message));
 		Serial.print("recived message: the data is:");
+		Serial.println(message.sensorType);
 		Serial.println(message.data);
 	}
 	else {

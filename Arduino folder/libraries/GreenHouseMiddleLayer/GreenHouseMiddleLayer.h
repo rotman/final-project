@@ -24,7 +24,7 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 		void decodeMessage(Message&);
 		Message& prepareMessage(Message&, int);
 		void sendMessage(Message&);
-		Message receiveMessage();
+		Message& receiveMessage();
 		
 	private:
 	
@@ -32,6 +32,7 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 		int sensorTypeNotRespondingTime;
 		Clock clock;
 		int address;
+		Radio radio;
 		
 		LinkedList<Message> temperatureData;
 		LinkedList<Message> humidityData;
