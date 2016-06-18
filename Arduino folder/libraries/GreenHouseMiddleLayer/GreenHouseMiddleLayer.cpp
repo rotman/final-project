@@ -10,6 +10,13 @@
 	return -1;
 }*/
 
+void GreenHouseMiddleLayer::sendMessage(Message& message) {
+	radio.sendMessage(message);
+};
+Message& GreenHouseMiddleLayer::receiveMessage() {
+	return radio.receiveMessage();
+};
+
 void GreenHouseMiddleLayer::initLayer(int address) {
 	Serial.print("GreenHouseMiddleLayer, initLayer() with address ");
 	this->address = address;
@@ -20,10 +27,11 @@ void GreenHouseMiddleLayer::initLayer(int address) {
 	addLowerId(CommonValues::lowerLayerAddress2);
 	addLowerId(CommonValues::lowerLayerConsumptionAdress);	//maybe remove the consumption layer from the low layers array
 	//init radio
-	ICommunicationable* radio = new Radio();
-	radio->initCommunication(this->address, CommonValues::highLayerAddress);
-	communicationList.add(radio);
+	//ICommunicationable* radio = new Radio();
+	radio.initCommunication(this->address, CommonValues::lowerLayerAddress1);
+	//communicationList.add(radio);
 	initDataArrays();
+
 	//more inits here
 }
 
@@ -35,10 +43,9 @@ void GreenHouseMiddleLayer::initDataArrays() {
 	waterData = LinkedList<Message>();
 }
 
-Message& GreenHouseMiddleLayer::prepareMessage(Message& message, int address) {
-	Serial.println("GreenHouseMiddleLayer, prepareMessage()");
-	message.source = CommonValues::middleLayerAddress;
-	message.dest = address;
+Message& GreenHouseMiddleLayer::prepareMessage(Message& message, int add) {
+	message.source = this->address;
+	message.dest = add;	
 	return message;
 }
 
@@ -56,7 +63,6 @@ void GreenHouseMiddleLayer::analyze() {
 	float airHumidityAverage = 0;
 	float lightAverage = 0;
 	Message newMessage;
-	prepareMessage(newMessage, CommonValues::highLayerAddress);
 	
 	//we have some data to analyze
 	if (isTemperatureReadyToAnalyze) {
@@ -74,6 +80,7 @@ void GreenHouseMiddleLayer::analyze() {
 
 		}
 		//prepare message and send to high layer
+		prepareMessage(newMessage, CommonValues::highLayerAddress);
 		newMessage.data = temperatureAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::temperatureType;
@@ -127,7 +134,8 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 		communicationList.get(0)->sendMessage(msg);	
 		return;
 	}
-	else if (msg.source >= CommonValues::highLayerMinAddress && msg.source < CommonValues::highLayerMaxAddress) {   //from higer layer
+	//from higer layer
+	else if (msg.source >= CommonValues::highLayerMinAddress && msg.source < CommonValues::highLayerMaxAddress) {   
 		switch (msg.messageType) {
 			case CommonValues::emptyMessage:
 				//this can't happen, we've already check if the message is empty
@@ -140,8 +148,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						for (int i = 1; i< lowersIds.size()+1 ; i++) {
 							if (lowersIds.get(i) != CommonValues::lowerLayerConsumptionAdress) {
 								Serial.print("GreenHouseMiddleLayer, sending new thresholds to address ");
-								Serial.print(i);
-								Serial.println();
+								Serial.println(i);
 								prepareMessage(msg, i);
 								communicationList.get(0)->sendMessage(msg);
 							}

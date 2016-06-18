@@ -9,7 +9,7 @@ struct Message {
 	short int source;
 	short int dest;
 	DateTime dateTime;
-  float data;
+	float data;
 	float additionalData;
 	Actions action;
 

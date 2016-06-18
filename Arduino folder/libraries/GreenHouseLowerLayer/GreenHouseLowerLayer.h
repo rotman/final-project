@@ -19,10 +19,13 @@ class GreenHouseLowerLayer : public LowerLayer<Message>{
 		 void initDataArrays();
 		 float doAverage(LinkedList<float>);
 		 Message& prepareDataMessage(float, char);
+		 void sendMessage(Message&);
+		 Message& receiveMessage();
 	private:
 		int address;
 		unsigned long currentMillis;
-		unsigned long previousMillis;		
+		unsigned long previousMillis;
+		Radio radio;
 		
 		//lower layer data
 		LinkedList<float> temperatureData;

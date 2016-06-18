@@ -30,13 +30,19 @@ class Layer {
 			}
 		}
 		
-		LinkedList<ICommunicationable*>& getCommunicationArray() {
+		LinkedList<ICommunicationable*>& getCommunicationList() {
 			return communicationList;
 		}
 
+		int getLoopTime(){
+			return this->loopTime;
+		}
+		void setLoopTime(int time) {
+			this->loopTime = time;
+		}
 	protected:
+		int loopTime;
 		LinkedList<ICommunicationable*> communicationList;
-
 };
 
 #endif
