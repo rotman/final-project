@@ -13,8 +13,8 @@
 void GreenHouseMiddleLayer::sendMessage(Message& message) {
 	communicationList.get(0)->sendMessage(message);
 };
-Message& GreenHouseMiddleLayer::receiveMessage() {
-	return communicationList.get(0)->receiveMessage();
+void GreenHouseMiddleLayer::receiveMessage(Message& message) {
+	return communicationList.get(0)->receiveMessage(message);
 };
 
 void GreenHouseMiddleLayer::initLayer(int address) {
@@ -43,10 +43,9 @@ void GreenHouseMiddleLayer::initDataArrays() {
 	waterData = LinkedList<Message>();
 }
 
-Message& GreenHouseMiddleLayer::prepareMessage(Message& message, int add) {
+void GreenHouseMiddleLayer::prepareMessage(Message& message, int add) {
 	message.source = this->address;
 	message.dest = add;	
-	return message;
 }
 
 float GreenHouseMiddleLayer::doAverage(LinkedList<Message>& messages) {
@@ -123,14 +122,16 @@ void GreenHouseMiddleLayer::analyze() {
 	
 }
 
-void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
+void GreenHouseMiddleLayer::decodeMessage(Message& msg) {	
 	if ('z' == msg.sensorType) {
+		Serial.println("message is null");
 		//do nothing the message is empty
 		return;
 	}
 	DateTime dateTime;
 	msg.dateTime = clock.createDateTime();             //add time to message
 	if (msg.dest != CommonValues::middleLayerAddress) {
+		Serial.println("message is not for me");
 		communicationList.get(0)->sendMessage(msg);	
 		return;
 	}
@@ -138,15 +139,17 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 	else if (msg.source >= CommonValues::highLayerMinAddress && msg.source < CommonValues::highLayerMaxAddress) {   
 		switch (msg.messageType) {
 			case CommonValues::emptyMessage:
+				Serial.println("message is null");
 				//this can't happen, we've already check if the message is empty
 				return;
 			break;
 			case CommonValues::policyChange:
 				switch (msg.sensorType) {
 					case CommonValues::soilHumidityType:
+						Serial.println("soilHumidityType");
 						//if it's soil Humidity policy changes, send it to the lower layers
-						for (int i = 1; i< lowersIds.size()+1 ; i++) {
-							if (lowersIds.get(i) != CommonValues::lowerLayerConsumptionAdress) {
+						for (int i = 1; i<= lowersIds.size() ; i++) {
+							if (i != CommonValues::lowerLayerConsumptionAdress) {
 								Serial.print("GreenHouseMiddleLayer, sending new thresholds to address ");
 								Serial.println(i);
 								prepareMessage(msg, i);

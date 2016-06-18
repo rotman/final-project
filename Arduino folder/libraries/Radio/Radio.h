@@ -12,7 +12,7 @@ class Radio : public ICommunicationable{
 public:
 	void initCommunication (int, int);
 	bool sendMessage(Message&);
-	Message& receiveMessage();
+	void receiveMessage(Message&);
 private:
 	RF24* radio = new RF24(7,8);
 

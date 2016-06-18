@@ -14,13 +14,13 @@ class GreenHouseLowerLayer : public LowerLayer<Message>{
 		 void initLayer(int);
 		 void analyze();
 		 void decodeMessage(Message&);
-		 Message& prepareMessage(Message&, int);
+		 void prepareMessage(Message&, int);
 
 		 void initDataArrays();
 		 float doAverage(LinkedList<float>);
 		 Message& prepareDataMessage(float, char);
 		 void sendMessage(Message&);
-		 Message& receiveMessage();
+		 void receiveMessage(Message&);
 	private:
 		int address;
 		unsigned long currentMillis;

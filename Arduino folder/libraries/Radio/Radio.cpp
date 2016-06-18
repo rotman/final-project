@@ -38,17 +38,17 @@ bool Radio::sendMessage(Message &message) {
 	return ok;
 }
 
-Message& Radio::receiveMessage() {
-	Message message;
+void Radio::receiveMessage(Message& message) {
 	if (radio->available()){
 		radio->read(&message, sizeof(message));
 		Serial.print("recived message: the data is:");
 		Serial.println(message.sensorType);
 		Serial.println(message.data);
+		Serial.println(message.additionalData);
+		Serial.println(message.dest);
 	}
 	else {
 		Serial.println("nothing to read");
 		message.sensorType = 'z';
 	}
-		return message;
 }

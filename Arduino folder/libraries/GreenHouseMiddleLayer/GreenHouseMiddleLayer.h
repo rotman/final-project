@@ -22,9 +22,9 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 		void initLayer(int);
 		void analyze();
 		void decodeMessage(Message&);
-		Message& prepareMessage(Message&, int);
+		void prepareMessage(Message&, int);
 		void sendMessage(Message&);
-		Message& receiveMessage();
+		void receiveMessage(Message&);
 		
 	private:
 	

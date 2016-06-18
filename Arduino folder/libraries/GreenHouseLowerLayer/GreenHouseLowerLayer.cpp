@@ -2,10 +2,11 @@
 
 void GreenHouseLowerLayer::sendMessage(Message& message) {
 	communicationList.get(0)->sendMessage(message);
-};
-Message& GreenHouseLowerLayer::receiveMessage() {
-	return communicationList.get(0)->receiveMessage();
-};
+}
+
+void GreenHouseLowerLayer::receiveMessage(Message& message) {
+	communicationList.get(0)->receiveMessage(message);
+}
 
 void GreenHouseLowerLayer::initLayer(int address) {
 	this->address = address;
@@ -180,10 +181,9 @@ void GreenHouseLowerLayer::decodeMessage(Message& message){
 	}
 }
 
-Message& GreenHouseLowerLayer::prepareMessage(Message& message, int address) {
+void GreenHouseLowerLayer::prepareMessage(Message& message, int address) {
 	message.source = this->address;
 	message.dest = address;
-	return message;
 }
 
 

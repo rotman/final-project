@@ -7,7 +7,6 @@
 //globals
 //-------
 GreenHouseLowerLayer lowerLayer;
-Radio* radio;
 
 //sensors
 Sensor * tempHumidity;
@@ -56,10 +55,9 @@ void createAndAddActuators() {
 void setup() {
   Serial.println("setup()");
   initConsole();
-  lowerLayer.initLayer(CommonValues::middleLayerAddress);
+  lowerLayer.initLayer(CommonValues::lowerLayerAddress2);
   createAndAddSensors();
   createAndAddActuators();
-  radio = (Radio*)lowerLayer.getCommunicationArray().get(0);
 }
 
 void loop() {
@@ -68,8 +66,9 @@ void loop() {
   //lowerLayer.analyze();
   
   //handle with received messages
-  Message messageToRead = radio->receiveMessage();
-  lowerLayer.decodeMessage(messageToRead);
+  Message message;
+  lowerLayer.receiveMessage(message);
+  lowerLayer.decodeMessage(message);
   
   delay(3000);
 }
