@@ -21,7 +21,7 @@ class GreenHouseHighLayer : public HighLayer<Message> {
 private:
 		GreenHouseHighLayerData greenHouseData[CommonValues::amountOfGreenHouses];
 		GreenHouseHighLayerThresholds greenHouseThresholds[CommonValues::amountOfGreenHouses];
-
+		int address;
 public:
 		/*Layer methods*/
 		~GreenHouseHighLayer() {}
