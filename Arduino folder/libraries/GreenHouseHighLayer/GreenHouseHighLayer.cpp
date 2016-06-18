@@ -3,6 +3,8 @@
 void GreenHouseHighLayer::initLayer(int address) {
 	int i;
 
+	this->address = address;
+
 	//initialize greenhouse data
 	for (i = 0 ; i < CommonValues::amountOfGreenHouses ; i++ ) {
 			greenHouseData[i].setId(101 + i) ;
@@ -46,13 +48,11 @@ void GreenHouseHighLayer::decodeMessage(Message & message) {
   int i = this->findGreenHouseDataIndex(greenhouseId);
   float data;
   if (CommonValues::amountOfGreenHouses == i) {
-    Serial.print("wrong id");
     return;
   }
 
 	switch(message.messageType) {
 		case CommonValues::emergencyType:
-
 			break;
 		case CommonValues::dataType:
 			DateTime dateTime = message.dateTime;
@@ -185,8 +185,8 @@ void GreenHouseHighLayer::getNewSettings() {
 
 			messageArr[3].sensorType = CommonValues::lightType;
 			messageArr[3].messageType = CommonValues::policyChange;
-
-			//iterate through the thresholds list
+			//
+			// //iterate through the thresholds list
 			for (j = 0 ; j < this->greenHouseThresholds[index].getValuesSize() ; j++ ) {
 				ThresholdsValue value = this->greenHouseThresholds[index].getValue(j);
 				if (value.name == "air_humidity_min") {
