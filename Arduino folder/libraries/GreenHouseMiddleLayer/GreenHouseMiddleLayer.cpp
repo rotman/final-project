@@ -11,10 +11,10 @@
 }*/
 
 void GreenHouseMiddleLayer::sendMessage(Message& message) {
-	radio.sendMessage(message);
+	communicationList.get(0)->sendMessage(message);
 };
 Message& GreenHouseMiddleLayer::receiveMessage() {
-	return radio.receiveMessage();
+	return communicationList.get(0)->receiveMessage();
 };
 
 void GreenHouseMiddleLayer::initLayer(int address) {
@@ -27,9 +27,9 @@ void GreenHouseMiddleLayer::initLayer(int address) {
 	addLowerId(CommonValues::lowerLayerAddress2);
 	addLowerId(CommonValues::lowerLayerConsumptionAdress);	//maybe remove the consumption layer from the low layers array
 	//init radio
-	//ICommunicationable* radio = new Radio();
-	radio.initCommunication(this->address, CommonValues::lowerLayerAddress1);
-	//communicationList.add(radio);
+	ICommunicationable* radio = new Radio();
+	radio->initCommunication(this->address, CommonValues::lowerLayerAddress1);
+	communicationList.add(radio);
 	initDataArrays();
 
 	//more inits here

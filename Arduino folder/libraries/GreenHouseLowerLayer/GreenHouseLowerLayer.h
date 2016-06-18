@@ -25,7 +25,6 @@ class GreenHouseLowerLayer : public LowerLayer<Message>{
 		int address;
 		unsigned long currentMillis;
 		unsigned long previousMillis;
-		Radio radio;
 		
 		//lower layer data
 		LinkedList<float> temperatureData;

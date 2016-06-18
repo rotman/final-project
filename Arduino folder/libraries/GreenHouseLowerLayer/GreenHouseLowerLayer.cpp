@@ -1,10 +1,10 @@
 #include <GreenHouseLowerLayer.h>
 
 void GreenHouseLowerLayer::sendMessage(Message& message) {
-	radio.sendMessage(message);
+	communicationList.get(0)->sendMessage(message);
 };
 Message& GreenHouseLowerLayer::receiveMessage() {
-	return radio.receiveMessage();
+	return communicationList.get(0)->receiveMessage();
 };
 
 void GreenHouseLowerLayer::initLayer(int address) {
@@ -12,9 +12,9 @@ void GreenHouseLowerLayer::initLayer(int address) {
 	Serial.print(this->address);
 	Serial.println();
 	previousMillis = 0;
-	//ICommunicationable* radio = new Radio();
-	radio.initCommunication(this->address, CommonValues::middleLayerAddress);
-	//communicationList.add(radio);
+	ICommunicationable* radio = new Radio();
+	radio->initCommunication(this->address, CommonValues::middleLayerAddress);
+	communicationList.add(radio);
 	initDataArrays();
 	//more inits here , think maybe to move the inits to relevant constractors
 }
