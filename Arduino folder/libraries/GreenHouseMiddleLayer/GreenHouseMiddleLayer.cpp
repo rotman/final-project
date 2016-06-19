@@ -128,8 +128,8 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 		//do nothing the message is empty
 		return;
 	}
-	DateTime dateTime;
-	msg.dateTime = clock.createDateTime();             //add time to message
+	/*DateTime dateTime;
+	msg.dateTime = clock.createDateTime();             //add time to message*/
 	if (msg.dest != CommonValues::middleLayerAddress) {
 		Serial.println("message is not for me");
 		communicationList.get(0)->sendMessage(msg);	
@@ -217,15 +217,15 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 					break;
 					case CommonValues::temperatureType:
 						temperatureData.add(msg);
-						isTemperatureReadyToAnalyze = (isArrayFullAndUnique(temperatureData) && isTimeConsistency(temperatureData, 5));
+						isTemperatureReadyToAnalyze = (isArrayFullAndUnique(temperatureData) && isTimeConsistency(temperatureData, CommonValues::minutesInInterval));
 					break;
 					case CommonValues::humidityType:
 						humidityData.add(msg);
-						isHumidityReadyToAnalyze = (isArrayFullAndUnique(humidityData) && isTimeConsistency(temperatureData, 5));
+						isHumidityReadyToAnalyze = (isArrayFullAndUnique(humidityData) && isTimeConsistency(temperatureData, CommonValues::minutesInInterval));
 					break;
 					case CommonValues::lightType:
 						lightData.add(msg);
-						isLightReadyToAnalyze = (isArrayFullAndUnique(lightData) && isTimeConsistency(temperatureData, 5));
+						isLightReadyToAnalyze = (isArrayFullAndUnique(lightData) && isTimeConsistency(temperatureData, CommonValues::minutesInInterval));
 					break;
 				}
 			break;
@@ -235,14 +235,23 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 	}
 }
 
-//TODO
 bool GreenHouseMiddleLayer::isTimeConsistency(LinkedList<Message>& data, int minutes) {
 	unsigned long interval = minutes*CommonValues::minute;
 	for (int i = 0; i<data.size(); i++) {
 		for (int j = 1; j<data.size(); j++) {
-			
+			if ((GreenHouseMiddleLayer::convertDateTimeToMillis(data.get(i).dateTime) - convertDateTimeToMillis(data.get(j).dateTime)) > interval) {
+				return false;
+			}
 		}
 	}
+	return true;
+}
+
+unsigned long GreenHouseMiddleLayer::convertDateTimeToMillis(DateTime dateTime) {
+	unsigned long millis = (dateTime.seconds*1000) + (dateTime.minutes*60000) + (dateTime.hours*3600000) + 
+		(dateTime.date*86400000) + (dateTime.month*2629746000) + (dateTime.year*31556952000);
+	Serial.println(millis);
+	return millis;
 }
 
 bool GreenHouseMiddleLayer::isArrayFullAndUnique(LinkedList<Message>& data) {

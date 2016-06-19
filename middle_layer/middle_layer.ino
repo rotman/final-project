@@ -6,8 +6,8 @@
 //globals
 //-------
 GreenHouseMiddleLayer middleLayer;
-RF24 radio(CommonValues::radioPin1 , CommonValues::radioPin2);
-Message message;
+DateTime mockDate;
+
 
 //actuators
 Actuator * fan1Actuator;
@@ -52,14 +52,32 @@ void setup() {
   initConsole();
   middleLayer.initLayer(CommonValues::middleLayerAddress);
   createAndAddActuators();
+  mockDate.year = 88;
+  mockDate.month = 11;
+  mockDate.date = 26;
+  mockDate.minutes = 55;
+  mockDate.hours = 16;
+  mockDate.seconds = 55;
+
 }
 
 
 void loop() {
   Serial.println("loop()");
-  message = middleLayer.receiveMessage();
-  middleLayer.decodeMessage(message);
   
-  delay(middleLayer.getLoopTime());
+  Message message;
+  middleLayer.receiveMessage(message);
+  message.dateTime = mockDate;
+  middleLayer.decodeMessage(message);
+
+//   Message msg;
+// msg.sensorType = CommonValues::temperatureType;
+// msg.messageType = CommonValues::dataType;
+// msg.dateTime = mockDate;
+// msg.data = 34.34;
+// middleLayer.prepareMessage(msg, CommonValues::highLayerAddress); 
+//  middleLayer.sendMessage(msg);
+
+  delay(3000);
 
 }

@@ -62,13 +62,15 @@ void setup() {
 
 void loop() {
   Serial.println("loop()");
-  //analyze the data from all the sensors
-  //lowerLayer.analyze();
+  
+  Message message;
+  lowerLayer.prepareDataMessage(message, 30.123, CommonValues::soilHumidityType);
+  message.action = STEAMER;
+  lowerLayer.sendMessage(message);
   
   //handle with received messages
-  Message message;
-  lowerLayer.receiveMessage(message);
-  lowerLayer.decodeMessage(message);
+//  lowerLayer.receiveMessage(message);
+//  lowerLayer.decodeMessage(message);
   
   delay(3000);
 }

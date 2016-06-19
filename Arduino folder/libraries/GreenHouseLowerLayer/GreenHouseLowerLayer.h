@@ -18,7 +18,7 @@ class GreenHouseLowerLayer : public LowerLayer<Message>{
 
 		 void initDataArrays();
 		 float doAverage(LinkedList<float>);
-		 Message& prepareDataMessage(float, char);
+		 void prepareDataMessage(Message&, float, char);
 		 void sendMessage(Message&);
 		 void receiveMessage(Message&);
 	private:
