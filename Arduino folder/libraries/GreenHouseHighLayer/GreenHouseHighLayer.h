@@ -14,6 +14,7 @@
 #include <Radio.h>
 #include <float.h>
 #include <DateTime.h>
+#include <Actions.h>
 
 
 class GreenHouseHighLayer : public HighLayer<Message> {
@@ -28,8 +29,8 @@ public:
 		void initLayer(int);
 		void analyze();
 		void decodeMessage(Message&);
-		Message& prepareMessage(Message&, int);
-		Message recieveRFMessage();
+		void prepareMessage(Message&, int);
+		void recieveRFMessage(Message&);
 		int findGreenHouseDataIndex(int id);
 		int findGreenHouseThresholdsIndex(int id);
 		void sendDataToServer(JsonObject& json);
