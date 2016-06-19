@@ -7,7 +7,7 @@
 //globals
 //-------
 GreenHouseLowerLayer lowerLayer;
-Radio* radio;
+Message* messageToRead;
 
 //sensors
 Sensor * tempHumidity;
@@ -17,7 +17,7 @@ Sensor * light;
 //actuators
 Actuator * pump;
 
-//pins  
+//pins
 int tempHumidityPin = CommonValues::tempHumidityPin;
 int soilPin = CommonValues::soilPin;
 int lightPin = CommonValues::lightPin;
@@ -41,6 +41,7 @@ void createAndAddSensors() {
   soil= new SSoil(CommonValues::soil1SensorId, soilPin);              //create new soil sensor instanse
   Serial.println("Ssoil created");
 
+    
   lowerLayer.addSensor(tempHumidity);
   lowerLayer.addSensor(soil);
   lowerLayer.addSensor(light);
@@ -64,9 +65,11 @@ void setup() {
 void loop() {
   Serial.println("loop()");
   //analyze the data from all the sensors
-  lowerLayer.analyze();
-  
+    lowerLayer.analyze(); 
+     
   //handle with received messages
- 
+ // messageToRead = lowerLayer.receiveMessage();
+  //lowerLayer.decodeMessage(*messageToRead);
+  
   delay(lowerLayer.getLoopTime());
 }

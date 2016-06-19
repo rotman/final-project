@@ -35,12 +35,13 @@ class Sensorable {
 				T newMessage;
 				if (sensorsArray.get(i)->getId() == CommonValues::humidityTemperatureSensorId) {
 					newMessage = sensorsArray.get(i)->readSensorData(true);
+					messages.add(newMessage);
 				}
-				else {
-					newMessage = sensorsArray.get(i)->readSensorData(false);
-				}
+				newMessage = sensorsArray.get(i)->readSensorData(false);
 				messages.add(newMessage);
 			}
+			Serial.print("messages list: ");
+			Serial.println(messages.size());
 			return messages;
 		}
 		

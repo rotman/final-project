@@ -11,8 +11,8 @@
 class Radio : public ICommunicationable{
 public:
 	void initCommunication (int, int);
-	bool sendMessage(Message&);
-	void receiveMessage(Message&);
+	bool sendMessage(Message);
+	void receiveMessage(Message& message);
 private:
 	RF24* radio = new RF24(7,8);
 

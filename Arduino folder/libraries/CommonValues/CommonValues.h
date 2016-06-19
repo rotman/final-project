@@ -25,19 +25,19 @@ class CommonValues {
 		static const int waterFlowSensorId			 = 6;
 
 
-		//pins
+		//pin
 		static const int radioPin1 = 7;
 		static const int radioPin2 = 8;
 		static const int tempHumidityPin = 2;
-		//static const int soilPin = A0;
-		//tatic const int lightPin = A2;
+		static const int soilPin = A0;
+		static const int lightPin = A1;
 		static const int pumpPin = 5;
 		static const int fan1Pin = 3;
 		static const int fan2Pin = 4;
 		static const int steamPin = 6;
 		static const int heatPin = 9;
-		static const int currentConsumptionPin = 9;
-		static const int waterConsumptionPin = 9;
+		static const int currentConsumptionPin = A2;
+		static const int waterConsumptionPin = A3;
 		static const int higherLayerRadioPin1 = 2;
 		static const int higherLayerRadioPin2 = 15;
 
@@ -58,8 +58,8 @@ class CommonValues {
 		static const char currentType = 'C';
 		static const char waterType = 'W';
 
-
-		static const int producersSize = 3;
+		static const int DefaultloopTime = 2000;
+		static const int producersSize = 1;
 		static const int lowerLayerRegisteredNum = 2;
 		static const int EMERGENCY_TEMPERATURE = 40;
 

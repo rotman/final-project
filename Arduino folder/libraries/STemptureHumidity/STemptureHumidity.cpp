@@ -167,15 +167,20 @@ Message STemptureHumidity::readSensorData(bool isHumidity) {
 		message.sensorType = 'H';
 		if (read()) {
 			result = dat[0];
+			Serial.print("humidity:");
+			Serial.println(result, DEC);
 		}
 	}
 	else {
 		message.sensorType = 'T';
 		if (read()) {
 			result = dat[2];
+			Serial.print("temperture:");
+			Serial.println(result, DEC);
 		}
 	}
 	message.data = result;		//enter the data
+	
 	return message;
 }
 

@@ -14,7 +14,7 @@ void GreenHouseMiddleLayer::sendMessage(Message& message) {
 	communicationList.get(0)->sendMessage(message);
 };
 void GreenHouseMiddleLayer::receiveMessage(Message& message) {
-	return communicationList.get(0)->receiveMessage(message);
+	 communicationList.get(0)->receiveMessage(message);
 };
 
 void GreenHouseMiddleLayer::initLayer(int address) {
@@ -123,12 +123,12 @@ void GreenHouseMiddleLayer::analyze() {
 }
 
 void GreenHouseMiddleLayer::decodeMessage(Message& msg) {	
-	if ('z' == msg.sensorType) {
+	if (CommonValues::emptyMessage == msg.sensorType) {
 		Serial.println("message is null");
 		//do nothing the message is empty
 		return;
 	}
-	/*DateTime dateTime;
+	DateTime dateTime;
 	msg.dateTime = clock.createDateTime();             //add time to message*/
 	if (msg.dest != CommonValues::middleLayerAddress) {
 		Serial.println("message is not for me");

@@ -13,25 +13,28 @@ void Radio::initCommunication(int readingAddress, int writingAddress) {
 	radio->startListening();
 }
 
-bool Radio::sendMessage(Message &message) {
-	radio->openWritingPipe(message.dest); // open pipe for current destination
+bool Radio::sendMessage(Message message) {
+	radio->openWritingPipe(message.dest);				// open pipe for current destination
     bool ok = false;
-    int iteration = 0;
-    int delayMili = 0;
+    int iteration = 0;									//
+    int delayMili = 0;									//this will be the time waiting for re sending a messege that failed.
     ExponentialBackoff exponentialBackoff(5);
-    radio->stopListening();
-    while(!ok && delayMili != -1){  //if message fails
+    radio->stopListening();							     //if you listen , you cant talk...
+    while(!ok && delayMili != -1){						
 		ok =  radio->write(&message, sizeof(message));
         if(ok)
 			Serial.println("send success");
 
-        else {
+        else {											 //if message fails
 			Serial.println("send failed backing off");
             delayMili = exponentialBackoff.getDelayTime(++iteration);
             if(delayMili >= 0)
               delay(delayMili);
-            else break;
-            //send failed (max retries)  TODO
+			else {
+				Serial.println("send failed (max retries)");
+				break;
+					//send failed (max retries)  TODO
+			}
         }
     }
     radio->startListening();
@@ -39,6 +42,7 @@ bool Radio::sendMessage(Message &message) {
 }
 
 void Radio::receiveMessage(Message& message) {
+	//Message* message = new Message();
 	if (radio->available()){
 		radio->read(&message, sizeof(message));
 		Serial.print("recived message: the data is:");
@@ -49,6 +53,7 @@ void Radio::receiveMessage(Message& message) {
 	}
 	else {
 		Serial.println("nothing to read");
-		message.sensorType = 'z';
+		message.sensorType = CommonValues::emptyMessage;
 	}
+	
 }

@@ -1,6 +1,7 @@
 #include <GreenHouseLowerLayer.h>
 
 void GreenHouseLowerLayer::sendMessage(Message& message) {
+	Serial.println("GreenHouseLowerLayer::sendMessage");
 	communicationList.get(0)->sendMessage(message);
 }
 
@@ -17,6 +18,7 @@ void GreenHouseLowerLayer::initLayer(int address) {
 	radio->initCommunication(this->address, CommonValues::middleLayerAddress);
 	communicationList.add(radio);
 	initDataArrays();
+	setLoopTime(CommonValues::DefaultloopTime);
 	//more inits here , think maybe to move the inits to relevant constractors
 }
 
@@ -30,8 +32,9 @@ void GreenHouseLowerLayer::initDataArrays() {
 }
 
 void GreenHouseLowerLayer::analyze() {
-	LinkedList<Message> sensorsData = readSensorsData();
-	if (this->address == CommonValues::lowerLayerConsumptionAdress) {
+	Serial.println("analyze");
+	LinkedList<Message> sensorsData = readSensorsData(); //read all sensors and put in list
+	if (this->address == CommonValues::lowerLayerConsumptionAdress) { //am i the consumtion layer?
 		currentMillis = millis();
 		for (int i = 0; i < sensorsData.size(); i++) {
 			switch (sensorsData.get(i).sensorType) {
@@ -60,8 +63,13 @@ void GreenHouseLowerLayer::analyze() {
 			previousMillis = currentMillis;
 		}
 	}
-	else {
-		for (int i = 0; i < sensorsData.size(); i++) {
+	else {	//i am not the Consumption layer, im a regular lower layer
+		for (int i = 0; i < sensorsData.size(); ++i) {
+			Serial.print("sensorsData size:");
+			Serial.println(sensorsData.size());
+
+			Serial.print("sensor type:");
+			Serial.println(sensorsData.get(i).sensorType);
 			switch (sensorsData.get(i).sensorType) {
 				case CommonValues::temperatureType:
 					//this is emergency state - send message to middle layer immidietly
@@ -92,17 +100,18 @@ void GreenHouseLowerLayer::analyze() {
 						float average = doAverage(airHumidityData);
 						Message newMessage;
 						prepareDataMessage(newMessage, average, CommonValues::humidityType);
-						communicationList.get(0)->sendMessage(newMessage);
+						sendMessage(newMessage);
 						//clear array after doing average
 						airHumidityData.clear();
 					}
+
 				break;
 				case CommonValues::soilHumidityType:
 					Message newMessage;
 					//before doing average, check if need to actuate first
 					if (sensorsData.get(i).data <= CommonValues::soilHumidityThresholdMin) {
 						Serial.println("GreenHouseLowerLayer, actuate needed");
-						for (int i = 0; i<actuatorsArray.size() ; i++) {
+						for (int i = 0; i<actuatorsArray.size() ; ++i) {
 							if (actuatorsArray.get(i)->getPin() == CommonValues::soilPin) {
 								actuatorsArray.get(i)->actuate(true);
 								Serial.println("GreenHouseLowerLayer, PUMP1 actuate");									
@@ -124,7 +133,6 @@ void GreenHouseLowerLayer::analyze() {
 						communicationList.get(0)->sendMessage(newMessage);
 						//clear array after doing average
 						soilHumidityData.clear();
-
 					}
 				break;
 				case CommonValues::lightType:
@@ -138,7 +146,6 @@ void GreenHouseLowerLayer::analyze() {
 						//clear array after doing average
 						lightData.clear();
 					}
-
 				break;			
 			}
 		}
@@ -157,17 +164,17 @@ void GreenHouseLowerLayer::prepareDataMessage(Message& message, float data, char
 	prepareMessage(message, CommonValues::middleLayerAddress);
 }
 
-float GreenHouseLowerLayer::doAverage(LinkedList<float> data) {
+float GreenHouseLowerLayer::doAverage(LinkedList<float>& data) {
 	float average;
 	for (int i = 0 ; i<data.size();i++) {
 		average+=data.get(i);
 	}
 	average = average/data.size();
 	return average;
-}
+}	
 
 void GreenHouseLowerLayer::decodeMessage(Message& message){
-	if ('z' == message.sensorType) {
+	if (CommonValues::emptyMessage == message.sensorType) {
 		//do nothing the message is empty
 		return;
 	}

@@ -6,7 +6,7 @@
 //globals
 //-------
 GreenHouseMiddleLayer middleLayer;
-DateTime mockDate;
+
 
 
 //actuators
@@ -52,32 +52,15 @@ void setup() {
   initConsole();
   middleLayer.initLayer(CommonValues::middleLayerAddress);
   createAndAddActuators();
-  mockDate.year = 88;
-  mockDate.month = 11;
-  mockDate.date = 26;
-  mockDate.minutes = 55;
-  mockDate.hours = 16;
-  mockDate.seconds = 55;
-
 }
 
 
 void loop() {
   Serial.println("loop()");
-  
   Message message;
   middleLayer.receiveMessage(message);
-  message.dateTime = mockDate;
   middleLayer.decodeMessage(message);
-
-//   Message msg;
-// msg.sensorType = CommonValues::temperatureType;
-// msg.messageType = CommonValues::dataType;
-// msg.dateTime = mockDate;
-// msg.data = 34.34;
-// middleLayer.prepareMessage(msg, CommonValues::highLayerAddress); 
-//  middleLayer.sendMessage(msg);
-
-  delay(3000);
+  delay(middleLayer.getLoopTime());
+ 
 
 }
