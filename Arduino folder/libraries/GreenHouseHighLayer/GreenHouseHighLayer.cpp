@@ -44,6 +44,8 @@ int GreenHouseHighLayer::findGreenHouseThresholdsIndex(int id) {
 }
 
 void GreenHouseHighLayer::decodeMessage(Message & message) {
+
+
   int greenhouseId = message.source;
   int i = this->findGreenHouseDataIndex(greenhouseId);
   float data;
@@ -55,31 +57,67 @@ void GreenHouseHighLayer::decodeMessage(Message & message) {
 		case CommonValues::emergencyType:
 			break;
 		case CommonValues::dataType:
+			if (message.action != NONE) {
+				StaticJsonBuffer<500> jsonBuffer;
+				JsonObject& root = jsonBuffer.createObject();
+				root["greenhouse"] = greenhouseId;
+				JsonObject& dateTime = root.createNestedObject("time");
+				dateTime["year"] = message.dateTime.year;
+				dateTime["month"] = message.dateTime.month;
+				dateTime["date"] = message.dateTime.date;
+				dateTime["hour"] = message.dateTime.hours;
+				dateTime["minutes"] = message.dateTime.minutes;
+				dateTime["seconds"] = message.dateTime.seconds;
+
+				switch(message.action) {
+					case PUMP1:
+						root["action"] = "pump1";
+						break;
+					case PUMP2:
+						root["action"] = "pump2";
+						break;
+					case FAN:
+						root["action"] = "fan";
+						break;
+					case LIGHT:
+						root["action"] = "light";
+						break;
+					case HEATER:
+						root["action"] = "heater";
+						break;
+					case STEAMER:
+						root["action"] = "steamer";
+						break;
+				}
+
+				this->communicationList.get(1)->sendMessage(root,"/actions.php");
+			}
+
 			DateTime dateTime = message.dateTime;
 		  switch(message.sensorType) {
 		      case CommonValues::temperatureType:
 		        data = message.data;
-		        greenHouseData[i].updateValue(String("temperature"),data,dateTime);
+		        greenHouseData[i].updateValue("temperature",data,dateTime);
 		        break;
 		      case CommonValues::humidityType:
 		        data = message.data;
-		        greenHouseData[i].updateValue(String('airHumidity'),data,dateTime);
+		        greenHouseData[i].updateValue("airHumidity",data,dateTime);
 		        break;
 		      case CommonValues::lightType:
 		        data = message.data;
-		        greenHouseData[i].updateValue(String('luminance'),data,dateTime);
+		        greenHouseData[i].updateValue("luminance",data,dateTime);
 		        break;
 		      case CommonValues::soilHumidityType:
 		        data = message.data;
-		        greenHouseData[i].updateValue(String('soilHumidity'),data,dateTime);
+		        greenHouseData[i].updateValue("soilHumidity",data,dateTime);
 		        break;
 					case CommonValues::currentType:
 						data = message.data;
-						greenHouseData[i].updateValue(String('current'),data,dateTime);
+						greenHouseData[i].updateValue("current",data,dateTime);
 						break;
 					case CommonValues::waterType:
 						data = message.data;
-						greenHouseData[i].updateValue(String('water'),data,dateTime);
+						greenHouseData[i].updateValue("water",data,dateTime);
 						break;
 		      default:
 		        break;
@@ -90,14 +128,13 @@ void GreenHouseHighLayer::decodeMessage(Message & message) {
 
 }
 
-Message& GreenHouseHighLayer::prepareMessage(Message & message , int address) {
+void GreenHouseHighLayer::prepareMessage(Message & message , int address) {
 	message.source = CommonValues::highLayerAddress;
 	message.dest = address;
-	return message;
 }
 
-Message GreenHouseHighLayer::recieveRFMessage() {
-  return this->communicationList.get(0)->receiveMessage();
+void GreenHouseHighLayer::recieveRFMessage(Message& message) {
+   this->communicationList.get(0)->receiveMessage(message);
 };
 
 void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
@@ -114,6 +151,7 @@ void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
       for (j = 0 ; j < this->greenHouseData[i].getValuesSize() ; j++ ) {
           DataValue data = this->greenHouseData[i].getValue(j);
           JsonObject& jsonData = dataArray.createNestedObject();
+
           jsonData["key"] = data.name;
           jsonData["value"] = data.value;
 
@@ -132,27 +170,32 @@ void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
 }
 
 void GreenHouseHighLayer::getNewSettings() {
+	Serial.println("getting new settings");
   int i,j;
 	Message messageArr[4];
 	String name;
 	float value;
 
+	//for every greenhouse check if it settings has changed
   for (i = 0; i < CommonValues::amountOfGreenHouses; i++ ){
     int greenhouse = this->greenHouseData[i].getId();
     int index;
     String response;
     String url = "/options-updated.php?greenhouse=";
     url += greenhouse ;
+
+		//get the last time the settings updated from the server
     String last_updated = this->communicationList.get(1)->receiveMessage(url);
 
     index = this->findGreenHouseThresholdsIndex(greenhouse);
 
+		//if the settings has changed from the last time we checked
     if (last_updated != this->greenHouseThresholds[index].getLastUpdated()) {
-      Serial.print("greeenhouse number ");
-      Serial.print(greenhouse);
-      Serial.print(" changed \n");
 
+			//set the time of the last updated settings
       this->greenHouseThresholds[index].setLastUpdated(last_updated);
+
+			//get the latest settins from the server
       url = "/options.php?greenhouse=";
       url += greenhouse ;
       response = this->communicationList.get(1)->receiveMessage(url);
@@ -167,6 +210,7 @@ void GreenHouseHighLayer::getNewSettings() {
 
       JsonObject& options = root["options"];
 
+			//update the thresholds in the layer memory
       for(JsonObject::iterator it=options.begin(); it!=options.end(); ++it) {
         this->greenHouseThresholds[index].updateValue(it->key,it->value);
       }
@@ -185,8 +229,8 @@ void GreenHouseHighLayer::getNewSettings() {
 
 			messageArr[3].sensorType = CommonValues::lightType;
 			messageArr[3].messageType = CommonValues::policyChange;
-			//
-			// //iterate through the thresholds list
+
+			//iterate through the thresholds list
 			for (j = 0 ; j < this->greenHouseThresholds[index].getValuesSize() ; j++ ) {
 				ThresholdsValue value = this->greenHouseThresholds[index].getValue(j);
 				if (value.name == "air_humidity_min") {
@@ -215,7 +259,8 @@ void GreenHouseHighLayer::getNewSettings() {
 				}
 			}
 
-			//send the messages
+			Serial.println("sending messages: ");
+			//send the radio messages
 			for (j = 0 ; j < 4 ; j++ ) {
 				this->prepareMessage(messageArr[j],greenhouse);
 				this->communicationList.get(0)->sendMessage(messageArr[j]);
