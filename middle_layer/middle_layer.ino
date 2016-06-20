@@ -17,7 +17,7 @@ Actuator * steamerActuator;
 
 //pins
 int fan1Pin = CommonValues::fan1Pin;
-int fan2Pin = CommonValues::fan2Pin;
+int fan2Pin = CommonValues::fan2Pin;  
 int lightPin = CommonValues::lightPin;
 int heatPin = CommonValues::heatPin;
 int steamPin = CommonValues::steamPin;

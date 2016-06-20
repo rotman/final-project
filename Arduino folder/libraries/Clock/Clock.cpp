@@ -118,13 +118,12 @@ float Clock::get3231Temp(){
 	return temp3231;
 }
 
-DateTime Clock::createDateTime() {
-	DateTime dt;
+void Clock::createDateTime(DateTime& dt) {
+	get3231Date();
 	dt.seconds = this->seconds;
 	dt.minutes = this->minutes;
 	dt.hours = this->hours;
 	dt.date = this->date;
 	dt.month = this->month;
 	dt.year = this->year;
-	return dt;
 }
