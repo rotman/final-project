@@ -65,6 +65,15 @@ class CommonValues {
 
 		static const unsigned long day	 = 86400000;  //24 hour
 		static const unsigned long minute= 60000;
+		static const unsigned long second = 1000;
+		
+		//actuators intervals
+		static const unsigned long fanTime = 10 * second;
+		static const unsigned long heatTime = 5 * second;
+		static const unsigned long steamTime = 7 * second;
+		static const unsigned long pumpTime = 3 * second;
+
+
 
 		//thresholds - not consts!
 		static float soilHumidityThresholdMin;

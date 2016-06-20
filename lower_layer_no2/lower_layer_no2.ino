@@ -8,7 +8,7 @@
 //globals
 //-------
 GreenHouseLowerLayer lowerLayer;
-Message* messageToRead;
+Message messageToRead;
 
 //sensors
 Sensor * tempHumidity;
@@ -25,33 +25,21 @@ int lightPin = CommonValues::lightPin;
 int pumpPin = CommonValues::pumpPin;
           
 void initConsole() {
-  Serial.println("initConsole()");
   while (!Serial);
   Serial.begin(9600);
 }
 
 void createAndAddSensors() {
-  Serial.println("createAndAddSensors()");
- 
   tempHumidity= new STemptureHumidity(CommonValues::humidityTemperatureSensorId, tempHumidityPin);              //create new temperature sensor instanse
-  Serial.println("STemptureHumidity created");
-
   light= new SLight(CommonValues::lightSensorId, lightPin);              //create new light sensor instanse
-  Serial.println("Slight created");
-
   soil= new SSoil(CommonValues::soil1SensorId, soilPin);              //create new soil sensor instanse
-  Serial.println("Ssoil created");
-
-    
   lowerLayer.addSensor(tempHumidity);
   lowerLayer.addSensor(soil);
   lowerLayer.addSensor(light);
 }
 
 void createAndAddActuators() {
-  Serial.println("createAndAddActuators()");
   pump = new GreenHouseActuator(CommonValues::pumpPin);
-  Serial.println("PumpActuator created");
   lowerLayer.addActuator(pump);
 }
 
@@ -64,15 +52,15 @@ void setup() {
 }
 
 void loop() {
-  Serial.println("loop()");
-  Serial.print("freeMemory()=");
+  Serial.print("loop() freeMemory()=");
   Serial.println(freeMemory());
+
   //analyze the data from all the sensors
   lowerLayer.analyze(); 
 
   //handle with received messages
-  //messageToRead = lowerLayer.receiveMessage();
-  //lowerLayer.decodeMessage(*messageToRead);
+  lowerLayer.receiveMessage(messageToRead);
+  lowerLayer.decodeMessage(messageToRead);
   
   delay(lowerLayer.getLoopTime());
 }

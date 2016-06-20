@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 #include <Actuator.h>
+#include <CommonValues.h>
+
 
 class GreenHouseActuator :public Actuator{
 	public:	
