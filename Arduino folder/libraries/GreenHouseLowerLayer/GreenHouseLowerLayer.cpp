@@ -18,7 +18,7 @@ void GreenHouseLowerLayer::initLayer(int address) {
 	radio->initCommunication(this->address, CommonValues::middleLayerAddress);
 	communicationList.add(radio);
 	//initDataArrays();/////////////////////////////////////
-	setLoopTime(CommonValues::DefaultloopTime);
+	setLoopTime(CommonValues::defaultLoopTime);
 	//more inits here , think maybe to move the inits to relevant constractors
 }
 /*void GreenHouseLowerLayer::initDataArrays() {
