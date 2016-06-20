@@ -2,10 +2,6 @@
 
 
 void Radio::initCommunication(int readingAddress, int writingAddress) {
-	Serial.print(" initCommunication() with readingAddress: ");
-	Serial.print(readingAddress);
-	Serial.print(" and writingAddress: ");
-	Serial.print(writingAddress);
 	radio->begin();
     radio->setRetries(15, 15); // default
     radio->openWritingPipe(writingAddress);
@@ -48,8 +44,8 @@ void Radio::receiveMessage(Message& message) {
 		Serial.print("recived message: the data is:");
 		Serial.println(message.sensorType);
 		Serial.println(message.data);
-		Serial.println(message.additionalData);
-		Serial.println(message.dest);
+	//	Serial.println(message.additionalData);
+	//	Serial.println(message.dest);
 	}
 	else {
 		Serial.println("nothing to read");

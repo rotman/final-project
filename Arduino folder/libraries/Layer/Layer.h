@@ -15,9 +15,7 @@ class Layer {
 		virtual void analyze() = 0;
 		virtual void decodeMessage(T&) = 0;
 		virtual void prepareMessage(T&, int) = 0;
-		Layer() {
-			communicationList = LinkedList<ICommunicationable*>();	
-		}
+		
 		void addCommunication(ICommunicationable* type) {
 			communicationList.add(type);
 		}
@@ -43,6 +41,7 @@ class Layer {
 	protected:
 		int loopTime;
 		LinkedList<ICommunicationable*> communicationList;
+		int maskjdhgf;
 };
 
 #endif

@@ -28,31 +28,30 @@ class Sensorable {
 			}
 		}
 		
-		LinkedList<T> readSensorsData() {
+		void readSensorsData(LinkedList<T>&	 sensorsData) {
 			Serial.println("Sensorable, readSensorsData()");
-			LinkedList<T> messages = LinkedList<T>();
 			for (int i = 0; i < sensorsArray.size(); i++) {
 				T newMessage;
 				if (sensorsArray.get(i)->getId() == CommonValues::humidityTemperatureSensorId) {
 					newMessage = sensorsArray.get(i)->readSensorData(true);
-					messages.add(newMessage);
+					sensorsData.add(newMessage);
 				}
 				newMessage = sensorsArray.get(i)->readSensorData(false);
-				messages.add(newMessage);
+				sensorsData.add(newMessage);
 			}
 			Serial.print("messages list: ");
-			Serial.println(messages.size());
-			return messages;
+			Serial.println(sensorsData.size());
 		}
 		
 		virtual void onSensorFail() {
 			Serial.println("Sensorable, onSensorFail()");
 		}
-
-	protected:
-		LinkedList<Sensor*> sensorsArray = LinkedList<Sensor*>();
-
-
+		/*LinkedList<T>& getSensorsData() {
+			return this->sensorsData;
+		}*/
+ 	protected:
+		LinkedList<Sensor*> sensorsArray;
+		//LinkedList<T> sensorsData = LinkedList<T>();
 };
 
 #endif

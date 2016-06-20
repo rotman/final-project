@@ -3,7 +3,6 @@
 #include <SLight.h>
 #include <SSoil.h>
 #include <GreenHouseActuator.h>
-
 //globals
 //-------
 GreenHouseLowerLayer lowerLayer;
@@ -17,7 +16,7 @@ Sensor * light;
 //actuators
 Actuator * pump;
 
-//pins
+  //pins    
 int tempHumidityPin = CommonValues::tempHumidityPin;
 int soilPin = CommonValues::soilPin;
 int lightPin = CommonValues::lightPin;
@@ -65,8 +64,8 @@ void setup() {
 void loop() {
   Serial.println("loop()");
   //analyze the data from all the sensors
-    lowerLayer.analyze(); 
-     
+  lowerLayer.analyze(); 
+
   //handle with received messages
  // messageToRead = lowerLayer.receiveMessage();
   //lowerLayer.decodeMessage(*messageToRead);

@@ -30,7 +30,7 @@ class MiddleLayer :public Layer<T>, public Actuatorable {
 
 
 protected:
-	LinkedList<int> lowersIds = LinkedList<int>();
+	LinkedList<int> lowersIds;
 };
 
 #endif

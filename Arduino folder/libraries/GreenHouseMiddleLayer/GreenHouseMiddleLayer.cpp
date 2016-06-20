@@ -30,18 +30,10 @@ void GreenHouseMiddleLayer::initLayer(int address) {
 	ICommunicationable* radio = new Radio();
 	radio->initCommunication(this->address, CommonValues::lowerLayerAddress1);
 	communicationList.add(radio);
-	initDataArrays();
 
 	//more inits here
 }
 
-void GreenHouseMiddleLayer::initDataArrays() {
-	temperatureData = LinkedList<Message>();
-	humidityData = LinkedList<Message>();
-	lightData = LinkedList<Message>();
-	currentData = LinkedList<Message>();
-	waterData = LinkedList<Message>();
-}
 
 void GreenHouseMiddleLayer::prepareMessage(Message& message, int add) {
 	message.source = this->address;
