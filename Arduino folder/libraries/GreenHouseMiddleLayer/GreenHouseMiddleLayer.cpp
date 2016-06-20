@@ -2,7 +2,7 @@
 
 
 bool GreenHouseMiddleLayer::updateDataAndCheckIfFull(LinkedList<Message>& list,Message& lastMessage){
-	//TODO
+	//TODO why the fuck i have a memory leak here?!?!?
 	//if (list.size() == 0) {					//for the first time
 	//	list.add(lastMessage);
 	//}
@@ -54,10 +54,15 @@ void GreenHouseMiddleLayer::prepareMessage(Message& message, int add) {
 
 float GreenHouseMiddleLayer::doAverage(LinkedList<Message>& messages) {
 	float average;
+	Serial.print(F("messages.size()"));
+
+	Serial.println(messages.size());
 	for (int i = 0 ; i<messages.size();++i) {
 		average+=messages.get(i).data;
 	}
 	average = average/messages.size();
+	Serial.print(F("returning av :"));
+	Serial.println(average);
 	return average;
 }
 
@@ -66,7 +71,9 @@ void GreenHouseMiddleLayer::analyze() {
 	float airHumidityAverage = 0;
 	float lightAverage = 0;
 	Message newMessage;
-	
+	DateTime dateTime;
+	clock.createDateTime(dateTime);
+	newMessage.dateTime = dateTime;	 //add time to message
 	//we have some data to analyze
 	if (isTemperatureReadyToAnalyze) {
 		Serial.println(F("in isTemperatureReadyToAnalyze"));
@@ -88,12 +95,14 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = temperatureAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::temperatureType;
-		if (sendMessage(newMessage))
-			isTemperatureReadyToAnalyze = false;	//now we need to wait for all new data 
+		if (sendMessage(newMessage)) {
+			//TODO handle if  message fails
+		}
 		else {
 			//TODO
 		}
 		//clear the array after done
+		isTemperatureReadyToAnalyze = false;
 		temperatureData.clear();
 	}
 	//we have some data to analyze
@@ -116,12 +125,14 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = airHumidityAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::humidityType;
-		if(sendMessage(newMessage))
-			isHumidityReadyToAnalyze = false;	//now we need to wait for all new data 
+		if (sendMessage(newMessage)) {
+			//TODO handle if  message fails
+		}
 		else {
 			//TODO
 		}
 		//clear the array after done
+		isHumidityReadyToAnalyze = false;
 		humidityData.clear();
 		Serial.print(F("after isHumidityReadyToAnalyze clear size is :"));
 		Serial.println(humidityData.size());
@@ -140,12 +151,14 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = lightAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::lightType;
-		if (sendMessage(newMessage))
-			isHumidityReadyToAnalyze = false;	//now we need to wait for all new data 
+		if (sendMessage(newMessage)) {
+			//TODO
+		}
 		else {
 			//TODO
 		}
 		//clear the array after done
+		isLightReadyToAnalyze = false;
 		lightData.clear();
 	}	
 	//TODO reduce duplicate code all above
@@ -159,7 +172,8 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 		return;
 	}
 	DateTime dateTime;
-	msg.dateTime = clock.createDateTime();				     //add time to message
+	clock.createDateTime(dateTime);
+	msg.dateTime = dateTime;	 //add time to message
 	if (msg.dest != CommonValues::middleLayerAddress) {		 //check if the message is for me
 		sendMessage(msg);			// if so, pass it on
 		return;

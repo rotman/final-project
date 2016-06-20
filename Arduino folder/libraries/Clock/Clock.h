@@ -35,7 +35,7 @@ public:
 	void set3231Date();
 	void get3231Date();
 	float get3231Temp();
-	DateTime createDateTime();
+	void createDateTime(DateTime&);
 };
 
 #endif
