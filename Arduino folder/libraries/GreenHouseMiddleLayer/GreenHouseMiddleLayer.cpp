@@ -2,18 +2,21 @@
 
 
 bool GreenHouseMiddleLayer::updateDataAndCheckIfFull(LinkedList<Message>& list,Message& lastMessage){
-	if (list.size() == 0) {					//for the first time
+	//TODO
+	//if (list.size() == 0) {					//for the first time
+	//	list.add(lastMessage);
+	//}
+	//else {
+	//	for (int i = 0; i < list.size(); ++i) {
+	//		if (list.get(i).source == lastMessage.source) {	//if arduino id exsist, overwrite the data
+	//			list.set(i, lastMessage);
+	//		}
+	//		else
+	//			list.add(lastMessage);						//else create it
+	//	}
+	//}
 		list.add(lastMessage);
-	}
-	else {
-		for (int i = 0; i < list.size(); ++i) {
-			if (list.get(i).source == lastMessage.source) {	//if arduino id exsist, overwrite the data
-				list.set(i, lastMessage);
-			}
-			else
-				list.add(lastMessage);						//else create it
-		}
-	}
+
 	if (list.size() == CommonValues::lowerLayerRegisteredNum)
 		return true;
 	else
@@ -66,12 +69,13 @@ void GreenHouseMiddleLayer::analyze() {
 	
 	//we have some data to analyze
 	if (isTemperatureReadyToAnalyze) {
+		Serial.println(F("in isTemperatureReadyToAnalyze"));
 		//calculate average
 		temperatureAverage = doAverage(temperatureData);
 		//check thresholds
 		if (temperatureAverage >= CommonValues::temperatureThresholdMax) {
 			actuate(CommonValues::fan1Pin);
-			actuate(CommonValues::fan2Pin);
+			actuate(CommonValues::fan2Pin);//TODO chsnge to vent
 			newMessage.action = FAN;
 		}
 		else if (temperatureAverage < CommonValues::temperatureThresholdMin) {
@@ -84,7 +88,7 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = temperatureAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::temperatureType;
-		if (communicationList.get(0)->sendMessage(newMessage))
+		if (sendMessage(newMessage))
 			isTemperatureReadyToAnalyze = false;	//now we need to wait for all new data 
 		else {
 			//TODO
@@ -94,6 +98,8 @@ void GreenHouseMiddleLayer::analyze() {
 	}
 	//we have some data to analyze
 	if (isHumidityReadyToAnalyze) {
+		Serial.println(F("in isHumidityReadyToAnalyze"));
+
 		//calculate average
 		airHumidityAverage = doAverage(humidityData);
 		//check thresholds
@@ -101,29 +107,40 @@ void GreenHouseMiddleLayer::analyze() {
 			actuate(CommonValues::steamPin);
 			newMessage.action = STEAMER;
 		}
+		else if(airHumidityAverage > CommonValues::airHumidityThresholdMax){
+			actuate(CommonValues::fan2Pin);
+			newMessage.action = VENT;
+		}
 		//prepare message and send to high layer
+		prepareMessage(newMessage, CommonValues::highLayerAddress);
 		newMessage.data = airHumidityAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::humidityType;
-		if(communicationList.get(0)->sendMessage(newMessage))
+		if(sendMessage(newMessage))
 			isHumidityReadyToAnalyze = false;	//now we need to wait for all new data 
 		else {
 			//TODO
 		}
-
 		//clear the array after done
-		temperatureData.clear();
+		humidityData.clear();
+		Serial.print(F("after isHumidityReadyToAnalyze clear size is :"));
+		Serial.println(humidityData.size());
+
+
 	}
 	if (isLightReadyToAnalyze) {
+		Serial.println(F("in isLightReadyToAnalyze"));
+
 		//calculate average
 		lightAverage = doAverage(lightData);
 		//TODO decide what to do with light thresholds
 		
 		//prepare message and send to high layer
+		prepareMessage(newMessage, CommonValues::highLayerAddress);
 		newMessage.data = lightAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::lightType;
-		if (communicationList.get(0)->sendMessage(newMessage))
+		if (sendMessage(newMessage))
 			isHumidityReadyToAnalyze = false;	//now we need to wait for all new data 
 		else {
 			//TODO
@@ -144,7 +161,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 	DateTime dateTime;
 	msg.dateTime = clock.createDateTime();				     //add time to message
 	if (msg.dest != CommonValues::middleLayerAddress) {		 //check if the message is for me
-		communicationList.get(0)->sendMessage(msg);			// if so, pass it on
+		sendMessage(msg);			// if so, pass it on
 		return;
 	}
 	//the message is from higer layer
@@ -158,7 +175,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						for (int i = 1; i<= lowersIds.size() ; ++i) {
 							if (i != CommonValues::lowerLayerConsumptionAdress) {
 								prepareMessage(msg, lowersIds.get(i));
-								communicationList.get(0)->sendMessage(msg);
+								sendMessage(msg);
 							}
 						}			
 					break;
@@ -199,7 +216,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 				actuate(CommonValues::fan1Pin);
 				actuate(CommonValues::fan2Pin);
 				prepareMessage(msg, CommonValues::highLayerAddress);
-				communicationList.get(0)->sendMessage(msg);	
+				sendMessage(msg);	
 			break;
 			case CommonValues::dataType:
 				switch (msg.sensorType) {
@@ -207,17 +224,17 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						//if it's soil Humidity data, send it to the high layer
 						//not using prepare message here because we want to know from which lower layer the data was sent
 						msg.dest = CommonValues::highLayerAddress;
-						communicationList.get(0)->sendMessage(msg);
+						sendMessage(msg);
 					break;
 					case CommonValues::currentType:
 						//if it's current consumption data, send it to the high layer
 						prepareMessage(msg, CommonValues::highLayerAddress);
-						communicationList.get(0)->sendMessage(msg);
+						sendMessage(msg);
 					break;
 					case CommonValues::waterType:
 						//if it's water consumption data, send it to the high layer
 						prepareMessage(msg, CommonValues::highLayerAddress);
-						communicationList.get(0)->sendMessage(msg);
+						sendMessage(msg);
 					break;
 					case CommonValues::temperatureType:						
 						isTemperatureReadyToAnalyze = ((updateDataAndCheckIfFull(temperatureData, msg)) && isTimeConsistency(temperatureData, CommonValues::minutesInInterval));

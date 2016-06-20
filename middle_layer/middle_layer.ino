@@ -28,6 +28,7 @@ void initConsole() {
   Serial.begin(9600);
 }
 
+
 void createAndAddActuators() { 
   fan1Actuator = new GreenHouseActuator(CommonValues::fan1Pin);
   fan2Actuator = new GreenHouseActuator(CommonValues::fan2Pin);
