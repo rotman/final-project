@@ -7,8 +7,6 @@
 //-------
 GreenHouseMiddleLayer middleLayer;
 
-
-
 //actuators
 Actuator * fan1Actuator;
 Actuator * fan2Actuator;
@@ -30,9 +28,7 @@ void initConsole() {
   Serial.begin(9600);
 }
 
-void createAndAddActuators() {
-  Serial.println("createAndAddActuators()");
- 
+void createAndAddActuators() { 
   fan1Actuator = new GreenHouseActuator(CommonValues::fan1Pin);
   fan2Actuator = new GreenHouseActuator(CommonValues::fan2Pin);
   lightActuator = new GreenHouseActuator(CommonValues::lightPin);
@@ -47,8 +43,8 @@ void createAndAddActuators() {
 
 }
 
+
 void setup() {
-  Serial.println("setup()");
   initConsole();
   middleLayer.initLayer(CommonValues::middleLayerAddress);
   createAndAddActuators();
@@ -61,6 +57,4 @@ void loop() {
   middleLayer.receiveMessage(message);
   middleLayer.decodeMessage(message);
   delay(middleLayer.getLoopTime());
- 
-
 }
