@@ -1,14 +1,24 @@
 #include <GreenHouseMiddleLayer.h>
 
 
-/*int GreenHouseMiddleLayer::findIdAndType(int id,char type){
-	for (int i = 0; i < lastMessagePerType.size(); ++i) {
-		if (lastMessagePerType.get(i).source == id && lastMessagePerType.get(i).sensorType == type) {
-			return i;
+bool GreenHouseMiddleLayer::updateDataAndCheckIfFull(LinkedList<Message>& list,Message& lastMessage){
+	if (list.size() == 0) {					//for the first time
+		list.add(lastMessage);
+	}
+	else {
+		for (int i = 0; i < list.size(); ++i) {
+			if (list.get(i).source == lastMessage.source) {	//if arduino id exsist, overwrite the data
+				list.set(i, lastMessage);
+			}
+			else
+				list.add(lastMessage);						//else create it
 		}
 	}
-	return -1;
-}*/
+	if (list.size() == CommonValues::lowerLayerRegisteredNum)
+		return true;
+	else
+		return false;
+}
 void GreenHouseMiddleLayer::initLayer(int address) {
 	this->address = address;
 	
@@ -74,7 +84,11 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = temperatureAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::temperatureType;
-		communicationList.get(0)->sendMessage(newMessage);
+		if (communicationList.get(0)->sendMessage(newMessage))
+			isTemperatureReadyToAnalyze = false;	//now we need to wait for all new data 
+		else {
+			//TODO
+		}
 		//clear the array after done
 		temperatureData.clear();
 	}
@@ -91,7 +105,12 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = airHumidityAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::humidityType;
-		communicationList.get(0)->sendMessage(newMessage);
+		if(communicationList.get(0)->sendMessage(newMessage))
+			isHumidityReadyToAnalyze = false;	//now we need to wait for all new data 
+		else {
+			//TODO
+		}
+
 		//clear the array after done
 		temperatureData.clear();
 	}
@@ -104,45 +123,40 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = lightAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::lightType;
-		communicationList.get(0)->sendMessage(newMessage);
+		if (communicationList.get(0)->sendMessage(newMessage))
+			isHumidityReadyToAnalyze = false;	//now we need to wait for all new data 
+		else {
+			//TODO
+		}
 		//clear the array after done
 		lightData.clear();
 	}	
-	
+	//TODO reduce duplicate code all above
 	//no need to do average on consumption data
 	
 }
 
 void GreenHouseMiddleLayer::decodeMessage(Message& msg) {	
 	if (CommonValues::emptyMessage == msg.sensorType) {
-		Serial.println("message is empty");
 		//do nothing the message is empty
 		return;
 	}
 	DateTime dateTime;
-	msg.dateTime = clock.createDateTime();             //add time to message
-	if (msg.dest != CommonValues::middleLayerAddress) {
-		Serial.println("message is not for me pass it on");
-		communicationList.get(0)->sendMessage(msg);	
+	msg.dateTime = clock.createDateTime();				     //add time to message
+	if (msg.dest != CommonValues::middleLayerAddress) {		 //check if the message is for me
+		communicationList.get(0)->sendMessage(msg);			// if so, pass it on
 		return;
 	}
-	//from higer layer
+	//the message is from higer layer
 	else if (msg.source >= CommonValues::highLayerMinAddress && msg.source < CommonValues::highLayerMaxAddress) {   
 		switch (msg.messageType) {
-			case CommonValues::emptyMessage:
-				Serial.println("message is null");
-				//this can't happen, we've already check if the message is empty
-				return;
-			break;
+			
 			case CommonValues::policyChange:
 				switch (msg.sensorType) {
 					case CommonValues::soilHumidityType:
-						Serial.println("soilHumidityType");
 						//if it's soil Humidity policy changes, send it to the lower layers
 						for (int i = 1; i<= lowersIds.size() ; ++i) {
 							if (i != CommonValues::lowerLayerConsumptionAdress) {
-								Serial.print("GreenHouseMiddleLayer, sending new thresholds to address ");
-								Serial.println(lowersIds.get(i));
 								prepareMessage(msg, lowersIds.get(i));
 								communicationList.get(0)->sendMessage(msg);
 							}
@@ -182,7 +196,6 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 		switch (msg.messageType) {
 			//first check if it's an emergency message
 			case CommonValues::emergencyType:
-				Serial.println("GreenHouseMiddleLayer, emergencyType from switch case - turn on all fans");
 				actuate(CommonValues::fan1Pin);
 				actuate(CommonValues::fan2Pin);
 				prepareMessage(msg, CommonValues::highLayerAddress);
@@ -206,60 +219,44 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						prepareMessage(msg, CommonValues::highLayerAddress);
 						communicationList.get(0)->sendMessage(msg);
 					break;
-					case CommonValues::temperatureType:
-						temperatureData.add(msg);
-						isTemperatureReadyToAnalyze = (isArrayFullAndUnique(temperatureData) && isTimeConsistency(temperatureData, CommonValues::minutesInInterval));
+					case CommonValues::temperatureType:						
+						isTemperatureReadyToAnalyze = ((updateDataAndCheckIfFull(temperatureData, msg)) && isTimeConsistency(temperatureData, CommonValues::minutesInInterval));
 					break;
 					case CommonValues::humidityType:
-						humidityData.add(msg);
-						isHumidityReadyToAnalyze = (isArrayFullAndUnique(humidityData) && isTimeConsistency(temperatureData, CommonValues::minutesInInterval));
+						isHumidityReadyToAnalyze = ((updateDataAndCheckIfFull(humidityData, msg)) && isTimeConsistency(humidityData, CommonValues::minutesInInterval));
 					break;
 					case CommonValues::lightType:
-						lightData.add(msg);
-						isLightReadyToAnalyze = (isArrayFullAndUnique(lightData) && isTimeConsistency(temperatureData, CommonValues::minutesInInterval));
+						isLightReadyToAnalyze = ((updateDataAndCheckIfFull(lightData, msg)) && isTimeConsistency(lightData, CommonValues::minutesInInterval));
 					break;
+				
 				}
 			break;
 		//TODO think maybe handle with more messageTypes	
-		}
+			//TODO action type
+			//TODO what happens if we are not erady to analyze??
+		}//end of switch (msg.messageType)
 		analyze();
 	}
 }
 
 bool GreenHouseMiddleLayer::isTimeConsistency(LinkedList<Message>& data, int minutes) {
-	unsigned long interval = minutes*CommonValues::minute;
+	/*unsigned long interval = minutes*CommonValues::minute;
 	for (int i = 0; i<data.size(); ++i) {
 		for (int j = 1; j<data.size(); j++) {
 			if ((GreenHouseMiddleLayer::convertDateTimeToMillis(data.get(i).dateTime) - convertDateTimeToMillis(data.get(j).dateTime)) > interval) {
 				return false;
 			}
 		}
-	}
+	}*/
 	return true;
 }
 
 unsigned long GreenHouseMiddleLayer::convertDateTimeToMillis(DateTime dateTime) {
 	unsigned long millis = (dateTime.seconds*1000) + (dateTime.minutes*60000) + (dateTime.hours*3600000) + 
 		(dateTime.date*86400000) + (dateTime.month*2629746000) + (dateTime.year*31556952000);
-	Serial.println(millis);
 	return millis;
 }
 
-bool GreenHouseMiddleLayer::isArrayFullAndUnique(LinkedList<Message>& data) {
-	if (data.size() == CommonValues::lowerLayerRegisteredNum) {
-		int j = 1;
-		for (int i = 0; i<data.size(); ++i) {
-			while (j<data.size()) {
-				if (data.get(i).source == data.get(j).source) {
-					return false;
-				}
-				j = i+1;
-			}
-		}
-		return true;
-	}
-	return false;
-}
 
 void GreenHouseMiddleLayer::actuate(int pin) {
 	for (int i = 0; i<actuatorsList.size() ; ++i) {

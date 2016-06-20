@@ -14,12 +14,10 @@ class Sensorable {
 		virtual ~Sensorable() {}
 		
 		void addSensor(Sensor* sensor) {
-			Serial.println("Sensorable, addSensor()");
 			sensorsArray.add(sensor);
 		}
 		
 		void removeSensor(int pin) { 
-			Serial.println("Sensorable, removeSensor()");
 			for (int i = 0; i < sensorsArray.size(); i++) {
 				if (sensorsArray.get(i)->getId() == pin) {
 					sensorsArray.remove(i);
@@ -29,7 +27,7 @@ class Sensorable {
 		}
 		
 		void readSensorsData(LinkedList<T>&	 sensorsData) {
-			Serial.println("Sensorable, readSensorsData()");
+			Serial.println(F("Sensorable, readSensorsData()"));
 			for (int i = 0; i < sensorsArray.size(); i++) {
 				T newMessage;
 				if (sensorsArray.get(i)->getId() == CommonValues::humidityTemperatureSensorId) {
@@ -39,12 +37,10 @@ class Sensorable {
 				newMessage = sensorsArray.get(i)->readSensorData(false);
 				sensorsData.add(newMessage);
 			}
-			Serial.print("messages list: ");
-			Serial.println(sensorsData.size());
 		}
 		
 		virtual void onSensorFail() {
-			Serial.println("Sensorable, onSensorFail()");
+			Serial.println(F("Sensorable, onSensorFail()"));
 		}
 		/*LinkedList<T>& getSensorsData() {
 			return this->sensorsData;

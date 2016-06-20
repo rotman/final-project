@@ -2,7 +2,7 @@
 #include <GreenHouseActuator.h>
 #include <CommonValues.h>
 #include <Message.h>
-
+#include <MemoryFree.h>
 //globals
 //-------
 GreenHouseMiddleLayer middleLayer;
@@ -52,8 +52,9 @@ void setup() {
 
 
 void loop() {
-  Serial.println("loop()");
-  Message message;
+  Serial.print("loop()   freeMemory()=");
+  Serial.println(freeMemory()); 
+ Message message;
   middleLayer.receiveMessage(message);
   middleLayer.decodeMessage(message);
   delay(middleLayer.getLoopTime());

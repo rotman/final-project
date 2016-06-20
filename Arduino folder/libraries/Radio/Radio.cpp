@@ -19,15 +19,15 @@ bool Radio::sendMessage(Message message) {
     while(!ok && delayMili != -1){						
 		ok =  radio->write(&message, sizeof(message));
         if(ok)
-			Serial.println("send success");
+			Serial.println(F("send success"));
 
         else {											 //if message fails
-			Serial.println("send failed backing off");
+			Serial.println(F("send failed backing off"));
             delayMili = exponentialBackoff.getDelayTime(++iteration);
             if(delayMili >= 0)
               delay(delayMili);
 			else {
-				Serial.println("send failed (max retries)");
+				Serial.println(F("send failed (max retries)"));
 				break;
 					//send failed (max retries)  TODO
 			}
@@ -41,14 +41,15 @@ void Radio::receiveMessage(Message& message) {
 	//Message* message = new Message();
 	if (radio->available()){
 		radio->read(&message, sizeof(message));
-		Serial.print("recived message: the data is:");
+		Serial.print(F("recived message: from and type and data is:"));
+		Serial.println(message.source);
 		Serial.println(message.sensorType);
 		Serial.println(message.data);
 	//	Serial.println(message.additionalData);
 	//	Serial.println(message.dest);
 	}
 	else {
-		Serial.println("nothing to read");
+		Serial.println(F("nothing to read"));
 		message.sensorType = CommonValues::emptyMessage;
 	}
 	
