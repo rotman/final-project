@@ -5,7 +5,6 @@
 //globals
 //-------
 GreenHouseLowerLayer lowerLayer;
-Radio* radio;
 
 //sensors
 Sensor * currentSensor;
@@ -35,17 +34,20 @@ void createAndAddSensors() {
 }
 
 void setup() {
-  Serial.println("setup()");
   initConsole();
+  Serial.println("setup()");
   lowerLayer.initLayer(CommonValues::lowerLayerConsumptionAdress);
   createAndAddSensors();
-  radio = (Radio*)lowerLayer.getCommunicationArray().get(0);
 }
 
 void loop() {
   Serial.println("loop()");
   //analyze the data from all the sensors
   lowerLayer.analyze();
+
+  //handle with received messages
+  //messageToRead = lowerLayer.receiveMessage();
+  //lowerLayer.decodeMessage(*messageToRead);
   
-  delay(3000);
+  delay(lowerLayer.getLoopTime());
 }

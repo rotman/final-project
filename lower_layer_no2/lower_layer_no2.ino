@@ -3,10 +3,10 @@
 #include <SLight.h>
 #include <SSoil.h>
 #include <GreenHouseActuator.h>
-
 //globals
 //-------
 GreenHouseLowerLayer lowerLayer;
+Message* messageToRead;
 
 //sensors
 Sensor * tempHumidity;
@@ -16,7 +16,7 @@ Sensor * light;
 //actuators
 Actuator * pump;
 
-//pins
+  //pins    
 int tempHumidityPin = CommonValues::tempHumidityPin;
 int soilPin = CommonValues::soilPin;
 int lightPin = CommonValues::lightPin;
@@ -37,9 +37,10 @@ void createAndAddSensors() {
   light= new SLight(CommonValues::lightSensorId, lightPin);              //create new light sensor instanse
   Serial.println("Slight created");
 
-  soil= new SSoil(CommonValues::soil2SensorId, soilPin);              //create new soil sensor instanse
+  soil= new SSoil(CommonValues::soil1SensorId, soilPin);              //create new soil sensor instanse
   Serial.println("Ssoil created");
 
+    
   lowerLayer.addSensor(tempHumidity);
   lowerLayer.addSensor(soil);
   lowerLayer.addSensor(light);
@@ -53,8 +54,8 @@ void createAndAddActuators() {
 }
 
 void setup() {
-  Serial.println("setup()");
   initConsole();
+  Serial.println("setup()");
   lowerLayer.initLayer(CommonValues::lowerLayerAddress2);
   createAndAddSensors();
   createAndAddActuators();
@@ -62,15 +63,12 @@ void setup() {
 
 void loop() {
   Serial.println("loop()");
-  
-  Message message;
-  lowerLayer.prepareDataMessage(message, 30.123, CommonValues::soilHumidityType);
-  message.action = STEAMER;
-  lowerLayer.sendMessage(message);
-  
+  //analyze the data from all the sensors
+  lowerLayer.analyze(); 
+
   //handle with received messages
-//  lowerLayer.receiveMessage(message);
-//  lowerLayer.decodeMessage(message);
+  //messageToRead = lowerLayer.receiveMessage();
+  //lowerLayer.decodeMessage(*messageToRead);
   
-  delay(3000);
+  delay(lowerLayer.getLoopTime());
 }
