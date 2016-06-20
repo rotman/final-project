@@ -23,7 +23,7 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 		void analyze();
 		void decodeMessage(Message&);
 		void prepareMessage(Message&, int);
-		void sendMessage(Message&);
+		bool sendMessage(Message&);
 		void receiveMessage(Message&);
 		
 		unsigned long convertDateTimeToMillis(DateTime);

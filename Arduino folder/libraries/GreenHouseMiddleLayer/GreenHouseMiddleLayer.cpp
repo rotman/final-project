@@ -9,30 +9,29 @@
 	}
 	return -1;
 }*/
+void GreenHouseMiddleLayer::initLayer(int address) {
+	this->address = address;
+	
+	//register lower layers
+	addLowerId(CommonValues::lowerLayerAddress1);
+	addLowerId(CommonValues::lowerLayerAddress2);
+	addLowerId(CommonValues::lowerLayerConsumptionAdress);	//maybe remove the consumption layer from the low layers array
+															//init radio
+	ICommunicationable* radio = new Radio();
+	radio->initCommunication(this->address, CommonValues::lowerLayerAddress1);
+	communicationList.add(radio);
+	setLoopTime(CommonValues::defaultLoopTime);
 
-void GreenHouseMiddleLayer::sendMessage(Message& message) {
-	communicationList.get(0)->sendMessage(message);
+	//more inits here
+}
+
+bool GreenHouseMiddleLayer::sendMessage(Message& message) {
+	return communicationList.get(0)->sendMessage(message);
 };
 void GreenHouseMiddleLayer::receiveMessage(Message& message) {
 	 communicationList.get(0)->receiveMessage(message);
 };
 
-void GreenHouseMiddleLayer::initLayer(int address) {
-	Serial.print("GreenHouseMiddleLayer, initLayer() with address ");
-	this->address = address;
-	Serial.print(this->address);
-	Serial.println();
-	//register lower layers
-	addLowerId(CommonValues::lowerLayerAddress1);
-	addLowerId(CommonValues::lowerLayerAddress2);
-	addLowerId(CommonValues::lowerLayerConsumptionAdress);	//maybe remove the consumption layer from the low layers array
-	//init radio
-	ICommunicationable* radio = new Radio();
-	radio->initCommunication(this->address, CommonValues::lowerLayerAddress1);
-	communicationList.add(radio);
-
-	//more inits here
-}
 
 
 void GreenHouseMiddleLayer::prepareMessage(Message& message, int add) {
@@ -42,7 +41,7 @@ void GreenHouseMiddleLayer::prepareMessage(Message& message, int add) {
 
 float GreenHouseMiddleLayer::doAverage(LinkedList<Message>& messages) {
 	float average;
-	for (int i = 0 ; i<messages.size();i++) {
+	for (int i = 0 ; i<messages.size();++i) {
 		average+=messages.get(i).data;
 	}
 	average = average/messages.size();
@@ -116,14 +115,14 @@ void GreenHouseMiddleLayer::analyze() {
 
 void GreenHouseMiddleLayer::decodeMessage(Message& msg) {	
 	if (CommonValues::emptyMessage == msg.sensorType) {
-		Serial.println("message is null");
+		Serial.println("message is empty");
 		//do nothing the message is empty
 		return;
 	}
 	DateTime dateTime;
-	msg.dateTime = clock.createDateTime();             //add time to message*/
+	msg.dateTime = clock.createDateTime();             //add time to message
 	if (msg.dest != CommonValues::middleLayerAddress) {
-		Serial.println("message is not for me");
+		Serial.println("message is not for me pass it on");
 		communicationList.get(0)->sendMessage(msg);	
 		return;
 	}
@@ -140,11 +139,11 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 					case CommonValues::soilHumidityType:
 						Serial.println("soilHumidityType");
 						//if it's soil Humidity policy changes, send it to the lower layers
-						for (int i = 1; i<= lowersIds.size() ; i++) {
+						for (int i = 1; i<= lowersIds.size() ; ++i) {
 							if (i != CommonValues::lowerLayerConsumptionAdress) {
 								Serial.print("GreenHouseMiddleLayer, sending new thresholds to address ");
-								Serial.println(i);
-								prepareMessage(msg, i);
+								Serial.println(lowersIds.get(i));
+								prepareMessage(msg, lowersIds.get(i));
 								communicationList.get(0)->sendMessage(msg);
 							}
 						}			
@@ -229,7 +228,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 
 bool GreenHouseMiddleLayer::isTimeConsistency(LinkedList<Message>& data, int minutes) {
 	unsigned long interval = minutes*CommonValues::minute;
-	for (int i = 0; i<data.size(); i++) {
+	for (int i = 0; i<data.size(); ++i) {
 		for (int j = 1; j<data.size(); j++) {
 			if ((GreenHouseMiddleLayer::convertDateTimeToMillis(data.get(i).dateTime) - convertDateTimeToMillis(data.get(j).dateTime)) > interval) {
 				return false;
@@ -249,7 +248,7 @@ unsigned long GreenHouseMiddleLayer::convertDateTimeToMillis(DateTime dateTime) 
 bool GreenHouseMiddleLayer::isArrayFullAndUnique(LinkedList<Message>& data) {
 	if (data.size() == CommonValues::lowerLayerRegisteredNum) {
 		int j = 1;
-		for (int i = 0; i<data.size(); i++) {
+		for (int i = 0; i<data.size(); ++i) {
 			while (j<data.size()) {
 				if (data.get(i).source == data.get(j).source) {
 					return false;
@@ -263,9 +262,9 @@ bool GreenHouseMiddleLayer::isArrayFullAndUnique(LinkedList<Message>& data) {
 }
 
 void GreenHouseMiddleLayer::actuate(int pin) {
-	for (int i = 0; i<actuatorsArray.size() ; i++) {
-		if (actuatorsArray.get(i)->getPin() == pin) {
-			actuatorsArray.get(i)->actuate(true);
+	for (int i = 0; i<actuatorsList.size() ; ++i) {
+		if (actuatorsList.get(i)->getPin() == pin) {
+			actuatorsList.get(i)->actuate(true);
 			break;
 		}
 	}	

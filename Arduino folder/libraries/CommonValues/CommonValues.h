@@ -58,7 +58,7 @@ class CommonValues {
 		static const char currentType = 'C';
 		static const char waterType = 'W';
 
-		static const int DefaultloopTime = 2000;
+		static const int defaultLoopTime = 2000;
 		static const int producersSize = 4;
 		static const int lowerLayerRegisteredNum = 2;
 		static const int EMERGENCY_TEMPERATURE = 40;
