@@ -13,12 +13,11 @@ Actuator * fan2Actuator;
 Actuator * lightActuator;
 Actuator * heatActuator;
 Actuator * steamActuator;
-Actuator * steamerActuator;
 
 //pins
 int fan1Pin = CommonValues::fan1Pin;
 int fan2Pin = CommonValues::fan2Pin;  
-int lightPin = CommonValues::lightPin;
+int lampPin = CommonValues::lampPin;
 int heatPin = CommonValues::heatPin;
 int steamPin = CommonValues::steamPin;
 
@@ -32,10 +31,9 @@ void initConsole() {
 void createAndAddActuators() { 
   fan1Actuator = new GreenHouseActuator(CommonValues::fan1Pin);
   fan2Actuator = new GreenHouseActuator(CommonValues::fan2Pin);
-  lightActuator = new GreenHouseActuator(CommonValues::lightPin);
+  lightActuator = new GreenHouseActuator(CommonValues::lampPin);
   heatActuator = new GreenHouseActuator(CommonValues::heatPin);
   steamActuator = new GreenHouseActuator(CommonValues::steamPin);
-
   middleLayer.addActuator(fan1Actuator);
   middleLayer.addActuator(fan2Actuator);
   middleLayer.addActuator(lightActuator);
@@ -55,8 +53,9 @@ void setup() {
 void loop() {
   Serial.print("loop()   freeMemory()=");
   Serial.println(freeMemory()); 
- Message message;
+  Message message;
   middleLayer.receiveMessage(message);
   middleLayer.decodeMessage(message);
+
   delay(middleLayer.getLoopTime());
 }

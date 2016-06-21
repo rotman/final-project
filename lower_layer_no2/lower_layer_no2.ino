@@ -62,5 +62,5 @@ void loop() {
   lowerLayer.receiveMessage(messageToRead);
   lowerLayer.decodeMessage(messageToRead);
   
-  delay(lowerLayer.getLoopTime());
+  delay(lowerLayer.getLoopTime());//TODO do something instead of waiting
 }

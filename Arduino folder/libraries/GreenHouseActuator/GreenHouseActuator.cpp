@@ -8,7 +8,7 @@ GreenHouseActuator::GreenHouseActuator(int pin):Actuator(pin){}
 
 void GreenHouseActuator::actuate(bool on) {
 	if(on) {
-		pinMode(this->pin,HIGH);
+		digitalWrite(this->pin,HIGH);
 		switch (pin) {
 			case CommonValues::pumpPin:
 				delay(CommonValues::pumpTime);
@@ -25,11 +25,14 @@ void GreenHouseActuator::actuate(bool on) {
 			case CommonValues::heatPin:
 				delay(CommonValues::heatTime);						
 			break;
+			case CommonValues::lampPin:
+				delay(CommonValues::lampTime);						
+			break;
 			default:
 			break;
 		}
-		pinMode(this->pin,LOW);
-
 	}
+	pinMode(this->pin,LOW);
+
 }
 
