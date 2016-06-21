@@ -23,7 +23,7 @@ int steamPin = CommonValues::steamPin;
 
 
 void initConsole() {
-  while (!Serial);
+  while (!Serial);  
   Serial.begin(9600);
 }
 
