@@ -14,6 +14,8 @@ class CommonValues {
 		static const int lowerLayerAddress2			 = 2;
 		static const int lowerLayerConsumptionAdress = 3;
 		static const int middleLayerAddress 		 = 101;
+		static const int fakeMiddleLayerAddress		 = 102;
+
 		static const int highLayerAddress 			 = 201;
 
 		//sensors id
