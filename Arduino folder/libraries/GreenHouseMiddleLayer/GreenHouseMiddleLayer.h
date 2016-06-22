@@ -16,7 +16,7 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 		float doAverage(LinkedList<Message>&);
 		bool isTimeConsistency(LinkedList<Message>&, int);
 		bool updateDataAndCheckIfFull(LinkedList<Message>&, Message&);
-		void actuate(int);
+		void actuate(int,bool);
 
 		//MiddleLayer implementation
 		void initLayer(int);

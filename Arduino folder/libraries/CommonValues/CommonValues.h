@@ -33,14 +33,15 @@ class CommonValues {
 		static const int tempHumidityPin = 2;
 		static const int soilPin = A0;
 		static const int lightPin = A1;
-		static const int pumpPin = 5;
+		static const int pumpPin = 6;
 		static const int fan1Pin = 3;
 		static const int fan2Pin = 4;
 		static const int steamPin = 10;
 		static const int lampPin = 9;
 		static const int heatPin = 6;
 		static const int currentConsumptionPin = A2;
-		static const int waterConsumptionPin = A3;
+		static const int waterConsumptionPin1 = 2;
+		static const int waterConsumptionPin2 = 3;
 		static const int higherLayerRadioPin1 = 2;
 		static const int higherLayerRadioPin2 = 15;
 

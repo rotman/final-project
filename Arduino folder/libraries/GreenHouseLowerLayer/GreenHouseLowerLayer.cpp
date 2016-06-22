@@ -36,36 +36,50 @@ void GreenHouseLowerLayer::analyze() {
 	Serial.println("analyze");
 	LinkedList<Message> sensorsData;
 	readSensorsData(sensorsData);
-	//if (this->address == CommonValues::lowerLayerConsumptionAdress) { //am i the consumtion layer?
-	//	currentMillis = millis();
-	//	for (int i = 0; i < sensorsData.size(); i++) {
-	//		switch (sensorsData.get(i).sensorType) {
-	//			case CommonValues::currentType:
-	//				currentConsumptionData += sensorsData.get(i).data;
-	//			break;
-	//			case CommonValues::waterType:
-	//				waterConsumptionData += sensorsData.get(i).data;
-	//			break;
-	//		}
-	//	}
-	//	//set the timer for sending consumption data to once a day
-	//	if ((unsigned long)(currentMillis - previousMillis) >= CommonValues::day) {
-	//		Message currentMessage;
-	//		prepareDataMessage(currentMessage, currentConsumptionData, CommonValues::currentType);
-	//		Message waterMessage;
-	//		prepareDataMessage(waterMessage, waterConsumptionData, CommonValues::waterType);
-	//		bool isCurrentSent = communicationList.get(0)->sendMessage(currentMessage);
-	//		if (!isCurrentSent) {
-	//			bool isCurrentSent = communicationList.get(0)->sendMessage(currentMessage);
-	//		}
-	//		bool isWaterSent = communicationList.get(0)->sendMessage(waterMessage);
-	//		if (!isWaterSent) {
-	//			bool isWaterSent = communicationList.get(0)->sendMessage(waterMessage);
-	//		}
-	//		previousMillis = currentMillis;
-	//	}
-	//}
-	//else 
+	if (this->address == CommonValues::lowerLayerConsumptionAdress) { //am i the consumtion layer?
+		currentMillis = millis();
+		for (int i = 0; i < sensorsData.size(); i++) {
+			switch (sensorsData.get(i).sensorType) {
+				case CommonValues::currentType:
+					currentConsumptionData += sensorsData.get(i).data;
+				break;
+				case CommonValues::waterType:
+					if (sensorsData.get(i).additionalData == CommonValues::waterConsumptionPin1) {
+						waterConsumptionData1 += sensorsData.get(i).data;
+					}
+					else if (sensorsData.get(i).additionalData == CommonValues::waterConsumptionPin2) {
+						waterConsumptionData2 += sensorsData.get(i).data;
+					}
+				break;
+			}
+		}
+		//set the timer for sending consumption data to once a day
+		if ((unsigned long)(currentMillis - previousMillis) >= CommonValues::day) {
+			Message currentMessage;
+			prepareDataMessage(currentMessage, currentConsumptionData, CommonValues::currentType);
+			bool isCurrentSent = communicationList.get(0)->sendMessage(currentMessage);
+			if (!isCurrentSent) {//TODO ROTEM what??????
+				bool isCurrentSent = communicationList.get(0)->sendMessage(currentMessage);
+			}
+			Message waterMessage1;
+			//TODO ROTEM why to add CommonValues::waterType ? we do it at the Sensor class
+			prepareDataMessage(waterMessage1, waterConsumptionData1, CommonValues::waterType);
+			bool isWaterSent1 = communicationList.get(0)->sendMessage(waterMessage1);
+			if (!isWaterSent1) {
+				bool isWaterSent1 = communicationList.get(0)->sendMessage(waterMessage1);
+			}
+			Message waterMessage2;
+			//TODO ROTEM why to add CommonValues::waterType ? we do it at the Sensor class
+			prepareDataMessage(waterMessage2, waterConsumptionData2, CommonValues::waterType);
+			bool isWaterSent2 = communicationList.get(0)->sendMessage(waterMessage2);
+			if (!isWaterSent2) {
+				bool isWaterSent2 = communicationList.get(0)->sendMessage(waterMessage2);
+			}
+			
+			previousMillis = currentMillis;
+		}
+	}
+	else 
 	{	//i am not the Consumption layer, im a regular lower layer
 		//Serial.print("ffffffffffffffffffffffffff size:");
 		//Serial.println(sensorsData.size());
@@ -82,7 +96,7 @@ void GreenHouseLowerLayer::analyze() {
 						prepareDataMessage(newMessage, sensorsData.get(i).data, CommonValues::emergencyType);
 						bool isSent = communicationList.get(0)->sendMessage(newMessage);
 						if (!isSent) {
-							//TODO maybe resent until received
+							//TODO maybe resent until received ROTEM whyyyyy
 							bool isSent = communicationList.get(0)->sendMessage(newMessage);
 						}
 					}
@@ -163,7 +177,7 @@ void GreenHouseLowerLayer::analyze() {
 	//	getSensorsData().clear(); //TODO think about moving this to sensorable somehow
 	}
 }
-
+//TODO rotem what is this? dont know if necessary..
 void GreenHouseLowerLayer::prepareDataMessage(Message& message, float data, char type) {
 	message.data = data;
 	if (type == CommonValues::emergencyType) {

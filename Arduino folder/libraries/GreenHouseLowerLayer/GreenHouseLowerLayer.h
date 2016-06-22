@@ -33,8 +33,10 @@ class GreenHouseLowerLayer : public LowerLayer<Message>{
 		LinkedList<float> lightData;
 		//lower layer consumption data
 		float currentConsumptionData;
-		float waterConsumptionData;
+		float waterConsumptionData1;
+		float waterConsumptionData2;
 
+		
 };
 
 #endif

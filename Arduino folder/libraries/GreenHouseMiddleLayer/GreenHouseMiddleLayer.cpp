@@ -39,6 +39,8 @@ void GreenHouseMiddleLayer::initLayer(int address) {
 }
 
 bool GreenHouseMiddleLayer::sendMessage(Message& message) {
+	Serial.print("sending : ");
+	Serial.println(message.data);
 	return communicationList.get(0)->sendMessage(message);
 };
 void GreenHouseMiddleLayer::receiveMessage(Message& message) {
@@ -81,12 +83,12 @@ void GreenHouseMiddleLayer::analyze() {
 		temperatureAverage = doAverage(temperatureData);
 		//check thresholds
 		if (temperatureAverage >= CommonValues::temperatureThresholdMax) {
-			actuate(CommonValues::fan1Pin);
-			actuate(CommonValues::fan2Pin);//TODO chsnge to vent
+			//actuate(CommonValues::fan1Pin);
+			//actuate(CommonValues::fan2Pin);//TODO chsnge to vent
 			newMessage.action = FAN;
 		}
 		else if (temperatureAverage < CommonValues::temperatureThresholdMin) {
-			actuate(CommonValues::heatPin);
+		//	actuate(CommonValues::heatPin);
 			newMessage.action = HEATER;
 
 		}
@@ -113,11 +115,11 @@ void GreenHouseMiddleLayer::analyze() {
 		airHumidityAverage = doAverage(humidityData);
 		//check thresholds
 		if (airHumidityAverage < CommonValues::airHumidityThresholdMin) {
-			actuate(CommonValues::steamPin);
+			//actuate(CommonValues::steamPin);
 			newMessage.action = STEAMER;
 		}
 		else if(airHumidityAverage > CommonValues::airHumidityThresholdMax){
-			actuate(CommonValues::fan2Pin);
+			//actuate(CommonValues::fan2Pin);
 			newMessage.action = VENT;
 		}
 		//prepare message and send to high layer
@@ -145,7 +147,10 @@ void GreenHouseMiddleLayer::analyze() {
 		//calculate average
 		lightAverage = doAverage(lightData);
 		//TODO decide what to do with light thresholds
-		
+		if(lightAverage>200)
+			actuate(CommonValues::fan1Pin,true);
+		else
+			actuate(CommonValues::fan1Pin, false);
 		//prepare message and send to high layer
 		prepareMessage(newMessage, CommonValues::highLayerAddress);
 		newMessage.data = lightAverage;
@@ -227,8 +232,8 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 		switch (msg.messageType) {
 			//first check if it's an emergency message
 			case CommonValues::emergencyType:
-				actuate(CommonValues::fan1Pin);
-				actuate(CommonValues::fan2Pin);
+				//actuate(CommonValues::fan1Pin);
+				//actuate(CommonValues::fan2Pin);
 				prepareMessage(msg, CommonValues::highLayerAddress);
 				sendMessage(msg);	
 			break;
@@ -289,10 +294,10 @@ unsigned long GreenHouseMiddleLayer::convertDateTimeToMillis(DateTime dateTime) 
 }
 
 
-void GreenHouseMiddleLayer::actuate(int pin) {
+void GreenHouseMiddleLayer::actuate(int pin,bool on) {
 	for (int i = 0; i<actuatorsList.size() ; ++i) {
 		if (actuatorsList.get(i)->getPin() == pin) {
-			actuatorsList.get(i)->actuate(true);
+			actuatorsList.get(i)->actuate(on);
 			break;
 		}
 	}	

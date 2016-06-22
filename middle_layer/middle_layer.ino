@@ -57,5 +57,6 @@ void loop() {
   middleLayer.receiveMessage(message);
   middleLayer.decodeMessage(message);
 
+
   delay(middleLayer.getLoopTime());
 }

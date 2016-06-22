@@ -5,18 +5,23 @@
 #include <RF24.h>
 #include <SPI.h>
 #include <nRF24L01.h>
-
+#include<CommonValues.h>
 
 class SWater : public Sensor {
 public:
 	SWater(int, int);
 	Message readSensorData(bool isHumidity = false);
-	static  void rpm();
+	//void pulseCounter();
+
 private:
 	int pin;
-	int sensorValue;
-	static volatile int NbTopsFan; //measuring the rising edges of the signal
-	
+	// The hall-effect flow sensor outputs approximately 4.5 pulses per second per
+	// litre/minute of flow.
+	float calibrationFactor = 4.5;
+	float flowRate;
+	unsigned int flowMilliLitres;
+	unsigned long totalMilliLitres;
+	unsigned long oldTime;
 };
 
 
