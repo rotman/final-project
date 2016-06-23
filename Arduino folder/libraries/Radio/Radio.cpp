@@ -47,8 +47,6 @@ void Radio::receiveMessage(Message& message) {
 		Serial.println(message.source);
 		Serial.println(message.sensorType);
 		Serial.println(message.data);
-	//	Serial.println(message.additionalData);
-	//	Serial.println(message.dest);
 	}
 	else {
 		Serial.println(F("nothing to read"));

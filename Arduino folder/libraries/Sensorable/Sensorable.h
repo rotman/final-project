@@ -30,6 +30,8 @@ class Sensorable {
 			Serial.println(F("Sensorable, readSensorsData()"));
 			for (int i = 0; i < sensorsArray.size(); i++) {
 				T newMessage;
+				//if the sensor is the tempHumidity sensor, read it twice : because it 
+				//holds data for both humidity and temperature.
 				if (sensorsArray.get(i)->getId() == CommonValues::humidityTemperatureSensorId) {
 					newMessage = sensorsArray.get(i)->readSensorData(true);
 					sensorsData.add(newMessage);
@@ -42,12 +44,9 @@ class Sensorable {
 		virtual void onSensorFail() {
 			Serial.println(F("Sensorable, onSensorFail()"));
 		}
-		/*LinkedList<T>& getSensorsData() {
-			return this->sensorsData;
-		}*/
+		
  	protected:
 		LinkedList<Sensor*> sensorsArray;
-		//LinkedList<T> sensorsData = LinkedList<T>();
 };
 
 #endif
