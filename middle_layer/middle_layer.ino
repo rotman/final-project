@@ -15,8 +15,8 @@ Actuator * heatActuator;
 Actuator * steamActuator;
 
 //pins
-int fan1Pin = CommonValues::fan1Pin;
-int fan2Pin = CommonValues::fan2Pin;  
+int fanPin = CommonValues::fanPin;
+int ventPin = CommonValues::ventPin;  
 int lampPin = CommonValues::lampPin;
 int heatPin = CommonValues::heatPin;
 int steamPin = CommonValues::steamPin;
@@ -29,11 +29,11 @@ void initConsole() {
 
 
 void createAndAddActuators() { 
-  fan1Actuator = new GreenHouseActuator(CommonValues::fan1Pin);
-  fan2Actuator = new GreenHouseActuator(CommonValues::fan2Pin);
-  lightActuator = new GreenHouseActuator(CommonValues::lampPin);
-  heatActuator = new GreenHouseActuator(CommonValues::heatPin);
-  steamActuator = new GreenHouseActuator(CommonValues::steamPin);
+  fan1Actuator = new GreenHouseActuator(fanPin);
+  fan2Actuator = new GreenHouseActuator(ventPin);
+  lightActuator = new GreenHouseActuator(lampPin);
+  heatActuator = new GreenHouseActuator(heatPin);
+  steamActuator = new GreenHouseActuator( steamPin);
   middleLayer.addActuator(fan1Actuator);
   middleLayer.addActuator(fan2Actuator);
   middleLayer.addActuator(lightActuator);

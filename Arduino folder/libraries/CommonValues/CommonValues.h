@@ -33,9 +33,9 @@ class CommonValues {
 		static const int tempHumidityPin = 2;
 		static const int soilPin = A0;
 		static const int lightPin = A1;
-		static const int pumpPin = 6;
-		static const int fan1Pin = 3;
-		static const int fan2Pin = 4;
+		static const int pumpPin = 2;
+		static const int fanPin = 3;
+		static const int ventPin = 4;
 		static const int steamPin = 10;
 		static const int lampPin = 9;
 		static const int heatPin = 6;
@@ -73,6 +73,7 @@ class CommonValues {
 		
 		//actuators intervals
 		static const unsigned long fanTime = 10 * second;
+		static const unsigned long ventTime = 8 * second;
 		static const unsigned long heatTime = 5 * second;
 		static const unsigned long steamTime = 7 * second;
 		static const unsigned long pumpTime = 3 * second;

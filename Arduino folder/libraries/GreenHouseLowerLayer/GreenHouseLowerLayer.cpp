@@ -11,25 +11,14 @@ void GreenHouseLowerLayer::receiveMessage(Message& message) {
 
 void GreenHouseLowerLayer::initLayer(int address) {
 	this->address = address;
-	Serial.print(this->address);
-	Serial.println();
 	previousMillis = 0;
 	ICommunicationable* radio = new Radio();
 	radio->initCommunication(this->address, CommonValues::middleLayerAddress);
 	communicationList.add(radio);
-	//initDataArrays();/////////////////////////////////////
 	setLoopTime(CommonValues::defaultLoopTime);
 	//more inits here , think maybe to move the inits to relevant constractors
 }
-/*void GreenHouseLowerLayer::initDataArrays() {
-	if (this->address != CommonValues::lowerLayerConsumptionAdress) {
-		temperatureData = LinkedList<float>();
-		soilHumidityData = LinkedList<float>();
-		airHumidityData = LinkedList<float>();
-		lightData = LinkedList<float>();
-	}
-}
-*/
+
 
 void GreenHouseLowerLayer::analyze() {
 	//TODO destruct all created linked list
@@ -57,35 +46,28 @@ void GreenHouseLowerLayer::analyze() {
 		if ((unsigned long)(currentMillis - previousMillis) >= CommonValues::day) {
 			Message currentMessage;
 			prepareDataMessage(currentMessage, currentConsumptionData, CommonValues::currentType);
-			bool isCurrentSent = communicationList.get(0)->sendMessage(currentMessage);
-			if (!isCurrentSent) {//TODO ROTEM what??????
-				bool isCurrentSent = communicationList.get(0)->sendMessage(currentMessage);
+			if (!(communicationList.get(0)->sendMessage(currentMessage))){
+				//TODO if no sent
 			}
 			Message waterMessage1;
 			//TODO ROTEM why to add CommonValues::waterType ? we do it at the Sensor class
 			prepareDataMessage(waterMessage1, waterConsumptionData1, CommonValues::waterType);
-			bool isWaterSent1 = communicationList.get(0)->sendMessage(waterMessage1);
-			if (!isWaterSent1) {
-				bool isWaterSent1 = communicationList.get(0)->sendMessage(waterMessage1);
+			if (!(communicationList.get(0)->sendMessage(waterMessage1))) {
+				//TODO if no sent
 			}
 			Message waterMessage2;
 			//TODO ROTEM why to add CommonValues::waterType ? we do it at the Sensor class
 			prepareDataMessage(waterMessage2, waterConsumptionData2, CommonValues::waterType);
-			bool isWaterSent2 = communicationList.get(0)->sendMessage(waterMessage2);
-			if (!isWaterSent2) {
-				bool isWaterSent2 = communicationList.get(0)->sendMessage(waterMessage2);
+		 
+			if (!(communicationList.get(0)->sendMessage(waterMessage2))) {
+				//TODO if no sent
 			}
-			
 			previousMillis = currentMillis;
 		}
 	}
 	else 
 	{	//i am not the Consumption layer, im a regular lower layer
-		//Serial.print("ffffffffffffffffffffffffff size:");
-		//Serial.println(sensorsData.size());
 		for (int i = 0; i < sensorsData.size(); ++i) {
-		//	Serial.print("sensorsData size:");
-		//	Serial.println(sensorsData.size());
 			Serial.print("sensor type:");
 			Serial.println(sensorsData.get(i).sensorType);
 			switch (sensorsData.get(i).sensorType) {
@@ -113,7 +95,6 @@ void GreenHouseLowerLayer::analyze() {
 						else {//send failed
 							//TODO 
 						}
-					
 					}
 				break;
 				case CommonValues::humidityType:

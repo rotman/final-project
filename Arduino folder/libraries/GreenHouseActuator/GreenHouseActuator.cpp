@@ -13,11 +13,11 @@ void GreenHouseActuator::actuate(bool on) {
 			case CommonValues::pumpPin:
 				delay(CommonValues::pumpTime);
 			break;
-			case CommonValues::fan1Pin:
+			case CommonValues::fanPin:
 				delay(CommonValues::fanTime);
 			break;
-			case CommonValues::fan2Pin:
-				delay(CommonValues::fanTime);			
+			case CommonValues::ventPin:
+				delay(CommonValues::ventTime);			
 			break;
 			case CommonValues::steamPin:
 				delay(CommonValues::steamTime);						

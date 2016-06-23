@@ -1,21 +1,30 @@
 #include <GreenHouseMiddleLayer.h>
 
 
-bool GreenHouseMiddleLayer::updateDataAndCheckIfFull(LinkedList<Message>& list,Message& lastMessage){
-	//TODO why the fuck i have a memory leak here?!?!?
-	//if (list.size() == 0) {					//for the first time
-	//	list.add(lastMessage);
-	//}
-	//else {
-	//	for (int i = 0; i < list.size(); ++i) {
-	//		if (list.get(i).source == lastMessage.source) {	//if arduino id exsist, overwrite the data
-	//			list.set(i, lastMessage);
-	//		}
-	//		else
-	//			list.add(lastMessage);						//else create it
-	//	}
-	//}
+bool GreenHouseMiddleLayer::updateDataAndCheckIfFull(LinkedList<Message>& list,Message& lastMessage,int fullSize){
+	
+	if (list.size() == 0) {					//for the first time
 		list.add(lastMessage);
+	}
+	else {
+		// update data
+		int i;
+		for (i = 0; i < list.size(); ++i) {
+			if (list.get(i).source == lastMessage.source) {	//if arduino id exsist, overwrite the data
+				list.remove(i);
+				list.add(lastMessage);
+				break;
+			}
+		}
+		if(list.size() == i) // if we didnt find id that maches last message id
+			list.add(lastMessage);			//add the message (it has a new id)
+		//check if full
+		if (fullSize == list.size()) {
+			return true;
+		}
+		return false;
+	}
+		
 
 	if (list.size() == CommonValues::lowerLayerRegisteredNum)
 		return true;
@@ -28,8 +37,9 @@ void GreenHouseMiddleLayer::initLayer(int address) {
 	//register lower layers
 	addLowerId(CommonValues::lowerLayerAddress1);
 	addLowerId(CommonValues::lowerLayerAddress2);
-	addLowerId(CommonValues::lowerLayerConsumptionAdress);	//maybe remove the consumption layer from the low layers array
-															//init radio
+	addLowerId(CommonValues::lowerLayerConsumptionAdress);	//TODO maybe remove the consumption layer from the low layers array
+	plantsLowerLayers = lowersIds.size() - 1; // minus the consumption
+//init radio
 	ICommunicationable* radio = new Radio();
 	radio->initCommunication(this->address, CommonValues::lowerLayerAddress1);
 	communicationList.add(radio);
@@ -83,8 +93,8 @@ void GreenHouseMiddleLayer::analyze() {
 		temperatureAverage = doAverage(temperatureData);
 		//check thresholds
 		if (temperatureAverage >= CommonValues::temperatureThresholdMax) {
-			//actuate(CommonValues::fan1Pin);
-			//actuate(CommonValues::fan2Pin);//TODO chsnge to vent
+			//actuate(CommonValues::fanPin);
+			//actuate(CommonValues::ventPin);
 			newMessage.action = FAN;
 		}
 		else if (temperatureAverage < CommonValues::temperatureThresholdMin) {
@@ -119,7 +129,7 @@ void GreenHouseMiddleLayer::analyze() {
 			newMessage.action = STEAMER;
 		}
 		else if(airHumidityAverage > CommonValues::airHumidityThresholdMax){
-			//actuate(CommonValues::fan2Pin);
+			//actuate(CommonValues::ventPin);
 			newMessage.action = VENT;
 		}
 		//prepare message and send to high layer
@@ -127,12 +137,10 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = airHumidityAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::humidityType;
-		if (sendMessage(newMessage)) {
+		if (!(sendMessage(newMessage))) {
 			//TODO handle if  message fails
 		}
-		else {
-			//TODO
-		}
+		
 		//clear the array after done
 		isHumidityReadyToAnalyze = false;
 		humidityData.clear();
@@ -148,18 +156,15 @@ void GreenHouseMiddleLayer::analyze() {
 		lightAverage = doAverage(lightData);
 		//TODO decide what to do with light thresholds
 		if(lightAverage>200)
-			actuate(CommonValues::fan1Pin,true);
+			actuate(CommonValues::fanPin,true);
 		else
-			actuate(CommonValues::fan1Pin, false);
+			actuate(CommonValues::fanPin, false);
 		//prepare message and send to high layer
 		prepareMessage(newMessage, CommonValues::highLayerAddress);
 		newMessage.data = lightAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::lightType;
-		if (sendMessage(newMessage)) {
-			//TODO
-		}
-		else {
+		if (!(sendMessage(newMessage))) {
 			//TODO
 		}
 		//clear the array after done
@@ -232,8 +237,8 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 		switch (msg.messageType) {
 			//first check if it's an emergency message
 			case CommonValues::emergencyType:
-				//actuate(CommonValues::fan1Pin);
-				//actuate(CommonValues::fan2Pin);
+				//actuate(CommonValues::fanPin);
+				//actuate(CommonValues::ventPin);
 				prepareMessage(msg, CommonValues::highLayerAddress);
 				sendMessage(msg);	
 			break;
@@ -256,13 +261,13 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						sendMessage(msg);
 					break;
 					case CommonValues::temperatureType:						
-						isTemperatureReadyToAnalyze = ((updateDataAndCheckIfFull(temperatureData, msg)) && isTimeConsistency(temperatureData, CommonValues::minutesInInterval));
+						isTemperatureReadyToAnalyze = ((updateDataAndCheckIfFull(temperatureData,msg,plantsLowerLayers)) && isTimeConsistency(temperatureData, CommonValues::minutesInInterval));
 					break;
 					case CommonValues::humidityType:
-						isHumidityReadyToAnalyze = ((updateDataAndCheckIfFull(humidityData, msg)) && isTimeConsistency(humidityData, CommonValues::minutesInInterval));
+						isHumidityReadyToAnalyze = ((updateDataAndCheckIfFull(humidityData,msg, plantsLowerLayers)) && isTimeConsistency(humidityData, CommonValues::minutesInInterval));
 					break;
 					case CommonValues::lightType:
-						isLightReadyToAnalyze = ((updateDataAndCheckIfFull(lightData, msg)) && isTimeConsistency(lightData, CommonValues::minutesInInterval));
+						isLightReadyToAnalyze = ((updateDataAndCheckIfFull(lightData,msg, plantsLowerLayers)) && isTimeConsistency(lightData, CommonValues::minutesInInterval));
 					break;
 				
 				}
@@ -272,7 +277,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 			//TODO what happens if we are not erady to analyze??
 		}//end of switch (msg.messageType)
 		analyze();
-	}
+	}//end of if (msg.source >= CommonValues::lowerLayerMinAddress && msg.source < CommonValues::lowerLayerMaxAddress)
 }
 
 bool GreenHouseMiddleLayer::isTimeConsistency(LinkedList<Message>& data, int minutes) {

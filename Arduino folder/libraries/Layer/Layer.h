@@ -41,7 +41,6 @@ class Layer {
 	protected:
 		int loopTime;
 		LinkedList<ICommunicationable*> communicationList;
-		int maskjdhgf;
 };
 
 #endif
