@@ -196,6 +196,9 @@ void GreenHouseLowerLayer::decodeMessage(Message& message){
 			CommonValues::soilHumidityThresholdMax = message.additionalData;
 		}
 	}
+	
+	//reset watchDog to notify that evertything works
+	watchDog.reset();
 }
 
 void GreenHouseLowerLayer::prepareMessage(Message& message, int address) {

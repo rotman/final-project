@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <ICommunicationable.h>
 #include <LinkedList.h>
+#include <WatchDog.h>
+#include <CommonValues.h>
 
 template <class T>
 //in green house project,'T' stands for Message
@@ -15,6 +17,9 @@ class Layer {
 		virtual void analyze() = 0;
 		virtual void decodeMessage(T&) = 0;
 		virtual void prepareMessage(T&, int) = 0;
+		Layer() {
+			watchDog.enable(CommonValues::watchDogSecondsUntilReset);
+		}
 		
 		void addCommunication(ICommunicationable* type) {
 			communicationList.add(type);
@@ -41,6 +46,7 @@ class Layer {
 	protected:
 		int loopTime;
 		LinkedList<ICommunicationable*> communicationList;
+		WatchDog watchDog;
 };
 
 #endif

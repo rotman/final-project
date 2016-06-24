@@ -13,6 +13,7 @@ float CommonValues::lightThresholdMin = 15;
 float CommonValues::lightThresholdMax = 15;
 
 int CommonValues::minutesInInterval = 3;
+int CommonValues::watchDogSecondsUntilReset = 60;
 
 const char* CommonValues::ssid = "***";
 const char* CommonValues::password = "**";
