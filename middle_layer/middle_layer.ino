@@ -50,8 +50,8 @@ void setup() {
 
 
 void loop() {
-  Serial.print("loop()   freeMemory()=");
-  Serial.println(freeMemory()); 
+  Serial.print("loop()");
+ // Serial.println(freeMemory()); 
   Message message;
   middleLayer.receiveMessage(message);
   middleLayer.decodeMessage(message);

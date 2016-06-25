@@ -40,6 +40,9 @@ Actions GreenHouseActuator::actuate(bool on) {
 		}
 	}
 	digitalWrite(this->pin, LOW);
+	Serial.print(F("action was pefformed!!!!!!!!!! :"));
+	Serial.println(action);
+
 	return action;
 }
 

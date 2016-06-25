@@ -19,7 +19,8 @@ bool Radio::sendMessage(Message message) {
     while(!ok && delayMili != -1){						
 		ok =  radio->write(&message, sizeof(message));
 		if (ok) {
-			Serial.print(F("send success i sent data and type:"));
+			Serial.print(F("send success i sent id data and type:"));
+			Serial.println(message.source);
 			Serial.println(message.data);
 			Serial.println(message.sensorType);
 		}

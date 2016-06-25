@@ -8,6 +8,7 @@ Actions GreenHouseMiddleLayer:: handleThresholds(float value, int min, int max, 
 	//check min threshold
 	else if (value <= min) {
 		//if its the light threshold, we dont want to actuate in intervals,we want on,or off.
+		//TODO check time of light
 		if(CommonValues::lightPin == minPin)
 			action = actuate(minPin, false);
 		else
@@ -109,7 +110,6 @@ void GreenHouseMiddleLayer::analyze() {
 		handleThresholds(temperatureAverage, CommonValues::temperatureThresholdMax,
 			CommonValues::temperatureThresholdMin, CommonValues::fanPin, CommonValues::heatPin);
 			//todo assign action
-		
 		newMessage.data = temperatureAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::temperatureType;
@@ -177,7 +177,6 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 		sendMessage(msg);			// if so, pass it on
 		return;
 	}
-	prepareMessage(msg, CommonValues::highLayerAddress);
 	//the message is from higer layer
 	 if (msg.source >= CommonValues::highLayerMinAddress && msg.source < CommonValues::highLayerMaxAddress) {   
 		switch (msg.messageType) {
@@ -212,8 +211,25 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 				
 			break;
 			case CommonValues::yourAddressChange:
-
-			
+				break;
+			case CommonValues::ACTION_TYPE:
+				switch (msg.action) {
+				case PUMP1:
+					prepareMessage(msg, lowersIds.get(0));
+					sendMessage(msg);
+					break;
+				case PUMP2:
+					prepareMessage(msg, lowersIds.get(1));
+					sendMessage(msg);
+					break;
+				case FAN:actuate(CommonValues::fanPin,msg.flag); break;
+				case LIGHT:actuate(CommonValues::pumpPin,msg.flag);break;
+				case HEATER:actuate(CommonValues::heatPin,msg.flag);break;
+				case VENT:actuate(CommonValues::ventPin,msg.flag);break;
+				case STEAMER:actuate(CommonValues::steamPin,msg.flag);break;
+				case NONE://TODO
+				}
+					
 			break;
 			case CommonValues::arduinoMalfunction: 
 
@@ -228,6 +244,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 			case CommonValues::emergencyType:
 				actuate(CommonValues::fanPin, true);
 				actuate(CommonValues::ventPin, true);
+				prepareMessage(msg, CommonValues::highLayerAddress); // prepare to send to high
 				sendMessage(msg);	
 			break;
 			case CommonValues::dataType:
@@ -239,6 +256,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 					break;
 					case CommonValues::currentType:
 						//if it's current consumption data, send it to the high layer
+						prepareMessage(msg, CommonValues::highLayerAddress); // prepare to send to high
 						sendMessage(msg);
 					break;
 					case CommonValues::waterType:

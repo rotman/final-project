@@ -27,23 +27,26 @@ class CommonValues {
 		static const int waterFlowSensorId			 = 6;
 
 
-		//pin
+		//input pins
 		static const int radioPin1 = 7;
 		static const int radioPin2 = 8;
 		static const int tempHumidityPin = 2;
 		static const int soilPin = A0;
 		static const int lightPin = A1;
 		static const int pumpPin = 2;
-		static const int fanPin = 3;
-		static const int ventPin = 4;
-		static const int steamPin = 10;
-		static const int lampPin = 6;
-		static const int heatPin = 5;
 		static const int currentConsumptionPin = A2;
 		static const int waterConsumptionPin1 = 2;
 		static const int waterConsumptionPin2 = 3;
 		static const int higherLayerRadioPin1 = 2;
 		static const int higherLayerRadioPin2 = 15;
+
+		//actuators pins
+		static const int fanPin = 3;
+		static const int ventPin = 4;
+		static const int steamPin = 10;
+		static const int lampPin = 6;
+		static const int heatPin = 5;
+		
 
 
 		//Conventions
@@ -54,7 +57,10 @@ class CommonValues {
 		static const char yourAddressChange = 'y';
 		static const char arduinoMalfunction = 'e';
 		static const char dataType = 'd';
-		static const char emergencyType = 'e';
+		static const char emergencyType = 'E';
+		static const char ACTION_TYPE = 'A';
+
+		//sensor types
 		static const char temperatureType = 'T';
 		static const char humidityType = 'H';
 		static const char soilHumidityType = 'S';
