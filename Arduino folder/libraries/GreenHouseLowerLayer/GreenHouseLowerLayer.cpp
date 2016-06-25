@@ -179,6 +179,8 @@ float GreenHouseLowerLayer::doAverage(LinkedList<float>& data) {
 }	
 
 void GreenHouseLowerLayer::decodeMessage(Message& message){
+	//reset watchDog to notify that evertything works
+	watchDog.reset();
 	if (CommonValues::emptyMessage == message.sensorType) {
 		//do nothing the message is empty
 		return;
@@ -196,9 +198,6 @@ void GreenHouseLowerLayer::decodeMessage(Message& message){
 			CommonValues::soilHumidityThresholdMax = message.additionalData;
 		}
 	}
-	
-	//reset watchDog to notify that evertything works
-	watchDog.reset();
 }
 
 void GreenHouseLowerLayer::prepareMessage(Message& message, int address) {

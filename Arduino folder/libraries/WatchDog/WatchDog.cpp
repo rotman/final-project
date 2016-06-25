@@ -7,8 +7,7 @@ volatile unsigned long timeout    = 0;
 void (*resetFunc)(void) = 0;
 
 
-void timeInterupt(void) {
-	//check if 
+void onArduinoStuck(void) {
 	if((millis()- lastUpdate) > timeout) {
 		//enable interrupts so serial can work
 		sei();
@@ -29,7 +28,7 @@ void WatchDog::enable(int seconds) {
 	timeout = (unsigned long)seconds*CommonValues::second;
 	lastUpdate = millis();
 	Timer1.initialize(1000000); //1 second pulses
-	Timer1.attachInterrupt(timeInterupt); //code to execute
+	Timer1.attachInterrupt(onArduinoStuck); //code to execute
 }
 
 void WatchDog::reset() {
