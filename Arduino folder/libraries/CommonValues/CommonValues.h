@@ -96,6 +96,7 @@ class CommonValues {
 
 		static long whenTosendConsumption;
 		static int minutesInInterval;
+		static int watchDogSecondsUntilReset;
 
 		static const char* ssid;
 		static const char* password;
