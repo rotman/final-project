@@ -37,8 +37,8 @@ class CommonValues {
 		static const int fanPin = 3;
 		static const int ventPin = 4;
 		static const int steamPin = 10;
-		static const int lampPin = 9;
-		static const int heatPin = 6;
+		static const int lampPin = 6;
+		static const int heatPin = 5;
 		static const int currentConsumptionPin = A2;
 		static const int waterConsumptionPin1 = 2;
 		static const int waterConsumptionPin2 = 3;

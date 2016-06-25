@@ -3,14 +3,14 @@
 float CommonValues::soilHumidityThresholdMin = 15;
 float CommonValues::soilHumidityThresholdMax = 15;
 
-float CommonValues::airHumidityThresholdMin = 40;
-float CommonValues::airHumidityThresholdMax = 70;
+float CommonValues::airHumidityThresholdMin = 50;
+float CommonValues::airHumidityThresholdMax = 60;
 
-float CommonValues::temperatureThresholdMin = 15;
+float CommonValues::temperatureThresholdMin = 24;
 float CommonValues::temperatureThresholdMax = 28;
 
-float CommonValues::lightThresholdMin = 15;
-float CommonValues::lightThresholdMax = 15;
+float CommonValues::lightThresholdMin = 200; //TODO its no minimum..
+float CommonValues::lightThresholdMax = 100;
 
 int CommonValues::minutesInInterval = 3;
 

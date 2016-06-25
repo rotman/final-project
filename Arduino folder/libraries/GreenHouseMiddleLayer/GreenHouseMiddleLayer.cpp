@@ -67,7 +67,6 @@ void GreenHouseMiddleLayer::prepareMessage(Message& message, int add) {
 float GreenHouseMiddleLayer::doAverage(LinkedList<Message>& messages) {
 	float average;
 	Serial.print(F("messages.size()"));
-
 	Serial.println(messages.size());
 	for (int i = 0 ; i<messages.size();++i) {
 		average+=messages.get(i).data;
@@ -93,12 +92,12 @@ void GreenHouseMiddleLayer::analyze() {
 		temperatureAverage = doAverage(temperatureData);
 		//check thresholds
 		if (temperatureAverage >= CommonValues::temperatureThresholdMax) {
-			//actuate(CommonValues::fanPin);
-			//actuate(CommonValues::ventPin);
+			actuate(CommonValues::fanPin,true);
+			actuate(CommonValues::ventPin, true);
 			newMessage.action = FAN;
 		}
 		else if (temperatureAverage < CommonValues::temperatureThresholdMin) {
-		//	actuate(CommonValues::heatPin);
+			actuate(CommonValues::heatPin, true);
 			newMessage.action = HEATER;
 
 		}
@@ -125,11 +124,11 @@ void GreenHouseMiddleLayer::analyze() {
 		airHumidityAverage = doAverage(humidityData);
 		//check thresholds
 		if (airHumidityAverage < CommonValues::airHumidityThresholdMin) {
-			//actuate(CommonValues::steamPin);
+			actuate(CommonValues::steamPin, true);
 			newMessage.action = STEAMER;
 		}
 		else if(airHumidityAverage > CommonValues::airHumidityThresholdMax){
-			//actuate(CommonValues::ventPin);
+			actuate(CommonValues::ventPin, true);
 			newMessage.action = VENT;
 		}
 		//prepare message and send to high layer
@@ -146,8 +145,6 @@ void GreenHouseMiddleLayer::analyze() {
 		humidityData.clear();
 		Serial.print(F("after isHumidityReadyToAnalyze clear size is :"));
 		Serial.println(humidityData.size());
-
-
 	}
 	if (isLightReadyToAnalyze) {
 		Serial.println(F("in isLightReadyToAnalyze"));
@@ -177,7 +174,7 @@ void GreenHouseMiddleLayer::analyze() {
 }
 
 void GreenHouseMiddleLayer::decodeMessage(Message& msg) {	
-	if (CommonValues::emptyMessage == msg.sensorType) {
+	if (CommonValues::emptyMessage == msg.messageType) {
 		//do nothing the message is empty
 		return;
 	}
@@ -237,8 +234,8 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 		switch (msg.messageType) {
 			//first check if it's an emergency message
 			case CommonValues::emergencyType:
-				//actuate(CommonValues::fanPin);
-				//actuate(CommonValues::ventPin);
+				actuate(CommonValues::fanPin, true);
+				actuate(CommonValues::ventPin, true);
 				prepareMessage(msg, CommonValues::highLayerAddress);
 				sendMessage(msg);	
 			break;
@@ -247,8 +244,9 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 					case CommonValues::soilHumidityType:
 						//if it's soil Humidity data, send it to the high layer
 						//not using prepare message here because we want to know from which lower layer the data was sent
-						msg.dest = CommonValues::highLayerAddress;
-						sendMessage(msg);
+						 msg.additionalData = (float)msg.source; // the higher needs to kno which pot it is.
+						 prepareMessage(msg, CommonValues::highLayerAddress);
+						 sendMessage(msg);
 					break;
 					case CommonValues::currentType:
 						//if it's current consumption data, send it to the high layer
@@ -299,9 +297,12 @@ unsigned long GreenHouseMiddleLayer::convertDateTimeToMillis(DateTime dateTime) 
 }
 
 
-void GreenHouseMiddleLayer::actuate(int pin,bool on) {
+void GreenHouseMiddleLayer::actuate(int pin_,bool on) {
+	Serial.print(F("actuate pin :"));
+	Serial.println(pin_);
+
 	for (int i = 0; i<actuatorsList.size() ; ++i) {
-		if (actuatorsList.get(i)->getPin() == pin) {
+		if (actuatorsList.get(i)->getPin() == pin_) {
 			actuatorsList.get(i)->actuate(on);
 			break;
 		}
