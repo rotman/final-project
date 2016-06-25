@@ -6,6 +6,7 @@
 #include <Radio.h>
 #include <CommonValues.h>
 #include <Clock.h>
+#include<Actions.h>
 
 
 class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
@@ -16,7 +17,8 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 		float doAverage(LinkedList<Message>&);
 		bool isTimeConsistency(LinkedList<Message>&, int);
 		bool updateDataAndCheckIfFull(LinkedList<Message>&, Message&,int);
-		void actuate(int,bool);
+		Actions actuate(int,bool);
+		Actions handleThresholds(float, int, int, int, int);
 
 		//MiddleLayer implementation
 		void initLayer(int);

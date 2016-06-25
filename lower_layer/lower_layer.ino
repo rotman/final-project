@@ -56,7 +56,7 @@ void createAndAddActuators() {
 void setup() {
   Serial.println("setup()");
   initConsole();
-  lowerLayer.initLayer(CommonValues::lowerLayerAddress2);
+  lowerLayer.initLayer(CommonValues::lowerLayerAddress1);
   createAndAddSensors();
   createAndAddActuators();
 }

@@ -19,7 +19,6 @@ void GreenHouseLowerLayer::initLayer(int address) {
 	//more inits here , think maybe to move the inits to relevant constractors
 }
 	
-
 void GreenHouseLowerLayer::analyze() {
 	//TODO destruct all created linked list
 	Serial.println("analyze");

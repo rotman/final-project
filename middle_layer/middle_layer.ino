@@ -39,7 +39,6 @@ void createAndAddActuators() {
   middleLayer.addActuator(lightActuator);
   middleLayer.addActuator(heatActuator);
   middleLayer.addActuator(steamActuator);
-
 }
 
 

@@ -2,7 +2,7 @@
 #define ACTUATOR_H
 
 #include <Arduino.h>
-
+#include <Actions.h>
 
 class Actuator {
 	public:
@@ -10,7 +10,7 @@ class Actuator {
 			pinMode(_pin,OUTPUT);
 		}
 		int getPin() { return pin; }
-		virtual void actuate(bool) = 0;
+		virtual Actions actuate(bool) = 0;
 	protected:
 		int pin;
 };

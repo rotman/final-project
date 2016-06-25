@@ -1,8 +1,22 @@
 #include <GreenHouseMiddleLayer.h>
 
+Actions GreenHouseMiddleLayer:: handleThresholds(float value, int min, int max, int minPin, int maxPin) {
+	Actions action;
+	//check max threshold
+	if (value >= max)
+		action = actuate(maxPin,true);
+	//check min threshold
+	else if (value <= min) {
+		//if its the light threshold, we dont want to actuate in intervals,we want on,or off.
+		if(CommonValues::lightPin == minPin)
+			action = actuate(minPin, false);
+		else
+			action = actuate(minPin, true);
+	}
+	else return NONE; //no action performed
+}
 
 bool GreenHouseMiddleLayer::updateDataAndCheckIfFull(LinkedList<Message>& list,Message& lastMessage,int fullSize){
-	
 	if (list.size() == 0) {					//for the first time
 		list.add(lastMessage);
 	}
@@ -31,6 +45,7 @@ bool GreenHouseMiddleLayer::updateDataAndCheckIfFull(LinkedList<Message>& list,M
 	else
 		return false;
 }
+
 void GreenHouseMiddleLayer::initLayer(int address) {
 	this->address = address;
 	
@@ -53,11 +68,10 @@ bool GreenHouseMiddleLayer::sendMessage(Message& message) {
 	Serial.println(message.data);
 	return communicationList.get(0)->sendMessage(message);
 };
+
 void GreenHouseMiddleLayer::receiveMessage(Message& message) {
 	 communicationList.get(0)->receiveMessage(message);
 };
-
-
 
 void GreenHouseMiddleLayer::prepareMessage(Message& message, int add) {
 	message.source = this->address;
@@ -85,24 +99,17 @@ void GreenHouseMiddleLayer::analyze() {
 	DateTime dateTime;
 	clock.createDateTime(dateTime);
 	newMessage.dateTime = dateTime;	 //add time to message
+	prepareMessage(newMessage, CommonValues::highLayerAddress);
 	//we have some data to analyze
 	if (isTemperatureReadyToAnalyze) {
 		Serial.println(F("in isTemperatureReadyToAnalyze"));
 		//calculate average
 		temperatureAverage = doAverage(temperatureData);
 		//check thresholds
-		if (temperatureAverage >= CommonValues::temperatureThresholdMax) {
-			actuate(CommonValues::fanPin,true);
-			actuate(CommonValues::ventPin, true);
-			newMessage.action = FAN;
-		}
-		else if (temperatureAverage < CommonValues::temperatureThresholdMin) {
-			actuate(CommonValues::heatPin, true);
-			newMessage.action = HEATER;
-
-		}
-		//prepare message and send to high layer
-		prepareMessage(newMessage, CommonValues::highLayerAddress);
+		handleThresholds(temperatureAverage, CommonValues::temperatureThresholdMax,
+			CommonValues::temperatureThresholdMin, CommonValues::fanPin, CommonValues::heatPin);
+			//todo assign action
+		
 		newMessage.data = temperatureAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::temperatureType;
@@ -119,27 +126,17 @@ void GreenHouseMiddleLayer::analyze() {
 	//we have some data to analyze
 	if (isHumidityReadyToAnalyze) {
 		Serial.println(F("in isHumidityReadyToAnalyze"));
-
 		//calculate average
 		airHumidityAverage = doAverage(humidityData);
 		//check thresholds
-		if (airHumidityAverage < CommonValues::airHumidityThresholdMin) {
-			actuate(CommonValues::steamPin, true);
-			newMessage.action = STEAMER;
-		}
-		else if(airHumidityAverage > CommonValues::airHumidityThresholdMax){
-			actuate(CommonValues::ventPin, true);
-			newMessage.action = VENT;
-		}
-		//prepare message and send to high layer
-		prepareMessage(newMessage, CommonValues::highLayerAddress);
+		handleThresholds(airHumidityAverage, CommonValues::airHumidityThresholdMin,
+			CommonValues::airHumidityThresholdMax, CommonValues::steamPin, CommonValues::ventPin);
 		newMessage.data = airHumidityAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::humidityType;
 		if (!(sendMessage(newMessage))) {
 			//TODO handle if  message fails
 		}
-		
 		//clear the array after done
 		isHumidityReadyToAnalyze = false;
 		humidityData.clear();
@@ -148,16 +145,11 @@ void GreenHouseMiddleLayer::analyze() {
 	}
 	if (isLightReadyToAnalyze) {
 		Serial.println(F("in isLightReadyToAnalyze"));
-
 		//calculate average
 		lightAverage = doAverage(lightData);
 		//TODO decide what to do with light thresholds
-		if(lightAverage>200)
-			actuate(CommonValues::fanPin,true);
-		else
-			actuate(CommonValues::fanPin, false);
-		//prepare message and send to high layer
-		prepareMessage(newMessage, CommonValues::highLayerAddress);
+		handleThresholds(lightAverage, CommonValues::lightThresholdMin,
+			CommonValues::lightThresholdMax, CommonValues::lightPin, CommonValues::lightPin);
 		newMessage.data = lightAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::lightType;
@@ -185,10 +177,10 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 		sendMessage(msg);			// if so, pass it on
 		return;
 	}
+	prepareMessage(msg, CommonValues::highLayerAddress);
 	//the message is from higer layer
-	else if (msg.source >= CommonValues::highLayerMinAddress && msg.source < CommonValues::highLayerMaxAddress) {   
+	 if (msg.source >= CommonValues::highLayerMinAddress && msg.source < CommonValues::highLayerMaxAddress) {   
 		switch (msg.messageType) {
-			
 			case CommonValues::policyChange:
 				switch (msg.sensorType) {
 					case CommonValues::soilHumidityType:
@@ -236,21 +228,17 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 			case CommonValues::emergencyType:
 				actuate(CommonValues::fanPin, true);
 				actuate(CommonValues::ventPin, true);
-				prepareMessage(msg, CommonValues::highLayerAddress);
 				sendMessage(msg);	
 			break;
 			case CommonValues::dataType:
 				switch (msg.sensorType) {
 					case CommonValues::soilHumidityType:
 						//if it's soil Humidity data, send it to the high layer
-						//not using prepare message here because we want to know from which lower layer the data was sent
-						 msg.additionalData = (float)msg.source; // the higher needs to kno which pot it is.
-						 prepareMessage(msg, CommonValues::highLayerAddress);
+						 msg.additionalData = (float)msg.source; // the higher needs to know which pot it is.
 						 sendMessage(msg);
 					break;
 					case CommonValues::currentType:
 						//if it's current consumption data, send it to the high layer
-						prepareMessage(msg, CommonValues::highLayerAddress);
 						sendMessage(msg);
 					break;
 					case CommonValues::waterType:
@@ -296,8 +284,7 @@ unsigned long GreenHouseMiddleLayer::convertDateTimeToMillis(DateTime dateTime) 
 	return millis;
 }
 
-
-void GreenHouseMiddleLayer::actuate(int pin_,bool on) {
+Actions GreenHouseMiddleLayer::actuate(int pin_,bool on) {
 	Serial.print(F("actuate pin :"));
 	Serial.println(pin_);
 

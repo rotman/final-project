@@ -6,7 +6,6 @@ unsigned long WatchDog::timeout    = 0;
 //reset the program to address 0 in memory
 void (*resetFunc)(void) = 0;
 
-
 void timeInterupt(void) {
 	//check if 
 	if((millis()- WatchDog::lastUpdate) > WatchDog::timeout) {

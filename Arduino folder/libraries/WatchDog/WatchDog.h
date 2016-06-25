@@ -13,8 +13,6 @@ class WatchDog {
 		void reset();
 		static unsigned long lastUpdate;
 		static unsigned long timeout;
-
-	
 };
 
 #endif

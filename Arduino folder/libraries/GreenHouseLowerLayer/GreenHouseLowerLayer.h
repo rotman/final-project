@@ -15,7 +15,7 @@ class GreenHouseLowerLayer : public LowerLayer<Message>{
 		 void analyze();
 		 void decodeMessage(Message&);
 		 void prepareMessage(Message&, int);
-
+	
 		 void initDataArrays();
 		 float doAverage(LinkedList<float>&);
 		 void prepareDataMessage(Message&, float, char);
