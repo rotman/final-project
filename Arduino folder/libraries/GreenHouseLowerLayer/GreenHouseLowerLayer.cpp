@@ -19,14 +19,16 @@ void GreenHouseLowerLayer::initLayer(int address) {
 	//more inits here , think maybe to move the inits to relevant constractors
 }
 	
-void GreenHouseLowerLayer::analyze() {
-	//TODO destruct all created linked list
+void GreenHouseLowerLayer::analyze(){
 	Serial.println("analyze");
 	LinkedList<Message> sensorsData;
 	readSensorsData(sensorsData);
 	if (this->address == CommonValues::lowerLayerConsumptionAdress) { //am i the consumtion layer?
 		currentMillis = millis();
-		//this for loop sums the data from the water and current consumption and saves the sum in a private member.
+		/*
+		this for loop sums the data from the water and current consumption
+		and saves the sum in a private member.
+		*/
 		for (int i = 0; i < sensorsData.size(); i++) {
 			switch (sensorsData.get(i).sensorType) {
 			case CommonValues::currentType:
@@ -41,7 +43,8 @@ void GreenHouseLowerLayer::analyze() {
 				}
 				break;
 			}
-		}
+		}//end of for() loop
+
 		//check if need to send to higher
 		if ((unsigned long)(currentMillis - previousMillis) >= CommonValues::day) {
 			Message currentMessage;
@@ -195,7 +198,6 @@ void GreenHouseLowerLayer::decodeMessage(Message& message){
 			CommonValues::soilHumidityThresholdMax = message.additionalData;
 		}
 	}
-	
 	//reset watchDog to notify that evertything works
 	watchDog.reset();
 }

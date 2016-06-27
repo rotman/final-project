@@ -34,7 +34,7 @@ class CommonValues {
 		static const int soilPin = A0;
 		static const int lightPin = A1;
 		static const int pumpPin = 2;
-		static const int currentConsumptionPin = A2;
+		static const int currentConsumptionPin = A5;
 		static const int waterConsumptionPin1 = 2;
 		static const int waterConsumptionPin2 = 3;
 		static const int higherLayerRadioPin1 = 2;

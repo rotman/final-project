@@ -228,6 +228,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 				case VENT:actuate(CommonValues::ventPin,msg.flag);break;
 				case STEAMER:actuate(CommonValues::steamPin,msg.flag);break;
 				case NONE://TODO
+				default://TODO
 				}
 					
 			break;
