@@ -9,14 +9,15 @@ GreenHouseHighLayerThresholds::GreenHouseHighLayerThresholds(int id) {
     this->values = LinkedList<ThresholdsValue>();
 }
 
-void GreenHouseHighLayerThresholds::updateValue(String name , float value) {
+void GreenHouseHighLayerThresholds::updateValue(String name , float minValue , float maxValue) {
   int i;
   bool found = false;
   ThresholdsValue data;
   for (i = 0 ; i < values.size() ; i++) {
     if (values.get(i).name == name) {
       data = values.get(i);
-      data.value = value;
+      data.minValue = minValue;
+      data.maxValue = maxValue;
       values.set(i,data);
       found = true;
     }
@@ -24,7 +25,8 @@ void GreenHouseHighLayerThresholds::updateValue(String name , float value) {
 
   if (!found) {
     data.name = name;
-    data.value = value;
+    data.minValue = minValue;
+    data.maxValue = maxValue;
     values.add(data);
   }
 }
@@ -35,14 +37,6 @@ int GreenHouseHighLayerThresholds::getId() {
 
 void GreenHouseHighLayerThresholds::setId(int id) {
   this->id = id;
-}
-
-String GreenHouseHighLayerThresholds::getLastUpdated() {
-  return last_updated;
-}
-
-void GreenHouseHighLayerThresholds::setLastUpdated(String last_updated) {
-  this->last_updated = last_updated;
 }
 
 int GreenHouseHighLayerThresholds::getValuesSize() {

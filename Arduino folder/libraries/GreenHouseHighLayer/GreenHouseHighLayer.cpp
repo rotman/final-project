@@ -45,7 +45,7 @@ int GreenHouseHighLayer::findGreenHouseThresholdsIndex(int id) {
 
 void GreenHouseHighLayer::decodeMessage(Message & message) {
 
-
+	int action = 0;
   int greenhouseId = message.source;
   int i = this->findGreenHouseDataIndex(greenhouseId);
   float data;
@@ -61,7 +61,7 @@ void GreenHouseHighLayer::decodeMessage(Message & message) {
 				StaticJsonBuffer<500> jsonBuffer;
 				JsonObject& root = jsonBuffer.createObject();
 				root["greenhouse"] = greenhouseId;
-				JsonObject& dateTime = root.createNestedObject("time");
+				JsonObject& dateTime = root.createNestedObject("dateTime");
 				dateTime["year"] = message.dateTime.year;
 				dateTime["month"] = message.dateTime.month;
 				dateTime["date"] = message.dateTime.date;
@@ -88,9 +88,14 @@ void GreenHouseHighLayer::decodeMessage(Message & message) {
 					case STEAMER:
 						root["action"] = "steamer";
 						break;
+					default:
+						action = 0;
 				}
 
-				this->communicationList.get(1)->sendMessage(root,"/actions.php");
+				if (action != 0) {
+					Serial.println("updating action in server");
+					this->communicationList.get(1)->sendMessage(root,"/action");
+				}
 			}
 
 			DateTime dateTime = message.dateTime;
@@ -138,11 +143,10 @@ void GreenHouseHighLayer::recieveRFMessage(Message& message) {
 };
 
 void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
-  JsonArray& jGreenHouses = json.createNestedArray("greenHouses");
+  JsonArray& jGreenHouses = json.createNestedArray("greenhouses");
   int i,j;
 
   for (i = 0 ; i < CommonValues::amountOfGreenHouses ; i++ ) {
-
       JsonObject& object = jGreenHouses.createNestedObject();
       object["id"] = this->greenHouseData[i].getId();
 
@@ -162,15 +166,16 @@ void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
 					dateTime["hour"] = data.dateTime.hours;
 					dateTime["minutes"] = data.dateTime.minutes;
 					dateTime["seconds"] = data.dateTime.seconds;
+
       }
 
-      this->communicationList.get(1)->sendMessage(json,"/data.php");
+			Serial.println("sending data to server");
+      this->communicationList.get(1)->sendMessage(json,"/data");
 
   }
 }
 
 void GreenHouseHighLayer::getNewSettings() {
-	Serial.println("getting new settings");
   int i,j;
 	Message messageArr[4];
 	String name;
@@ -181,7 +186,7 @@ void GreenHouseHighLayer::getNewSettings() {
     int greenhouse = this->greenHouseData[i].getId();
     int index;
     String response;
-    String url = "/options-updated.php?greenhouse=";
+    String url = "/options/last_updated.php?greenhouse=";
     url += greenhouse ;
 
 		//get the last time the settings updated from the server
@@ -196,7 +201,7 @@ void GreenHouseHighLayer::getNewSettings() {
       this->greenHouseThresholds[index].setLastUpdated(last_updated);
 
 			//get the latest settins from the server
-      url = "/options.php?greenhouse=";
+      url = "/options/";
       url += greenhouse ;
       response = this->communicationList.get(1)->receiveMessage(url);
 
@@ -259,8 +264,8 @@ void GreenHouseHighLayer::getNewSettings() {
 				}
 			}
 
-			Serial.println("sending messages: ");
 			//send the radio messages
+			Serial.println("sending thresholds messages");
 			for (j = 0 ; j < 4 ; j++ ) {
 				this->prepareMessage(messageArr[j],greenhouse);
 				this->communicationList.get(0)->sendMessage(messageArr[j]);
@@ -282,12 +287,14 @@ void GreenHouseHighLayer::checkMiddleLayer() {
 		if (millis() - greenHouseData[i].getLastChecked() >= CommonValues::MiddleLayerLostConnectionTime ) {
 			//set it to not working state
 			greenHouseData[i].setWorking(false);
+			Serial.println("updating status");
 			this->communicationList.get(0)->sendMessage(root, "/status.php");
 		}
 		else {
 			if (!greenHouseData[i].getWorking()) {
 				//set it back to working state
 				greenHouseData[i].setWorking(true);
+				Serial.println("updating status");
 				this->communicationList.get(0)->sendMessage(root, "/status.php");
 			}
 		}
