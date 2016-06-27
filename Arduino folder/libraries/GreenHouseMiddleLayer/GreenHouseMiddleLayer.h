@@ -6,6 +6,7 @@
 #include <Radio.h>
 #include <CommonValues.h>
 #include <Clock.h>
+#include<Actions.h>
 
 
 class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
@@ -15,8 +16,9 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 		void initDataArrays();
 		float doAverage(LinkedList<Message>&);
 		bool isTimeConsistency(LinkedList<Message>&, int);
-		bool updateDataAndCheckIfFull(LinkedList<Message>&, Message&);
-		void actuate(int);
+		bool updateDataAndCheckIfFull(LinkedList<Message>&, Message&,int);
+		Actions actuate(int,bool);
+		Actions handleThresholds(float, int, int, int, int);
 
 		//MiddleLayer implementation
 		void initLayer(int);
@@ -25,16 +27,15 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 		void prepareMessage(Message&, int);
 		bool sendMessage(Message&);
 		void receiveMessage(Message&);
-		
 		unsigned long convertDateTimeToMillis(DateTime);
 		
 	private:
-	
+
 		int sendDataTime;
 		int sensorTypeNotRespondingTime;
 		Clock clock;
 		int address;
-		
+		int plantsLowerLayers; // the consumption is a lower layer, but in the green house we treat him different.
 		LinkedList<Message> temperatureData;
 		LinkedList<Message> humidityData;
 		LinkedList<Message> lightData;

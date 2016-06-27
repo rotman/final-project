@@ -4,8 +4,7 @@
 #include <Sensor.h>
 #include <RF24.h>
 #include <SPI.h>
-#include <nRF24L01.h>
-
+#include <CommonValues.h>
 
 class SCurrent: public Sensor {
 public:

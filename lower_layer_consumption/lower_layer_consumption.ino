@@ -8,11 +8,14 @@ GreenHouseLowerLayer lowerLayer;
 
 //sensors
 Sensor * currentSensor;
-Sensor * waterSensor;
+Sensor * waterSensor1;
+Sensor * waterSensor2;
+
 
 //pins
 int currentPin = CommonValues::currentConsumptionPin;
-int waterPin = CommonValues::waterConsumptionPin;
+int waterPin1 = CommonValues::waterConsumptionPin1;
+int waterPin2 = CommonValues::waterConsumptionPin2;
 
 void initConsole() {
   Serial.println("initConsole()");
@@ -22,15 +25,13 @@ void initConsole() {
 
 void createAndAddSensors() {
   Serial.println("createAndAddSensors()");
- 
-  currentSensor = new SCurrent(CommonValues::currentSensorId, currentPin);              //create new current sensor instanse
-  Serial.println("SCurrent created");
+  currentSensor = new SCurrent(CommonValues::currentSensorId, currentPin);            
+  waterSensor1 = new SWater(CommonValues::waterFlowSensorId, waterPin1);              
+  waterSensor2 = new SWater(CommonValues::waterFlowSensorId, waterPin2);            
 
-  waterSensor = new SWater(CommonValues::waterFlowSensorId, waterPin);              //create new water sensor instanse
-  Serial.println("SWater created");
-  
   lowerLayer.addSensor(currentSensor);
-  lowerLayer.addSensor(waterSensor);
+  lowerLayer.addSensor(waterSensor1);
+  lowerLayer.addSensor(waterSensor2);
 }
 
 void setup() {
@@ -44,10 +45,6 @@ void loop() {
   Serial.println("loop()");
   //analyze the data from all the sensors
   lowerLayer.analyze();
-
-  //handle with received messages
-  //messageToRead = lowerLayer.receiveMessage();
-  //lowerLayer.decodeMessage(*messageToRead);
   
   delay(lowerLayer.getLoopTime());
 }

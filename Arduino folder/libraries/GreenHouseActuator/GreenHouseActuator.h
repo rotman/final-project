@@ -3,11 +3,13 @@
 
 #include <Arduino.h>
 #include <Actuator.h>
+#include <CommonValues.h>
+#include<Actions.h>
 
 class GreenHouseActuator :public Actuator{
 	public:	
 		GreenHouseActuator(int);
-		void actuate(bool);
+		Actions actuate(bool);
 };
 
 

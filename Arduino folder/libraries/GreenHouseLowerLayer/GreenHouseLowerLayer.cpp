@@ -1,8 +1,8 @@
 #include <GreenHouseLowerLayer.h>
 
-void GreenHouseLowerLayer::sendMessage(Message& message) {
+bool GreenHouseLowerLayer::sendMessage(Message& message) {
 	Serial.println("GreenHouseLowerLayer::sendMessage");
-	communicationList.get(0)->sendMessage(message);
+	return (communicationList.get(0)->sendMessage(message));
 }
 
 void GreenHouseLowerLayer::receiveMessage(Message& message) {
@@ -11,159 +11,154 @@ void GreenHouseLowerLayer::receiveMessage(Message& message) {
 
 void GreenHouseLowerLayer::initLayer(int address) {
 	this->address = address;
-	Serial.print(this->address);
-	Serial.println();
 	previousMillis = 0;
 	ICommunicationable* radio = new Radio();
 	radio->initCommunication(this->address, CommonValues::middleLayerAddress);
 	communicationList.add(radio);
-	//initDataArrays();/////////////////////////////////////
 	setLoopTime(CommonValues::defaultLoopTime);
 	//more inits here , think maybe to move the inits to relevant constractors
 }
-/*void GreenHouseLowerLayer::initDataArrays() {
-	if (this->address != CommonValues::lowerLayerConsumptionAdress) {
-		temperatureData = LinkedList<float>();
-		soilHumidityData = LinkedList<float>();
-		airHumidityData = LinkedList<float>();
-		lightData = LinkedList<float>();
-	}
-}
-*/
-
-void GreenHouseLowerLayer::analyze() {
-	//TODO destruct all created linked list
+	
+void GreenHouseLowerLayer::analyze(){
 	Serial.println("analyze");
 	LinkedList<Message> sensorsData;
 	readSensorsData(sensorsData);
-	//if (this->address == CommonValues::lowerLayerConsumptionAdress) { //am i the consumtion layer?
-	//	currentMillis = millis();
-	//	for (int i = 0; i < sensorsData.size(); i++) {
-	//		switch (sensorsData.get(i).sensorType) {
-	//			case CommonValues::currentType:
-	//				currentConsumptionData += sensorsData.get(i).data;
-	//			break;
-	//			case CommonValues::waterType:
-	//				waterConsumptionData += sensorsData.get(i).data;
-	//			break;
-	//		}
-	//	}
-	//	//set the timer for sending consumption data to once a day
-	//	if ((unsigned long)(currentMillis - previousMillis) >= CommonValues::day) {
-	//		Message currentMessage;
-	//		prepareDataMessage(currentMessage, currentConsumptionData, CommonValues::currentType);
-	//		Message waterMessage;
-	//		prepareDataMessage(waterMessage, waterConsumptionData, CommonValues::waterType);
-	//		bool isCurrentSent = communicationList.get(0)->sendMessage(currentMessage);
-	//		if (!isCurrentSent) {
-	//			bool isCurrentSent = communicationList.get(0)->sendMessage(currentMessage);
-	//		}
-	//		bool isWaterSent = communicationList.get(0)->sendMessage(waterMessage);
-	//		if (!isWaterSent) {
-	//			bool isWaterSent = communicationList.get(0)->sendMessage(waterMessage);
-	//		}
-	//		previousMillis = currentMillis;
-	//	}
-	//}
-	//else 
-	{	//i am not the Consumption layer, im a regular lower layer
-		//Serial.print("ffffffffffffffffffffffffff size:");
-		//Serial.println(sensorsData.size());
+	if (this->address == CommonValues::lowerLayerConsumptionAdress) { //am i the consumtion layer?
+		currentMillis = millis();
+		/*
+		this for loop sums the data from the water and current consumption
+		and saves the sum in a private member.
+		*/
+		for (int i = 0; i < sensorsData.size(); i++) {
+			switch (sensorsData.get(i).sensorType) {
+			case CommonValues::currentType:
+				currentConsumptionData += sensorsData.get(i).data;
+				break;
+			case CommonValues::waterType:
+				if (sensorsData.get(i).additionalData == CommonValues::waterConsumptionPin1) {
+					waterConsumptionData1 += sensorsData.get(i).data;
+				}
+				else if (sensorsData.get(i).additionalData == CommonValues::waterConsumptionPin2) {
+					waterConsumptionData2 += sensorsData.get(i).data;
+				}
+				break;
+			}
+		}//end of for() loop
+
+		//check if need to send to higher
+		if ((unsigned long)(currentMillis - previousMillis) >= CommonValues::day) {
+			Message currentMessage;
+			prepareDataMessage(currentMessage, currentConsumptionData, CommonValues::currentType);
+			if (!(sendMessage(currentMessage))) {
+				//TODO if no sent
+			}
+			Message waterMessage1;
+			//TODO ROTEM why to add CommonValues::waterType ? we do it at the Sensor class
+			prepareDataMessage(waterMessage1, waterConsumptionData1, CommonValues::waterType);
+			if (!(sendMessage(waterMessage1))) {
+				//TODO if no sent
+			}
+			Message waterMessage2;
+			//TODO ROTEM why to add CommonValues::waterType ? we do it at the Sensor class
+			prepareDataMessage(waterMessage2, waterConsumptionData2, CommonValues::waterType);
+
+			if (!(sendMessage(waterMessage2))) {
+				//TODO if no sent
+			}
+			previousMillis = currentMillis;
+		}
+	}//end off consumtion layer
+	else {	//i am not the Consumption layer, im a regular plant lower layer
 		for (int i = 0; i < sensorsData.size(); ++i) {
-		//	Serial.print("sensorsData size:");
-		//	Serial.println(sensorsData.size());
 			Serial.print("sensor type:");
 			Serial.println(sensorsData.get(i).sensorType);
 			switch (sensorsData.get(i).sensorType) {
-				case CommonValues::temperatureType:
-					//this is emergency state - send message to middle layer immidietly
-					if (sensorsData.get(i).data >= CommonValues::EMERGENCY_TEMPERATURE) {
-						Message newMessage;
-						prepareDataMessage(newMessage, sensorsData.get(i).data, CommonValues::emergencyType);
-						bool isSent = communicationList.get(0)->sendMessage(newMessage);
-						if (!isSent) {
-							//TODO maybe resent until received
-							bool isSent = communicationList.get(0)->sendMessage(newMessage);
-						}
+			case CommonValues::temperatureType:
+				//this is emergency state - send message to middle layer immidietly
+				if (sensorsData.get(i).data >= CommonValues::EMERGENCY_TEMPERATURE) {
+					Message newMessage;
+					prepareDataMessage(newMessage, sensorsData.get(i).data, CommonValues::emergencyType);
+					if (!(sendMessage(newMessage))) {
 					}
+				}
 					//add data to data array for average
 					temperatureData.add(sensorsData.get(i).data);
 					if (temperatureData.size() == CommonValues::producersSize) {
 						float average = doAverage(temperatureData);
 						Message newMessage;
 						prepareDataMessage(newMessage, average, CommonValues::temperatureType);
-						if (communicationList.get(0)->sendMessage(newMessage)) {
-							//clear array after doing average
-							temperatureData.clear();
+						temperatureData.clear();
+						if (!(sendMessage(newMessage))) {
 						}
-						else {//send failed
-							//TODO 
-						}
-					
 					}
-				break;
-				case CommonValues::humidityType:
-					//add data to data array for average
-					airHumidityData.add(sensorsData.get(i).data);	
-					if (airHumidityData.size() == CommonValues::producersSize) {
-						float average = doAverage(airHumidityData);
-						Message newMessage;
-						prepareDataMessage(newMessage, average, CommonValues::humidityType);
-						sendMessage(newMessage);
-						//clear array after doing average
-						airHumidityData.clear();
-					}
-				break;
-				case CommonValues::soilHumidityType:
+					break;
+			case CommonValues::humidityType:
+				//add data to data array for average
+				airHumidityData.add(sensorsData.get(i).data);
+				if (airHumidityData.size() == CommonValues::producersSize) {
+					float average = doAverage(airHumidityData);
 					Message newMessage;
-					//before doing average, check if need to actuate first
+					prepareDataMessage(newMessage, average, CommonValues::humidityType);
+					if (!(sendMessage(newMessage))) {
+					}
+					//clear array after doing average
+					airHumidityData.clear();
+				}
+				break;
+			case CommonValues::soilHumidityType:
+				//add data to data array for average
+				soilHumidityData.add(sensorsData.get(i).data);
+				//check if we can do avarage
+				if (soilHumidityData.size() == CommonValues::producersSize) {
+					float average = doAverage(soilHumidityData);
+					Message newMessage;
+					//check if need to actuate TODO move to function
 					if (sensorsData.get(i).data <= CommonValues::soilHumidityThresholdMin) {
-						for (int i = 0; i<getActuatorsList().size() ; ++i) {
+						for (int i = 0; i < getActuatorsList().size(); ++i) {
 							if (getActuatorsList().get(i)->getPin() == CommonValues::pumpPin) {
 								getActuatorsList().get(i)->actuate(true);
+								// put in message which pump was activated. 
+								//since both lower layers use the same code.
 								if (this->address == CommonValues::lowerLayerAddress1) {
 									newMessage.action = PUMP1;
-								}	
+								}
 								else if (this->address == CommonValues::lowerLayerAddress2) {
 									newMessage.action = PUMP2;
 								}
 								break;
-							}
-						}
+							}//end of if(CommonValues::pumpPin)
+						}//end of for loop
+					}//end of soilHumidityThresholdMin check
+					else newMessage.action = NONE;
+					prepareDataMessage(newMessage, average, CommonValues::soilHumidityType);
+
+					if (!(sendMessage(newMessage))) {
 					}
-					//add data to data array for average
-					soilHumidityData.add(sensorsData.get(i).data);
-					//Serial.print("soilHumidityDataaaaaaaaaaaaa sizee:");
-					//Serial.println(soilHumidityData.size());
-					if (soilHumidityData.size() == CommonValues::producersSize) {
-						float average = doAverage(soilHumidityData);
-						prepareDataMessage(newMessage, average, CommonValues::soilHumidityType);
-						communicationList.get(0)->sendMessage(newMessage);
-						//clear array after doing average
-						soilHumidityData.clear();
-					}
+					//clear array after doing average
+					soilHumidityData.clear();
+				}
 				break;
-				case CommonValues::lightType:
-					//add data to data array for average
-					lightData.add(sensorsData.get(i).data);
-					if (lightData.size() == CommonValues::producersSize) {
-						float average = doAverage(lightData);
-						Message newMessage;
-						prepareDataMessage(newMessage, average, CommonValues::lightType);
-						communicationList.get(0)->sendMessage(newMessage);
-						//clear array after doing average
-						lightData.clear();
+			case CommonValues::lightType:
+				//add data to data array for average
+				lightData.add(sensorsData.get(i).data);
+				if (lightData.size() == CommonValues::producersSize) {
+					float average = doAverage(lightData);
+					Message newMessage;
+					prepareDataMessage(newMessage, average, CommonValues::lightType);
+					if (!(sendMessage(newMessage))) {
 					}
-				break;	
-				default : Serial.println("default");
-					break;
-			}
-
-		}
-	//	getSensorsData().clear(); //TODO think about moving this to sensorable somehow
-	}
+					//clear array after doing average
+					lightData.clear();
+				}
+				break;
+			default: Serial.println("default");
+				break;
+				}
+		}//and of for loop
+		
+	}//end of regular plant lower layer treatment
 }
-
+//TODO rotem what is this? dont know if necessary..
 void GreenHouseLowerLayer::prepareDataMessage(Message& message, float data, char type) {
 	message.data = data;
 	if (type == CommonValues::emergencyType) {
@@ -192,8 +187,9 @@ void GreenHouseLowerLayer::decodeMessage(Message& message){
 	}
 	if (this->address != message.dest) {
 		//not for me, resend the message to it's original destination
-		communicationList.get(0)->sendMessage(message);	
-		return;	
+		if (!(sendMessage(message))) {
+		}
+			return;
 	}
 	//means we got new policy from upper layer
 	if (message.messageType == CommonValues::policyChange) {
@@ -202,6 +198,8 @@ void GreenHouseLowerLayer::decodeMessage(Message& message){
 			CommonValues::soilHumidityThresholdMax = message.additionalData;
 		}
 	}
+	//reset watchDog to notify that evertything works
+	watchDog.reset();
 }
 
 void GreenHouseLowerLayer::prepareMessage(Message& message, int address) {

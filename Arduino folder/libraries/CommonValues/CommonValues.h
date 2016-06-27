@@ -14,6 +14,8 @@ class CommonValues {
 		static const int lowerLayerAddress2			 = 2;
 		static const int lowerLayerConsumptionAdress = 3;
 		static const int middleLayerAddress 		 = 101;
+		static const int fakeMiddleLayerAddress		 = 102;
+
 		static const int highLayerAddress 			 = 201;
 
 		//sensors id
@@ -25,21 +27,26 @@ class CommonValues {
 		static const int waterFlowSensorId			 = 6;
 
 
-		//pin
+		//input pins
 		static const int radioPin1 = 7;
 		static const int radioPin2 = 8;
 		static const int tempHumidityPin = 2;
 		static const int soilPin = A0;
 		static const int lightPin = A1;
-		static const int pumpPin = 5;
-		static const int fan1Pin = 3;
-		static const int fan2Pin = 4;
-		static const int steamPin = 6;
-		static const int heatPin = 9;
-		static const int currentConsumptionPin = A2;
-		static const int waterConsumptionPin = A3;
+		static const int pumpPin = 2;
+		static const int currentConsumptionPin = A5;
+		static const int waterConsumptionPin1 = 2;
+		static const int waterConsumptionPin2 = 3;
 		static const int higherLayerRadioPin1 = 2;
 		static const int higherLayerRadioPin2 = 15;
+
+		//actuators pins
+		static const int fanPin = 3;
+		static const int ventPin = 4;
+		static const int steamPin = 10;
+		static const int lampPin = 6;
+		static const int heatPin = 5;
+		
 
 
 		//Conventions
@@ -50,7 +57,10 @@ class CommonValues {
 		static const char yourAddressChange = 'y';
 		static const char arduinoMalfunction = 'e';
 		static const char dataType = 'd';
-		static const char emergencyType = 'e';
+		static const char emergencyType = 'E';
+		static const char ACTION_TYPE = 'A';
+
+		//sensor types
 		static const char temperatureType = 'T';
 		static const char humidityType = 'H';
 		static const char soilHumidityType = 'S';
@@ -65,6 +75,17 @@ class CommonValues {
 
 		static const unsigned long day	 = 86400000;  //24 hour
 		static const unsigned long minute= 60000;
+		static const unsigned long second = 1000;
+		
+		//actuators intervals
+		static const unsigned long fanTime = 10 * second;
+		static const unsigned long ventTime = 8 * second;
+		static const unsigned long heatTime = 5 * second;
+		static const unsigned long steamTime = 7 * second;
+		static const unsigned long pumpTime = 3 * second;
+		static const unsigned long lampTime = 3 * second;
+
+
 
 		//thresholds - not consts!
 		static float soilHumidityThresholdMin;
@@ -81,6 +102,7 @@ class CommonValues {
 
 		static long whenTosendConsumption;
 		static int minutesInInterval;
+		static int watchDogSecondsUntilReset;
 
 		static const char* ssid;
 		static const char* password;

@@ -3,8 +3,6 @@
 #include <SLight.h>
 #include <SSoil.h>
 #include <GreenHouseActuator.h>
-#include <MemoryFree.h>
-
 //globals
 //-------
 GreenHouseLowerLayer lowerLayer;
@@ -56,8 +54,8 @@ void createAndAddActuators() {
 }
 
 void setup() {
-  initConsole();
   Serial.println("setup()");
+  initConsole();
   lowerLayer.initLayer(CommonValues::lowerLayerAddress1);
   createAndAddSensors();
   createAndAddActuators();
@@ -65,13 +63,11 @@ void setup() {
 
 void loop() {
   Serial.println("loop()");
-  Serial.print("freeMemory()=");
-  Serial.println(freeMemory());
   //analyze the data from all the sensors
   lowerLayer.analyze(); 
 
   //handle with received messages
-  //messageToRead = lowerLayer.receiveMessage();
+ // messageToRead = lowerLayer.receiveMessage();
   //lowerLayer.decodeMessage(*messageToRead);
   
   delay(lowerLayer.getLoopTime());

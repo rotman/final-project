@@ -14,13 +14,16 @@ bool Radio::sendMessage(Message message) {
     bool ok = false;
     int iteration = 0;									//
     int delayMili = 0;									//this will be the time waiting for re sending a messege that failed.
-    ExponentialBackoff exponentialBackoff(5);
+    ExponentialBackoff exponentialBackoff(7);
     radio->stopListening();							     //if you listen , you cant talk...
     while(!ok && delayMili != -1){						
 		ok =  radio->write(&message, sizeof(message));
-        if(ok)
-			Serial.println(F("send success"));
-
+		if (ok) {
+			Serial.print(F("send success i sent id data and type:"));
+			Serial.println(message.source);
+			Serial.println(message.data);
+			Serial.println(message.sensorType);
+		}
         else {											 //if message fails
 			Serial.println(F("send failed backing off"));
             delayMili = exponentialBackoff.getDelayTime(++iteration);
@@ -38,19 +41,20 @@ bool Radio::sendMessage(Message message) {
 }
 
 void Radio::receiveMessage(Message& message) {
-	//Message* message = new Message();
 	if (radio->available()){
 		radio->read(&message, sizeof(message));
 		Serial.print(F("recived message: from and type and data is:"));
 		Serial.println(message.source);
 		Serial.println(message.sensorType);
 		Serial.println(message.data);
-	//	Serial.println(message.additionalData);
-	//	Serial.println(message.dest);
+		if (isnan(message.data)) {
+			message.messageType = CommonValues::emptyMessage;
+			Serial.println(F("message is nan"));
+		}	
 	}
-	else {
+	else{
 		Serial.println(F("nothing to read"));
-		message.sensorType = CommonValues::emptyMessage;
+		message.messageType = CommonValues::emptyMessage;
 	}
 	
 }

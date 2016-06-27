@@ -15,11 +15,11 @@ class GreenHouseLowerLayer : public LowerLayer<Message>{
 		 void analyze();
 		 void decodeMessage(Message&);
 		 void prepareMessage(Message&, int);
-
+	
 		 void initDataArrays();
 		 float doAverage(LinkedList<float>&);
 		 void prepareDataMessage(Message&, float, char);
-		 void sendMessage(Message&);
+		 bool sendMessage(Message&);
 		 void receiveMessage(Message&);
 	private:
 		int address;
@@ -33,8 +33,10 @@ class GreenHouseLowerLayer : public LowerLayer<Message>{
 		LinkedList<float> lightData;
 		//lower layer consumption data
 		float currentConsumptionData;
-		float waterConsumptionData;
+		float waterConsumptionData1;
+		float waterConsumptionData2;
 
+		
 };
 
 #endif

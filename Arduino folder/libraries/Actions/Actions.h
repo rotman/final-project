@@ -7,8 +7,10 @@ enum Actions {
 	FAN,
 	LIGHT,
 	HEATER,
+	VENT,
 	STEAMER,
 	NONE
+
 };
 
 #endif
