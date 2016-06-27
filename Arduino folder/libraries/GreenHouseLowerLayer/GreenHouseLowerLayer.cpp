@@ -12,7 +12,7 @@ void GreenHouseLowerLayer::receiveMessage(Message& message) {
 void GreenHouseLowerLayer::initLayer(int address) {
 	this->address = address;
 	previousMillis = 0;
-	ICommunicationable* radio = new Radio();
+	ICommunicationable* radio = new Radio(CommonValues::radioPin1, CommonValues::radioPin2);
 	radio->initCommunication(this->address, CommonValues::middleLayerAddress);
 	communicationList.add(radio);
 	setLoopTime(CommonValues::defaultLoopTime);
@@ -46,7 +46,7 @@ void GreenHouseLowerLayer::analyze(){
 		}//end of for() loop
 
 		//check if need to send to higher
-		if ((unsigned long)(currentMillis - previousMillis) >= CommonValues::day) {
+		if ((unsigned long)(currentMillis - previousMillis) >= CommonValues::hour) {
 			Message currentMessage;
 			prepareDataMessage(currentMessage, currentConsumptionData, CommonValues::currentType);
 			if (!(sendMessage(currentMessage))) {

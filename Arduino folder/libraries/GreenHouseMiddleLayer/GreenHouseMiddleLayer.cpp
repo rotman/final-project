@@ -55,8 +55,8 @@ void GreenHouseMiddleLayer::initLayer(int address) {
 	addLowerId(CommonValues::lowerLayerAddress2);
 	addLowerId(CommonValues::lowerLayerConsumptionAdress);	//TODO maybe remove the consumption layer from the low layers array
 	plantsLowerLayers = lowersIds.size() - 1; // minus the consumption
-//init radio
-	ICommunicationable* radio = new Radio();
+	//init radio
+	ICommunicationable* radio = new Radio(CommonValues::radioPin1, CommonValues::radioPin2);
 	radio->initCommunication(this->address, CommonValues::lowerLayerAddress1);
 	communicationList.add(radio);
 	setLoopTime(CommonValues::defaultLoopTime);

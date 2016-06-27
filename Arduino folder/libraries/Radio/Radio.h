@@ -10,11 +10,12 @@
 
 class Radio : public ICommunicationable{
 public:
+	Radio(int, int);
 	void initCommunication (int, int);
 	bool sendMessage(Message);
 	void receiveMessage(Message& message);
 private:
-	RF24* radio = new RF24(7,8);
+	RF24* radio;
 
 };
 

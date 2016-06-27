@@ -15,7 +15,6 @@ class CommonValues {
 		static const int lowerLayerConsumptionAdress = 3;
 		static const int middleLayerAddress 		 = 101;
 		static const int fakeMiddleLayerAddress		 = 102;
-
 		static const int highLayerAddress 			 = 201;
 
 		//sensors id
@@ -68,12 +67,15 @@ class CommonValues {
 		static const char currentType = 'C';
 		static const char waterType = 'W';
 
+		static const int exponentialBackoffMaxRetries = 7;
+		static const int sendMaxRetries = 10;
 		static const int defaultLoopTime = 2000;
 		static const int producersSize = 4;
 		static const int lowerLayerRegisteredNum = 2;
 		static const int EMERGENCY_TEMPERATURE = 40;
 
 		static const unsigned long day	 = 86400000;  //24 hour
+		static const unsigned long hour = 3600000;
 		static const unsigned long minute= 60000;
 		static const unsigned long second = 1000;
 		
