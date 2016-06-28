@@ -69,16 +69,16 @@ class CommonValues {
 		static const char waterType = 'W';
 
 		static const int exponentialBackoffMaxRetries = 7;
-		static const int sendMaxRetries = 10;
-		static const int defaultLoopTime = 2000;
-		static const int producersSize = 4;
-		static const int lowerLayerRegisteredNum = 2;
-		static const int EMERGENCY_TEMPERATURE = 40;
+		static const int sendMaxRetries				  = 10;
+		static const int defaultLoopTime			  = 2000;
+		static const int producersSize				  = 4;
+		static const int lowerLayerRegisteredNum	  = 2;
+		static const int EMERGENCY_TEMPERATURE		  = 40;
 
-		static const unsigned long day	 = 86400000;  //24 hour
-		static const unsigned long hour = 3600000;
-		static const unsigned long minute= 60000;
-		static const unsigned long second = 1000;
+		static const unsigned long day		= 86400000;  //24 hour
+		static const unsigned long hour		= 3600000;
+		static const unsigned long minute	= 60000;
+		static const unsigned long second	= 1000;
 		
 		//actuators intervals
 		static const unsigned long fanTime = 10 * second;

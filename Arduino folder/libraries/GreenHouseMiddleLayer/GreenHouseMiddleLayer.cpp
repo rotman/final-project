@@ -9,9 +9,6 @@ Actions GreenHouseMiddleLayer:: handleThresholds(float value, int min, int max, 
 	else if (value <= min) {
 		//if its the light threshold, we dont want to actuate in intervals,we want on,or off.
 		//TODO check time of light
-		if(CommonValues::lightPin == minPin)
-			action = actuate(minPin, false);
-		else
 			action = actuate(minPin, true);
 	}
 	else return NONE; //no action performed
