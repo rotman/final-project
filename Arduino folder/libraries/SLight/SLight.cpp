@@ -10,7 +10,7 @@ Message SLight	::readSensorData(bool isHumidity){
 	Message message;					//create new message
 	Serial.println("readSensorData called");
 	sensorValue = analogRead(pin);
-	sensorValue = 100 - (sensorValue / 1024) * 100; //calculate light in percentage.
+	sensorValue = 100 - (int)(sensorValue / 1023.0 * 100.0); //calculate light in percentage.
 	Serial.print("light:");
 	Serial.println(sensorValue, DEC);
 	message.data= sensorValue;		//enter the data
