@@ -113,12 +113,9 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = temperatureAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::temperatureType;
-		////if (sendMessage(newMessage)) {
-		////	//TODO handle if  message fails
-		////}
-		//else {
-		//	//TODO
-		//}
+		if (!(sendMessage(newMessage))) {
+			//TODO handle if  message fails
+		}
 		//clear the array after done
 		isTemperatureReadyToAnalyze = false;
 		temperatureData.clear();
@@ -134,9 +131,9 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = airHumidityAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::humidityType;
-		//if (!(sendMessage(newMessage))) {
-		//	//TODO handle if  message fails
-		//}
+		if (!(sendMessage(newMessage))) {
+			//TODO handle if  message fails
+		}
 		//clear the array after done
 		isHumidityReadyToAnalyze = false;
 		humidityData.clear();
@@ -153,9 +150,9 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.data = lightAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::lightType;
-		//if (!(sendMessage(newMessage))) {
-		//	//TODO
-		//}
+		if (!(sendMessage(newMessage))) {
+			//TODO
+		}
 		//clear the array after done
 		isLightReadyToAnalyze = false;
 		lightData.clear();
@@ -254,17 +251,17 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 					case CommonValues::soilHumidityType:
 						//if it's soil Humidity data, send it to the high layer
 						 msg.additionalData = (float)msg.source; // the higher needs to know which pot it is.
-						// sendMessage(msg);
+						 sendMessage(msg);
 					break;
 					case CommonValues::currentType:
 						//if it's current consumption data, send it to the high layer
 						prepareMessage(msg, CommonValues::highLayerAddress); // prepare to send to high
-						//sendMessage(msg);
+						sendMessage(msg);
 					break;
 					case CommonValues::waterType:
 						//if it's water consumption data, send it to the high layer
 						prepareMessage(msg, CommonValues::highLayerAddress);
-						//sendMessage(msg);
+						sendMessage(msg);
 					break;
 					case CommonValues::temperatureType:						
 						isTemperatureReadyToAnalyze = ((updateDataAndCheckIfFull(temperatureData,msg,plantsLowerLayers)) && isTimeConsistency(temperatureData, CommonValues::minutesInInterval));

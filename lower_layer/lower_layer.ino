@@ -70,7 +70,9 @@ void loop() {
  //handle with received messages
  // Message messageToRead;
   //lowerLayer.receiveMessage(messageToRead);
-  //lowerLayer.decodeMessage(messageToRead);  
+  //lowerLayer.decodeMessage(messageToRead); 
+  lowerLayer.getWatchDog().reset();
+ 
 
   delay(lowerLayer.getLoopTime());
 }
