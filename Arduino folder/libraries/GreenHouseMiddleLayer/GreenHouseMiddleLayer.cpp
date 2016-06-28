@@ -149,7 +149,7 @@ void GreenHouseMiddleLayer::analyze() {
 		lightAverage = doAverage(lightData);
 		//TODO decide what to do with light thresholds
 		handleThresholds(lightAverage, CommonValues::lightThresholdMin,
-			CommonValues::lightThresholdMax, CommonValues::lightPin, CommonValues::lightPin);
+			CommonValues::lightThresholdMax, CommonValues::lampPin, CommonValues::lampPin);
 		newMessage.data = lightAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::lightType;
@@ -223,7 +223,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 					sendMessage(msg);
 					break;
 				case FAN:actuate(CommonValues::fanPin,msg.flag); break;
-				case LIGHT:actuate(CommonValues::pumpPin,msg.flag);break;
+				case LIGHT:actuate(CommonValues::lampPin,msg.flag);break;
 				case HEATER:actuate(CommonValues::heatPin,msg.flag);break;
 				case VENT:actuate(CommonValues::ventPin,msg.flag);break;
 				case STEAMER:actuate(CommonValues::steamPin,msg.flag);break;

@@ -55,7 +55,8 @@ void loop() {
   Message message;
   middleLayer.receiveMessage(message);
   middleLayer.decodeMessage(message);
-
+  //
+middleLayer.getWatchDog().reset();
 
   delay(middleLayer.getLoopTime());
 }
