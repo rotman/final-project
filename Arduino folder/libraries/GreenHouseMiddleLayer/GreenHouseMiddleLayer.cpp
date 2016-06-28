@@ -107,8 +107,8 @@ void GreenHouseMiddleLayer::analyze() {
 		//calculate average
 		temperatureAverage = doAverage(temperatureData);
 		//check thresholds
-		handleThresholds(temperatureAverage, CommonValues::temperatureThresholdMax,
-			CommonValues::temperatureThresholdMin, CommonValues::fanPin, CommonValues::heatPin);
+		handleThresholds(temperatureAverage, CommonValues::temperatureThresholdMin,
+			CommonValues::temperatureThresholdMax, CommonValues::heatPin,CommonValues::fanPin);
 			//todo assign action
 		newMessage.data = temperatureAverage;
 		newMessage.messageType = CommonValues::dataType;
@@ -229,6 +229,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 				case STEAMER:actuate(CommonValues::steamPin,msg.flag);break;
 				case NONE://TODO
 				default://TODO
+					break;
 				}
 					
 			break;

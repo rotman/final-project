@@ -9,8 +9,8 @@ float CommonValues::airHumidityThresholdMax = 60;
 float CommonValues::temperatureThresholdMin = 24;
 float CommonValues::temperatureThresholdMax = 28;
 
-float CommonValues::lightThresholdMin = 200; //TODO its no minimum..
-float CommonValues::lightThresholdMax = 100;
+float CommonValues::lightThresholdMin = 0; //TODO its no minimum..
+float CommonValues::lightThresholdMax = 500;
 
 int CommonValues::minutesInInterval = 3;
 int CommonValues::watchDogSecondsUntilReset = 60;

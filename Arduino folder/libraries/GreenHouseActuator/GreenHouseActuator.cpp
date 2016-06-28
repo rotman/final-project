@@ -33,7 +33,8 @@ Actions GreenHouseActuator::actuate(bool on) {
 			break;
 			case CommonValues::lampPin:
 				action = LIGHT;
-				delay(CommonValues::lampTime);						
+				//TODO light hours
+				//delay(CommonValues::lampTime);						
 			break;
 			default:
 			break;
