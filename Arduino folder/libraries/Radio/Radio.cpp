@@ -27,6 +27,8 @@ bool Radio::sendMessage(Message message) {
 			Serial.println(message.source);
 			Serial.println(message.data);
 			Serial.println(message.sensorType);
+			radio->startListening();
+			sendCounter++;
 			return true;
 		}
 		else 									 //if message fails
@@ -43,6 +45,8 @@ bool Radio::sendMessage(Message message) {
 			Serial.println(message.source);
 			Serial.println(message.data);
 			Serial.println(message.sensorType);
+			sendCounter++;
+			break;
 		}
         else{											 //if message fails
 			Serial.println(F("send failed backing off"));
