@@ -66,7 +66,9 @@ void loop() {
   Serial.println("loop()");
   //analyze the data from all the sensors
   lowerLayer.analyze(); 
-
+Serial.println(F("i send and receive times:::::::::::::::::::::"));
+  Serial.println(Radio::sendCounter);
+  Serial.println(Radio::receiveCounter);
  //handle with received messages
  // Message messageToRead;
   //lowerLayer.receiveMessage(messageToRead);
