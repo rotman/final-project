@@ -177,11 +177,15 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 			case CommonValues::policyChange:
 				switch (msg.sensorType) {
 					case CommonValues::soilHumidityType:
+						Serial.print(F("lowersIds.size() ------------"));
+						Serial.println(lowersIds.size(), DEC);
 						//if it's soil Humidity policy changes, send it to the lower layers
-						for (int i = 1; i<= lowersIds.size() ; ++i) {
-							if (i != CommonValues::lowerLayerConsumptionAdress) {
+						for (int i = 0; i<lowersIds.size() ; ++i) {
+							if (lowersIds.get(i) != CommonValues::lowerLayerConsumptionAdress) {
 								prepareMessage(msg, lowersIds.get(i));
-								sendMessage(msg);
+								if (!sendMessage(msg)) {
+									unsentImportantMessages.add(msg);
+								}
 							}
 						}			
 					break;

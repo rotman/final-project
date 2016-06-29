@@ -37,7 +37,7 @@ class Layer {
 			return communicationList;
 		}
 
-		int getLoopTime(){
+		int getLoopTime() {
 			return this->loopTime;
 		}
 		WatchDog& getWatchDog() {
@@ -46,9 +46,19 @@ class Layer {
 		void setLoopTime(int time) {
 			this->loopTime = time;
 		}
+		void sendUnsentImportantMessages() {
+			for (int i = 0; i<unsentImportantMessages.size(); i++) {
+				Serial.print(F("resending message to--------------- "));
+				Serial.println(unsentImportantMessages.get(i).dest, DEC);
+				if (communicationList.get(0)->sendMessage(unsentImportantMessages.get(i))) {
+					unsentImportantMessages.remove(i);
+				}
+			}
+		}
 	protected:
 		int loopTime;
 		LinkedList<ICommunicationable*> communicationList;
+		LinkedList<T> unsentImportantMessages;
 		WatchDog watchDog;
 };
 
