@@ -63,20 +63,27 @@ bool Radio::sendMessage(Message message) {
 	return ok;
 }
 
-void Radio::receiveMessage(Message& message) {
-	while (radio->available()){
-		receiveCounter++;
-		radio->read(&message, sizeof(message));
-		Serial.print(F("recived message: from and type and data is:"));
-		Serial.println(message.source);
-		Serial.println(message.sensorType);
-		Serial.println(message.data);
-		if (isnan(message.data)) {
-			message.messageType = CommonValues::emptyMessage;
-			Serial.println(F("message is nan"));
-		}		
-	}
-	Serial.println(F("nothing to read"));
-	message.messageType = CommonValues::emptyMessage;
-	
+ Radio::receiveMessages(LinkedList<Message>& messages) {
+	 if (radio->available()) {
+		 while (radio->available()) {
+			 Message message;
+			 receiveCounter++; //TODO its a test
+			 radio->read(&message, sizeof(message));
+			 Serial.print(F("recived message: from and type and data is:"));
+			 Serial.println(message.source);
+			 Serial.println(message.sensorType);
+			 Serial.println(message.data);
+			 if (isnan(message.data)) {
+				 message.messageType = CommonValues::emptyMessage;
+				 Serial.println(F("message is nan"));
+			 }
+			 messages.add(message);
+		 }
+	 }
+	 else {
+		 Message message;
+		 message.messageType = CommonValues::empyMessage;
+		 messages.add(message);
+		 Serial.println(F("nothing to read"));
+	 }
 }
