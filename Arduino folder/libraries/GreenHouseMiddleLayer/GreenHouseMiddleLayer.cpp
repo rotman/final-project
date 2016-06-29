@@ -183,7 +183,9 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						for (int i = 0; i<lowersIds.size() ; ++i) {
 							if (lowersIds.get(i) != CommonValues::lowerLayerConsumptionAdress) {
 								prepareMessage(msg, lowersIds.get(i));
-								sendMessage(msg);
+								if (!sendMessage(msg)) {
+									unsentImportantMessages.add(msg);
+								}
 							}
 						}			
 					break;

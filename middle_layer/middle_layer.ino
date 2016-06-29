@@ -69,6 +69,8 @@ void loop() {
   Serial.println(Radio::sendCounter, DEC);
   Serial.print(F("Radio::receiveCounter::::::::::::::::::"));
   Serial.println(Radio::receiveCounter, DEC);
+
+  middleLayer.sendUnsentImportantMessages();
   
   middleLayer.getWatchDog().reset();
 }
