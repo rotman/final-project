@@ -15,7 +15,6 @@ void Radio::initCommunication(int readingAddress, int writingAddress) {
 }
 
 bool Radio::sendMessage(Message message) {
-	sendCounter++;
 	radio->openWritingPipe(message.dest);				// open pipe for current destination
     bool ok = false;
 	int sendMaxRetries = CommonValues::sendMaxRetries;
@@ -65,7 +64,7 @@ bool Radio::sendMessage(Message message) {
 }
 
 void Radio::receiveMessage(Message& message) {
-	if (radio->available()){
+	while (radio->available()){
 		receiveCounter++;
 		radio->read(&message, sizeof(message));
 		Serial.print(F("recived message: from and type and data is:"));
@@ -75,11 +74,9 @@ void Radio::receiveMessage(Message& message) {
 		if (isnan(message.data)) {
 			message.messageType = CommonValues::emptyMessage;
 			Serial.println(F("message is nan"));
-		}	
+		}		
 	}
-	else{
-		Serial.println(F("nothing to read"));
-		message.messageType = CommonValues::emptyMessage;
-	}
+	Serial.println(F("nothing to read"));
+	message.messageType = CommonValues::emptyMessage;
 	
 }
