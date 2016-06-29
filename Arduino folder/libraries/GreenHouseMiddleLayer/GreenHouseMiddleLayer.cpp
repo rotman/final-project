@@ -9,9 +9,6 @@ Actions GreenHouseMiddleLayer:: handleThresholds(float value, int min, int max, 
 	else if (value <= min) {
 		//if its the light threshold, we dont want to actuate in intervals,we want on,or off.
 		//TODO check time of light
-		if(CommonValues::lightPin == minPin)
-			action = actuate(minPin, false);
-		else
 			action = actuate(minPin, true);
 	}
 	else return NONE; //no action performed
@@ -55,8 +52,8 @@ void GreenHouseMiddleLayer::initLayer(int address) {
 	addLowerId(CommonValues::lowerLayerAddress2);
 	addLowerId(CommonValues::lowerLayerConsumptionAdress);	//TODO maybe remove the consumption layer from the low layers array
 	plantsLowerLayers = lowersIds.size() - 1; // minus the consumption
-//init radio
-	ICommunicationable* radio = new Radio();
+	//init radio
+	ICommunicationable* radio = new Radio(CommonValues::radioPin1, CommonValues::radioPin2);
 	radio->initCommunication(this->address, CommonValues::lowerLayerAddress1);
 	communicationList.add(radio);
 	setLoopTime(CommonValues::defaultLoopTime);
@@ -107,17 +104,14 @@ void GreenHouseMiddleLayer::analyze() {
 		//calculate average
 		temperatureAverage = doAverage(temperatureData);
 		//check thresholds
-		handleThresholds(temperatureAverage, CommonValues::temperatureThresholdMax,
-			CommonValues::temperatureThresholdMin, CommonValues::fanPin, CommonValues::heatPin);
+		handleThresholds(temperatureAverage, CommonValues::temperatureThresholdMin,
+			CommonValues::temperatureThresholdMax, CommonValues::heatPin,CommonValues::fanPin);
 			//todo assign action
 		newMessage.data = temperatureAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::temperatureType;
-		if (sendMessage(newMessage)) {
+		if (!(sendMessage(newMessage))) {
 			//TODO handle if  message fails
-		}
-		else {
-			//TODO
 		}
 		//clear the array after done
 		isTemperatureReadyToAnalyze = false;
@@ -149,7 +143,7 @@ void GreenHouseMiddleLayer::analyze() {
 		lightAverage = doAverage(lightData);
 		//TODO decide what to do with light thresholds
 		handleThresholds(lightAverage, CommonValues::lightThresholdMin,
-			CommonValues::lightThresholdMax, CommonValues::lightPin, CommonValues::lightPin);
+			CommonValues::lightThresholdMax, CommonValues::lampPin, CommonValues::lampPin);
 		newMessage.data = lightAverage;
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::lightType;
@@ -223,12 +217,13 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 					sendMessage(msg);
 					break;
 				case FAN:actuate(CommonValues::fanPin,msg.flag); break;
-				case LIGHT:actuate(CommonValues::pumpPin,msg.flag);break;
+				case LIGHT:actuate(CommonValues::lampPin,msg.flag);break;
 				case HEATER:actuate(CommonValues::heatPin,msg.flag);break;
 				case VENT:actuate(CommonValues::ventPin,msg.flag);break;
 				case STEAMER:actuate(CommonValues::steamPin,msg.flag);break;
 				case NONE://TODO
 				default://TODO
+					break;
 				}
 					
 			break;

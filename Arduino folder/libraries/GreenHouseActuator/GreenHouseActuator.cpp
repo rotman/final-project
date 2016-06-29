@@ -3,45 +3,59 @@
 #include <GreenHouseActuator.h>
 
 
-GreenHouseActuator::GreenHouseActuator(int pin):Actuator(pin){}
+GreenHouseActuator::GreenHouseActuator(int pin):Actuator(pin){
+	//initialize with the actuator beeing off
+	if (CommonValues::pumpPin == pin)// the second relay is working the opposite way. HIGH is off and LOW is on
+		digitalWrite(this->pin, HIGH);
+	else
+		digitalWrite(this->pin, LOW);
+}
 
 
 Actions GreenHouseActuator::actuate(bool on) {
 	Actions action;
 	if(on) {
-		digitalWrite(this->pin,HIGH);
-		switch (pin) {
-			case CommonValues::pumpPin:
-				//action = //TODO
-				delay(CommonValues::pumpTime);
-			break;
+		// the second relay is working the opposite way. HIGH is off and LOW is on
+		if (CommonValues::pumpPin == pin) {
+			digitalWrite(this->pin, LOW);
+			delay(CommonValues::pumpTime);
+			//action = //TODO
+		}
+		else {
+			digitalWrite(this->pin, HIGH); //turn on pin on relay
+			switch (pin) {
 			case CommonValues::fanPin:
 				action = FAN;
 				delay(CommonValues::fanTime);
-			break;
+				break;
 			case CommonValues::ventPin:
 				action = VENT;
-				delay(CommonValues::ventTime);			
-			break;
+				delay(CommonValues::ventTime);
+				break;
 			case CommonValues::steamPin:
 				action = STEAMER;
-				delay(CommonValues::steamTime);						
-			break;
+				delay(CommonValues::steamTime);
+				break;
 			case CommonValues::heatPin:
 				action = HEATER;
-				delay(CommonValues::heatTime);						
-			break;
+				delay(CommonValues::heatTime);
+				break;
 			case CommonValues::lampPin:
 				action = LIGHT;
-				delay(CommonValues::lampTime);						
-			break;
+				//TODO light hours
+								
+				break;
 			default:
-			break;
+				break;
+			}
 		}
 	}
-	digitalWrite(this->pin, LOW);
-	Serial.print(F("action was pefformed!!!!!!!!!! :"));
-	Serial.println(action);
+	if (CommonValues::pumpPin == pin)// the second relay is working the opposite way. HIGH is off and LOW is on
+		digitalWrite(this->pin, HIGH);
+	else if(CommonValues::lampPin != pin) // light does not turn off with intervals
+		digitalWrite(this->pin, LOW);
+	Serial.print(F("action was pefformed!!!!!!!!!!pin :"));
+	Serial.println(this->pin);
 
 	return action;
 }

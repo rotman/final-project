@@ -15,7 +15,6 @@ class CommonValues {
 		static const int lowerLayerConsumptionAdress = 3;
 		static const int middleLayerAddress 		 = 101;
 		static const int fakeMiddleLayerAddress		 = 102;
-
 		static const int highLayerAddress 			 = 201;
 
 		//sensors id
@@ -33,7 +32,6 @@ class CommonValues {
 		static const int tempHumidityPin = 2;
 		static const int soilPin = A0;
 		static const int lightPin = A1;
-		static const int pumpPin = 2;
 		static const int currentConsumptionPin = A5;
 		static const int waterConsumptionPin1 = 2;
 		static const int waterConsumptionPin2 = 3;
@@ -41,10 +39,12 @@ class CommonValues {
 		static const int higherLayerRadioPin2 = 15;
 
 		//actuators pins
+		static const int pumpPin = 6;
+
 		static const int fanPin = 3;
 		static const int ventPin = 4;
 		static const int steamPin = 10;
-		static const int lampPin = 6;
+		static const int lampPin = 9;
 		static const int heatPin = 5;
 		
 
@@ -68,14 +68,17 @@ class CommonValues {
 		static const char currentType = 'C';
 		static const char waterType = 'W';
 
-		static const int defaultLoopTime = 2000;
-		static const int producersSize = 4;
-		static const int lowerLayerRegisteredNum = 2;
-		static const int EMERGENCY_TEMPERATURE = 40;
+		static const int exponentialBackoffMaxRetries = 7;
+		static const int sendMaxRetries				  = 10;
+		static const int defaultLoopTime			  = 2000;
+		static const int producersSize				  = 4;
+		static const int lowerLayerRegisteredNum	  = 2;
+		static const int EMERGENCY_TEMPERATURE		  = 40;
 
-		static const unsigned long day	 = 86400000;  //24 hour
-		static const unsigned long minute= 60000;
-		static const unsigned long second = 1000;
+		static const unsigned long day		= 86400000;  //24 hour
+		static const unsigned long hour		= 3600000;
+		static const unsigned long minute	= 60000;
+		static const unsigned long second	= 1000;
 		
 		//actuators intervals
 		static const unsigned long fanTime = 10 * second;

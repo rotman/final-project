@@ -6,7 +6,6 @@
 //globals
 //-------
 GreenHouseLowerLayer lowerLayer;
-Message* messageToRead;
 
 //sensors
 Sensor * tempHumidity;
@@ -53,12 +52,14 @@ void createAndAddActuators() {
   lowerLayer.addActuator(pump);
 }
 
+
 void setup() {
   Serial.println("setup()");
   initConsole();
-  lowerLayer.initLayer(CommonValues::lowerLayerAddress1);
+  lowerLayer.initLayer(CommonValues::lowerLayerAddress2);
   createAndAddSensors();
   createAndAddActuators();
+ 
 }
 
 void loop() {
@@ -66,9 +67,11 @@ void loop() {
   //analyze the data from all the sensors
   lowerLayer.analyze(); 
 
-  //handle with received messages
- // messageToRead = lowerLayer.receiveMessage();
-  //lowerLayer.decodeMessage(*messageToRead);
-  
+ //handle with received messages
+ // Message messageToRead;
+  //lowerLayer.receiveMessage(messageToRead);
+  //lowerLayer.decodeMessage(messageToRead);  
+  lowerLayer.getWatchDog().reset();
+//TODO maybe we donf need delay
   delay(lowerLayer.getLoopTime());
 }

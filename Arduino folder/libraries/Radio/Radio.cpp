@@ -1,6 +1,11 @@
 #include <Radio.h>
 
+int Radio::sendCounter = 0;
+int Radio::receiveCounter = 0;
 
+Radio::Radio(int connactionPin1, int connactionPin2){
+	radio = new RF24(connactionPin1,connactionPin2);
+}
 void Radio::initCommunication(int readingAddress, int writingAddress) {
 	radio->begin();
     radio->setRetries(15, 15); // default
@@ -10,13 +15,28 @@ void Radio::initCommunication(int readingAddress, int writingAddress) {
 }
 
 bool Radio::sendMessage(Message message) {
+	sendCounter++;
 	radio->openWritingPipe(message.dest);				// open pipe for current destination
     bool ok = false;
-    int iteration = 0;									//
-    int delayMili = 0;									//this will be the time waiting for re sending a messege that failed.
-    ExponentialBackoff exponentialBackoff(7);
-    radio->stopListening();							     //if you listen , you cant talk...
-    while(!ok && delayMili != -1){						
+	int sendMaxRetries = CommonValues::sendMaxRetries;
+	radio->stopListening();							     //if you listen , you cant talk...
+	for (int i = 0; i < sendMaxRetries; ++i) {
+		ok = radio->write(&message, sizeof(message));
+		if (ok) {
+			Serial.print(F("send success i sent id data and type:"));
+			Serial.println(message.source);
+			Serial.println(message.data);
+			Serial.println(message.sensorType);
+			return true;
+		}
+		else 									 //if message fails
+			Serial.println(F("send failed trying again"));
+	}
+	//send message failed, lets try exponential backoff.
+	int iteration = 0;									//
+	int delayMili = 0;									//this will be the time waiting for re sending a messege that failed.
+	ExponentialBackoff exponentialBackoff(CommonValues::exponentialBackoffMaxRetries);
+	while(!ok && delayMili != -1){						
 		ok =  radio->write(&message, sizeof(message));
 		if (ok) {
 			Serial.print(F("send success i sent id data and type:"));
@@ -24,7 +44,7 @@ bool Radio::sendMessage(Message message) {
 			Serial.println(message.data);
 			Serial.println(message.sensorType);
 		}
-        else {											 //if message fails
+        else{											 //if message fails
 			Serial.println(F("send failed backing off"));
             delayMili = exponentialBackoff.getDelayTime(++iteration);
             if(delayMili >= 0)
@@ -42,6 +62,7 @@ bool Radio::sendMessage(Message message) {
 
 void Radio::receiveMessage(Message& message) {
 	if (radio->available()){
+		receiveCounter++;
 		radio->read(&message, sizeof(message));
 		Serial.print(F("recived message: from and type and data is:"));
 		Serial.println(message.source);

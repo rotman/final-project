@@ -40,6 +40,9 @@ class Layer {
 		int getLoopTime(){
 			return this->loopTime;
 		}
+		WatchDog& getWatchDog() {
+			return this->watchDog;
+		}
 		void setLoopTime(int time) {
 			this->loopTime = time;
 		}
