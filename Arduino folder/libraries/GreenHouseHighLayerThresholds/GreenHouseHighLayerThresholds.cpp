@@ -18,6 +18,7 @@ void GreenHouseHighLayerThresholds::updateValue(String name , float minValue , f
       data = values.get(i);
       data.minValue = minValue;
       data.maxValue = maxValue;
+      data.last_updated = last_updated;
       values.set(i,data);
       found = true;
     }

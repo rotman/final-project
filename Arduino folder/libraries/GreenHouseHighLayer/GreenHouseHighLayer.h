@@ -30,7 +30,8 @@ public:
 		void analyze();
 		void decodeMessage(Message&);
 		void prepareMessage(Message&, int);
-		void recieveRFMessage(Message&);
+		void recieveRFMessages(LinkedList<Message>&);
+		void sendRFMessage(Message);
 		int findGreenHouseDataIndex(int id);
 		int findGreenHouseThresholdsIndex(int id);
 		void sendDataToServer(JsonObject& json);

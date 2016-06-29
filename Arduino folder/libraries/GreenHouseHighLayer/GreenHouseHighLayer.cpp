@@ -45,6 +45,10 @@ int GreenHouseHighLayer::findGreenHouseThresholdsIndex(int id) {
 
 void GreenHouseHighLayer::decodeMessage(Message & message) {
 
+	if ('z' != message.sensorType && 201 == message.dest) {
+		return;
+	}
+
 	int action = 0, greenhouseId;
 	String soilHumidityKey = "soilHumidity";
 	soilHumidityKey += message.source;
@@ -147,9 +151,16 @@ void GreenHouseHighLayer::prepareMessage(Message & message , int address) {
 	message.dest = address;
 }
 
-void GreenHouseHighLayer::recieveRFMessage(Message& message) {
-   this->communicationList.get(0)->receiveMessage(message);
+void GreenHouseHighLayer::recieveRFMessages(LinkedList<Message>& messages) {
+   this->communicationList.get(0)->receiveMessages(messages);
 };
+
+void GreenHouseHighLayer::sendRFMessage(Message message) {
+		//if message was not send
+		if (!(this->communicationList.get(0)->sendMessage(message))) {
+				this->unSentImportantMessages.add(message);
+		}
+}
 
 void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
   JsonArray& jGreenHouses = json.createNestedArray("greenhouses");
@@ -224,7 +235,8 @@ void GreenHouseHighLayer::getNewSettings() {
 					Serial.println(minValue);
 					Serial.println("max value: ");
 					Serial.println(maxValue);
-
+					Serial.println("updated_At: ");
+					Serial.println(updated_at);
 		      this->greenHouseThresholds[index].updateValue(key,minValue,maxValue,updated_at);
 
 		      message.data = minValue;
@@ -244,7 +256,7 @@ void GreenHouseHighLayer::getNewSettings() {
 		      }
 
 		      this->prepareMessage(message,greenhouse);
-		      this->communicationList.get(0)->sendMessage(message);
+					this->sendRFMessage(message);
 		    }
     }
   }
@@ -262,14 +274,14 @@ void GreenHouseHighLayer::checkMiddleLayer() {
 			//set it to not working state
 			greenHouseData[i].setWorking(false);
 			Serial.println("updating status");
-			this->communicationList.get(0)->sendMessage(root, "/api/status.php");
+			this->communicationList.get(1)->sendMessage(root, "/api/status.php");
 		}
 		else {
 			if (!greenHouseData[i].getWorking()) {
 				//set it back to working state
 				greenHouseData[i].setWorking(true);
 				Serial.println("updating status");
-				this->communicationList.get(0)->sendMessage(root, "/api/status.php");
+				this->communicationList.get(1)->sendMessage(root, "/api/status.php");
 			}
 		}
 	}
