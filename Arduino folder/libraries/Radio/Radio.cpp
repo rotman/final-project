@@ -63,7 +63,7 @@ bool Radio::sendMessage(Message message) {
 	return ok;
 }
 
- Radio::receiveMessages(LinkedList<Message>& messages) {
+void Radio::receiveMessages(LinkedList<Message>& messages) {
 	 if (radio->available()) {
 		 while (radio->available()) {
 			 Message message;
@@ -82,7 +82,7 @@ bool Radio::sendMessage(Message message) {
 	 }
 	 else {
 		 Message message;
-		 message.messageType = CommonValues::empyMessage;
+		 message.messageType = CommonValues::emptyMessage;
 		 messages.add(message);
 		 Serial.println(F("nothing to read"));
 	 }

@@ -5,8 +5,8 @@ bool GreenHouseLowerLayer::sendMessage(Message& message) {
 	return (communicationList.get(0)->sendMessage(message));
 }
 
-void GreenHouseLowerLayer::receiveMessage(Message& message) {
-	communicationList.get(0)->receiveMessage(message);
+void GreenHouseLowerLayer::receiveMessages(LinkedList<Message>& messages) {
+	communicationList.get(0)->receiveMessages(messages);
 }
 
 void GreenHouseLowerLayer::initLayer(int address) {

@@ -26,7 +26,7 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 		void decodeMessage(Message&);
 		void prepareMessage(Message&, int);
 		bool sendMessage(Message&);
-		void receiveMessage(Message&);
+		void receiveMessages(LinkedList<Message>&);
 		unsigned long convertDateTimeToMillis(DateTime);
 		
 	private:

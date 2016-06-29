@@ -13,7 +13,7 @@ public:
 	Radio(int, int);
 	void initCommunication (int, int);
 	bool sendMessage(Message);
-	void receiveMessage(Message& message);
+	void receiveMessages(LinkedList<Message>&);
 	static int sendCounter;//TEST
 	static int receiveCounter; //TEST
 private:

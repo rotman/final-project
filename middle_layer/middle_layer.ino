@@ -55,8 +55,12 @@ void loop() {
   //handle with received messages
   LinkedList<Message> messages;
   middleLayer.receiveMessages(messages);
-  for (int i = 0; i<messages.size(); i++) {
-    middleLayer.decodeMessage(message);
+  
+  int mSize = messages.size();
+  Message* messagesArray = new Message[mSize];
+  for (int i = 0; i<mSize; i++) {
+    messagesArray[i] = messages.get(i);
+    middleLayer.decodeMessage(messagesArray[i]);
   }
 
   Serial.print(F("Radio::sendCounter::::::::::::::::::"));

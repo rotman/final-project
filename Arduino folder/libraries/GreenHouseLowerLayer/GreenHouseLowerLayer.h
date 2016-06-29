@@ -20,7 +20,7 @@ class GreenHouseLowerLayer : public LowerLayer<Message>{
 		 float doAverage(LinkedList<float>&);
 		 void prepareDataMessage(Message&, float, char);
 		 bool sendMessage(Message&);
-		 void receiveMessage(Message&);
+		 void receiveMessages(LinkedList<Message>&);
 	private:
 		int address;
 		unsigned long currentMillis;

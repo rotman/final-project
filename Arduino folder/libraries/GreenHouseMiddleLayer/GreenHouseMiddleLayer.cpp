@@ -67,8 +67,8 @@ bool GreenHouseMiddleLayer::sendMessage(Message& message) {
 	return communicationList.get(0)->sendMessage(message);
 };
 
-void GreenHouseMiddleLayer::receiveMessage(Message& message) {
-	 communicationList.get(0)->receiveMessage(message);
+void GreenHouseMiddleLayer::receiveMessages(LinkedList<Message>& messages) {
+	 communicationList.get(0)->receiveMessages(messages);
 };
 
 void GreenHouseMiddleLayer::prepareMessage(Message& message, int add) {
