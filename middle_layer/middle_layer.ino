@@ -51,12 +51,25 @@ void setup() {
 
 void loop() {
   Serial.print("loop()");
- // Serial.println(freeMemory()); 
-  Message message;
-  middleLayer.receiveMessage(message);
-  middleLayer.decodeMessage(message);
+  
+  //handle with received messages
+  LinkedList<Message> messages;
+  middleLayer.receiveMessages(messages);
+  
+  int mSize = messages.size();
+  Message* messagesArray = new Message[mSize];
+  for (int i = 0; i<mSize; i++) {
+    messagesArray[i] = messages.get(i);
+    middleLayer.decodeMessage(messagesArray[i]);
+  }
+
+  Serial.print(F("Radio::sendCounter::::::::::::::::::"));
+  Serial.println(Radio::sendCounter, DEC);
+  Serial.print(F("Radio::receiveCounter::::::::::::::::::"));
+  Serial.println(Radio::receiveCounter, DEC);
   
   middleLayer.getWatchDog().reset();
-
+  
+  //TODO maybe we donf need delay
   delay(middleLayer.getLoopTime());
 }

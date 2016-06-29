@@ -64,15 +64,27 @@ void setup() {
 
 void loop() {
   Serial.println("loop()");
+  
   //analyze the data from all the sensors
   lowerLayer.analyze(); 
+  
+  //handle with received messages
+  LinkedList<Message> messages;
+  lowerLayer.receiveMessages(messages);
+  int mSize = messages.size();
+  Message* messagesArray = new Message[mSize];
+  for (int i = 0; i<mSize; i++) {
+    messagesArray[i] = messages.get(i);
+    lowerLayer.decodeMessage(messagesArray[i]);
+  }
 
- //handle with received messages
- // Message messageToRead;
-  //lowerLayer.receiveMessage(messageToRead);
-  //lowerLayer.decodeMessage(messageToRead); 
+  Serial.print(F("Radio::sendCounter::::::::::::::::::"));
+  Serial.println(Radio::sendCounter, DEC);
+  Serial.print(F("Radio::receiveCounter::::::::::::::::::"));
+  Serial.println(Radio::receiveCounter, DEC);
+  
   lowerLayer.getWatchDog().reset();
- 
-
+   
+  //TODO maybe we donf need delay
   delay(lowerLayer.getLoopTime());
 }
