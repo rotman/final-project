@@ -1,5 +1,8 @@
 #include <Radio.h>
 
+int Radio::sendCounter = 0;
+int Radio::receiveCounter = 0;
+
 Radio::Radio(int connactionPin1, int connactionPin2){
 	radio = new RF24(connactionPin1,connactionPin2);
 }
@@ -12,6 +15,7 @@ void Radio::initCommunication(int readingAddress, int writingAddress) {
 }
 
 bool Radio::sendMessage(Message message) {
+	sendCounter++;
 	radio->openWritingPipe(message.dest);				// open pipe for current destination
     bool ok = false;
 	int sendMaxRetries = CommonValues::sendMaxRetries;
@@ -23,6 +27,7 @@ bool Radio::sendMessage(Message message) {
 			Serial.println(message.source);
 			Serial.println(message.data);
 			Serial.println(message.sensorType);
+			return true;
 		}
 		else 									 //if message fails
 			Serial.println(F("send failed trying again"));
@@ -57,6 +62,7 @@ bool Radio::sendMessage(Message message) {
 
 void Radio::receiveMessage(Message& message) {
 	if (radio->available()){
+		receiveCounter++;
 		radio->read(&message, sizeof(message));
 		Serial.print(F("recived message: from and type and data is:"));
 		Serial.println(message.source);

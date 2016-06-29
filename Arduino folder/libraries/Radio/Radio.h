@@ -14,6 +14,8 @@ public:
 	void initCommunication (int, int);
 	bool sendMessage(Message);
 	void receiveMessage(Message& message);
+	static int sendCounter;//TEST
+	static int receiveCounter; //TEST
 private:
 	RF24* radio;
 
