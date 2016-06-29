@@ -94,7 +94,7 @@ void GreenHouseHighLayer::decodeMessage(Message & message) {
 
 				if (action != 0) {
 					Serial.println("updating action in server");
-					this->communicationList.get(1)->sendMessage(root,"/action");
+					this->communicationList.get(1)->sendMessage(root,"/api/action");
 				}
 			}
 
@@ -145,7 +145,6 @@ void GreenHouseHighLayer::recieveRFMessage(Message& message) {
 void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
   JsonArray& jGreenHouses = json.createNestedArray("greenhouses");
   int i,j;
-
   for (i = 0 ; i < CommonValues::amountOfGreenHouses ; i++ ) {
       JsonObject& object = jGreenHouses.createNestedObject();
       object["id"] = this->greenHouseData[i].getId();
@@ -155,7 +154,6 @@ void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
       for (j = 0 ; j < this->greenHouseData[i].getValuesSize() ; j++ ) {
           DataValue data = this->greenHouseData[i].getValue(j);
           JsonObject& jsonData = dataArray.createNestedObject();
-
           jsonData["key"] = data.name;
           jsonData["value"] = data.value;
 
@@ -170,14 +168,14 @@ void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
       }
 
 			Serial.println("sending data to server");
-      this->communicationList.get(1)->sendMessage(json,"/data");
+      this->communicationList.get(1)->sendMessage(json,"/api/data");
 
   }
 }
 
 void GreenHouseHighLayer::getNewSettings() {
   int i,j;
-	Message messageArr[4];
+	Message message;
 	String name;
 	float value;
 
@@ -186,92 +184,59 @@ void GreenHouseHighLayer::getNewSettings() {
     int greenhouse = this->greenHouseData[i].getId();
     int index;
     String response;
-    String url = "/options/last_updated.php?greenhouse=";
+    String url = "/api/options/";
     url += greenhouse ;
+		response = this->communicationList.get(1)->receiveMessage(url);
+		DynamicJsonBuffer jsonBuffer;
+		JsonObject& root = jsonBuffer.parseObject(response);
 
-		//get the last time the settings updated from the server
-    String last_updated = this->communicationList.get(1)->receiveMessage(url);
+		if (!root.success()) {
+		  Serial.println("parseObject() failed");
+		  return;
+		}
 
-    index = this->findGreenHouseThresholdsIndex(greenhouse);
+		JsonArray& options = root["options"];
 
-		//if the settings has changed from the last time we checked
-    if (last_updated != this->greenHouseThresholds[index].getLastUpdated()) {
+		//check if values has changed
+		for(JsonArray::iterator it=options.begin(); it!=options.end(); ++it) {
+				JsonObject& itValue = *it;
+				String updated_at = itValue["updated_at"];
 
-			//set the time of the last updated settings
-      this->greenHouseThresholds[index].setLastUpdated(last_updated);
+		    ThresholdsValue tValue = this->greenHouseThresholds[index].getValueByName(itValue["key"]);
+		    if (tValue.last_updated != updated_at) {
+					String key = itValue["key"];
+					float minValue = itValue["minValue"];
+					float maxValue = itValue["maxValue"];
 
-			//get the latest settins from the server
-      url = "/options/";
-      url += greenhouse ;
-      response = this->communicationList.get(1)->receiveMessage(url);
+					Serial.println("updating thresholds: ");
+					Serial.println("key: ");
+					Serial.println(key);
+					Serial.println("min value: ");
+					Serial.println(minValue);
+					Serial.println("max value: ");
+					Serial.println(maxValue);
 
-      StaticJsonBuffer<600> jsonBuffer;
-      JsonObject& root = jsonBuffer.parseObject(response);
+		      this->greenHouseThresholds[index].updateValue(key,minValue,maxValue,updated_at);
 
-      if (!root.success()) {
-        Serial.println("parseObject() failed");
-        return;
-      }
+		      message.data = minValue;
+		      message.additionalData = maxValue;
+		      message.messageType = CommonValues::policyChange;
+		      if (key == "airHumidity") {
+		          message.sensorType = CommonValues::humidityType;
+		      }
+		      if (key == "soilHumidity") {
+		          message.sensorType = CommonValues::soilHumidityType;
+		      }
+		      if (key == "temperature") {
+		          message.sensorType = CommonValues::temperatureType;
+		      }
+		      if (key == "luminance") {
+		          message.sensorType = CommonValues::lightType;
+		      }
 
-      JsonObject& options = root["options"];
-
-			//update the thresholds in the layer memory
-      for(JsonObject::iterator it=options.begin(); it!=options.end(); ++it) {
-        this->greenHouseThresholds[index].updateValue(it->key,it->value);
-      }
-
-      //send rf message to greenhouse middle layer
-
-			//initialize messages array
-			messageArr[0].sensorType = CommonValues::humidityType;
-			messageArr[0].messageType = CommonValues::policyChange;
-
-			messageArr[1].sensorType = CommonValues::soilHumidityType;
-			messageArr[1].messageType = CommonValues::policyChange;
-
-			messageArr[2].sensorType = CommonValues::temperatureType;
-			messageArr[2].messageType = CommonValues::policyChange;
-
-			messageArr[3].sensorType = CommonValues::lightType;
-			messageArr[3].messageType = CommonValues::policyChange;
-
-			//iterate through the thresholds list
-			for (j = 0 ; j < this->greenHouseThresholds[index].getValuesSize() ; j++ ) {
-				ThresholdsValue value = this->greenHouseThresholds[index].getValue(j);
-				if (value.name == "air_humidity_min") {
-					messageArr[0].data = value.value;
-				}
-				if (value.name == "air_humidity_max") {
-					messageArr[0].additionalData = value.value;
-				}
-				if (value.name == "soil_humidity_min") {
-					messageArr[1].data = value.value;
-				}
-				if (value.name == "soil_humidity_max") {
-					messageArr[1].additionalData = value.value;
-				}
-				if (value.name == "temperature_min") {
-					messageArr[2].data = value.value;
-				}
-				if (value.name == "temperature_max") {
-					messageArr[2].additionalData = value.value;
-				}
-				if (value.name == "luminance_min") {
-					messageArr[3].data = value.value;
-				}
-				if (value.name == "luminance_max") {
-					messageArr[3].additionalData = value.value;
-				}
-			}
-
-			//send the radio messages
-			Serial.println("sending thresholds messages");
-			for (j = 0 ; j < 4 ; j++ ) {
-				this->prepareMessage(messageArr[j],greenhouse);
-				this->communicationList.get(0)->sendMessage(messageArr[j]);
-				delay(500);
-			}
-
+		      this->prepareMessage(message,greenhouse);
+		      this->communicationList.get(0)->sendMessage(message);
+		    }
     }
   }
 }
@@ -288,14 +253,14 @@ void GreenHouseHighLayer::checkMiddleLayer() {
 			//set it to not working state
 			greenHouseData[i].setWorking(false);
 			Serial.println("updating status");
-			this->communicationList.get(0)->sendMessage(root, "/status.php");
+			this->communicationList.get(0)->sendMessage(root, "/api/status.php");
 		}
 		else {
 			if (!greenHouseData[i].getWorking()) {
 				//set it back to working state
 				greenHouseData[i].setWorking(true);
 				Serial.println("updating status");
-				this->communicationList.get(0)->sendMessage(root, "/status.php");
+				this->communicationList.get(0)->sendMessage(root, "/api/status.php");
 			}
 		}
 	}

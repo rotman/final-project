@@ -18,11 +18,13 @@ private:
 public:
   GreenHouseHighLayerThresholds();
   GreenHouseHighLayerThresholds(int);
-  void updateValue(String,float,float);
+  void updateValue(String,float,float,String);
   int getId();
   void setId(int);
   int getValuesSize();
   ThresholdsValue getValue(int i);
+  ThresholdsValue getValueByName(String name);
+
 };
 
 #endif

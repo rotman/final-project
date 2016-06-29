@@ -13,7 +13,7 @@ void Wifi::initCommunication(const char* ssid, const char* password) {
     }
 
     Serial.println("");
-    Serial.println("WiFi connected"); 
+    Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
 }
@@ -23,8 +23,9 @@ String Wifi::sendMessage(JsonObject& json, String url) {
   String line = "";
 
   Serial.print("Trying to Establish connection with  ");
-  Serial.println(CommonValues::host);
-
+  Serial.print(CommonValues::host);
+  Serial.print(url);
+  Serial.print('\n');
   const int httpPort = 80;
 
   if (!client.connect(CommonValues::host, httpPort)) {
@@ -72,7 +73,9 @@ String Wifi::sendMessage(JsonObject& json, String url) {
 
 String Wifi::receiveMessage(String url) {
   Serial.print("Trying to Establish connection with  ");
-  Serial.println(CommonValues::host);
+  Serial.print(CommonValues::host);
+  Serial.print(url);
+  Serial.print('\n');
 
   const int httpPort = 80;
 
