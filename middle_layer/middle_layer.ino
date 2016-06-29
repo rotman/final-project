@@ -63,13 +63,12 @@ void loop() {
     middleLayer.decodeMessage(messagesArray[i]);
   }
 
+  delete messagesArray;
+
   Serial.print(F("Radio::sendCounter::::::::::::::::::"));
   Serial.println(Radio::sendCounter, DEC);
   Serial.print(F("Radio::receiveCounter::::::::::::::::::"));
   Serial.println(Radio::receiveCounter, DEC);
   
   middleLayer.getWatchDog().reset();
-  
-  //TODO maybe we donf need delay
-  delay(middleLayer.getLoopTime());
 }
