@@ -13,7 +13,7 @@ void GreenHouseHighLayer::initLayer(int address) {
 
 	//initialize communication
 
-	ICommunicationable* radioPtr = new Radio();
+	ICommunicationable* radioPtr = new Radio(4,15);
 	radioPtr->initCommunication(CommonValues::highLayerAddress,CommonValues::middleLayerAddress);
 	this->addCommunication(radioPtr);
 
@@ -45,8 +45,17 @@ int GreenHouseHighLayer::findGreenHouseThresholdsIndex(int id) {
 
 void GreenHouseHighLayer::decodeMessage(Message & message) {
 
-	int action = 0;
-  int greenhouseId = message.source;
+	int action = 0, greenhouseId;
+	String soilHumidityKey = "soilHumidity";
+	soilHumidityKey += message.source;
+	if (message.messageType == CommonValues::dataType && message.sensorType == CommonValues::soilHumidityType) {
+		greenhouseId = message.additionalData;
+
+	}
+	else {
+		greenhouseId = message.source;
+	}
+
   int i = this->findGreenHouseDataIndex(greenhouseId);
   float data;
   if (CommonValues::amountOfGreenHouses == i) {
@@ -114,7 +123,7 @@ void GreenHouseHighLayer::decodeMessage(Message & message) {
 		        break;
 		      case CommonValues::soilHumidityType:
 		        data = message.data;
-		        greenHouseData[i].updateValue("soilHumidity",data,dateTime);
+		        greenHouseData[i].updateValue(soilHumidityKey,data,dateTime);
 		        break;
 					case CommonValues::currentType:
 						data = message.data;
