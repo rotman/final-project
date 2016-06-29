@@ -47,10 +47,17 @@ class Layer {
 			this->loopTime = time;
 		}
 		void sendUnsentImportantMessages() {
+			Serial.print(F("unsentImportantMessages.size() &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"));
+			Serial.println(unsentImportantMessages.size(), DEC);
 			for (int i = 0; i<unsentImportantMessages.size(); i++) {
 				Serial.print(F("resending message to--------------- "));
 				Serial.println(unsentImportantMessages.get(i).dest, DEC);
-				if (communicationList.get(0)->sendMessage(unsentImportantMessages.get(i))) {
+				bool isSent = communicationList.get(0)->sendMessage(unsentImportantMessages.get(i));
+				Serial.print(F("isSent ???????????????????????????????????     "));
+				Serial.println(isSent);
+				if (isSent) {
+					Serial.print(F("removing message **************************"));
+					Serial.println(i, DEC);
 					unsentImportantMessages.remove(i);
 				}
 			}
