@@ -6,24 +6,25 @@
 
 struct ThresholdsValue {
   String name;
-  float value;
+  float minValue;
+  float maxValue;
+  String last_updated;
 };
 
 class GreenHouseHighLayerThresholds {
 private:
   int id;
-  String last_updated;
   LinkedList<ThresholdsValue> values;
 public:
   GreenHouseHighLayerThresholds();
   GreenHouseHighLayerThresholds(int);
-  void updateValue(String,float);
+  void updateValue(String,float,float,String);
   int getId();
   void setId(int);
-  String getLastUpdated();
-  void setLastUpdated(String);
   int getValuesSize();
   ThresholdsValue getValue(int i);
+  ThresholdsValue getValueByName(String name);
+
 };
 
 #endif

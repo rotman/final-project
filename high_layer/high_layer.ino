@@ -11,24 +11,23 @@ void setup() {
   Serial.begin(115200);
   delay(10);
   layer.initLayer(0);
-  layer.setLoopTime(5000);
+  layer.setLoopTime(2000);
 }
 
 void loop() {
+  Serial.println("loop start");
   int i;
   delay(layer.getLoopTime());
   StaticJsonBuffer<2000> jsonBuffer;
   JsonObject& root = jsonBuffer.createObject();
-  root["key"] = String(CommonValues::key);
 
   unsigned long now = millis();
 
   //try to read RF message from lower level
   Message RFMessage;
-  //layer.recieveRFMessage(RFMessage);
-
+  layer.recieveRFMessage(RFMessage);
   if ('z' != RFMessage.sensorType && 201 == RFMessage.dest) {
-      //layer.decodeMessage(RFMessage);
+      layer.decodeMessage(RFMessage);
   }
 
   //if it passeed xxx seconds from the last time we sent to the server than send
@@ -40,6 +39,6 @@ void loop() {
   //if it passeed xxx seconds from the last time we checked for new settings
   if (now - lastTimeCheckedForNewSettings >= CommonValues::checkedForNewSettingsInterval ) {
     lastTimeCheckedForNewSettings = now;
-    //layer.getNewSettings();
+    layer.getNewSettings();
   }
 }
