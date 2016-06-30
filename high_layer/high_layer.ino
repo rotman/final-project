@@ -48,5 +48,5 @@ void loop() {
       layer.getNewSettings();
     }
 
-    layer.sendUnsentImortantMessages();
+    layer.sendUnsentImportantMessages();
 }

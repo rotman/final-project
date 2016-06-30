@@ -158,7 +158,7 @@ void GreenHouseHighLayer::recieveRFMessages(LinkedList<Message>& messages) {
 void GreenHouseHighLayer::sendRFMessage(Message message) {
 		//if message was not send
 		if (!(this->communicationList.get(0)->sendMessage(message))) {
-				this->unSentImportantMessages.add(message);
+				this->unsentImportantMessages.add(message);
 		}
 }
 
