@@ -15,7 +15,6 @@ float CommonValues::lightThresholdMax = 100;
 int CommonValues::minutesInInterval = 3;
 int CommonValues::watchDogSecondsUntilReset = 60;
 
-const char* CommonValues::ssid = "***";
-const char* CommonValues::password = "**";
-const char* CommonValues::host = "www.graphical-transformation.netau.net";
-const char* CommonValues::key = "123456";
+const char* CommonValues::ssid = "SuperBox";
+const char* CommonValues::password = "0547231229";
+const char* CommonValues::host = "multlayermngmnt.com";

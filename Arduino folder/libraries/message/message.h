@@ -6,8 +6,8 @@
 struct Message {
 	char sensorType;
 	char messageType;
-	short int source;
-	short int dest;
+	uint64_t source;
+	uint64_t dest;
 	DateTime dateTime;
 	float data;
 	float additionalData;

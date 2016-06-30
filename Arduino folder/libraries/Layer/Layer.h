@@ -48,16 +48,22 @@ class Layer {
 		}
 		void sendUnsentImportantMessages() {
 			Serial.print(F("unsentImportantMessages.size() &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"));
-			Serial.println(unsentImportantMessages.size(), DEC);
+			Serial.println(unsentImportantMessages.size());
 			for (int i = 0; i<unsentImportantMessages.size(); i++) {
-				Serial.print(F("resending message to--------------- "));
-				Serial.println(unsentImportantMessages.get(i).dest, DEC);
+				Serial.print(F("unsentImportantMessages.get(i) "));
+				/*Serial.println(unsentImportantMessages.get(i).dest);
+				Serial.println(unsentImportantMessages.get(i).source);
+				Serial.println(unsentImportantMessages.get(i).messageType);
+				Serial.println(unsentImportantMessages.get(i).data);*/
+
+				/*Serial.print(F("resending message to--------------- "));
+				Serial.println(unsentImportantMessages.get(i).dest);*/
 				bool isSent = communicationList.get(0)->sendMessage(unsentImportantMessages.get(i));
 				Serial.print(F("isSent ???????????????????????????????????     "));
 				Serial.println(isSent);
 				if (isSent) {
 					Serial.print(F("removing message **************************"));
-					Serial.println(i, DEC);
+					Serial.println(i);
 					unsentImportantMessages.remove(i);
 				}
 			}
