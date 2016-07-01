@@ -6,7 +6,7 @@ SLight::SLight(int id, int pin) : Sensor(id){
 	sensorValue = 0;
 }
 
-Message SLight	::readSensorData(bool isHumidity){
+Message SLight	::readSensorData(boolean isHumidity){
 	Message message;					//create new message
 	Serial.println("readSensorData called");
 	sensorValue = analogRead(pin);

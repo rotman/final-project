@@ -12,7 +12,7 @@ struct Message {
 	float data;
 	float additionalData;
 	Actions action;
-	bool flag;
+	boolean flag;
 };
 
 

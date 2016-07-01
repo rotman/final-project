@@ -14,7 +14,7 @@ Actions GreenHouseMiddleLayer:: handleThresholds(float value, int min, int max, 
 	else return NONE; //no action performed
 }
 
-bool GreenHouseMiddleLayer::updateDataAndCheckIfFull(LinkedList<Message>& list,Message& lastMessage,int fullSize){
+boolean GreenHouseMiddleLayer::updateDataAndCheckIfFull(LinkedList<Message>& list,Message& lastMessage,int fullSize){
 	if (list.size() == 0) {					//for the first time
 		list.add(lastMessage);
 	}
@@ -61,7 +61,7 @@ void GreenHouseMiddleLayer::initLayer(int address) {
 	//more inits here
 }
 
-bool GreenHouseMiddleLayer::sendMessage(Message& message) {
+boolean GreenHouseMiddleLayer::sendMessage(Message& message) {
 	Serial.print("sending : ");
 	Serial.println(message.data);
 	return communicationList.get(0)->sendMessage(message);
@@ -160,6 +160,8 @@ void GreenHouseMiddleLayer::analyze() {
 }
 
 void GreenHouseMiddleLayer::decodeMessage(Message& msg) {	
+	Serial.print(msg.source);
+
 	if (CommonValues::emptyMessage == msg.messageType) {
 		//do nothing the message is empty
 		return;
@@ -173,12 +175,14 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 	}
 	//the message is from higer layer
 	 if (msg.source >= CommonValues::highLayerMinAddress && msg.source < CommonValues::highLayerMaxAddress) {   
+		 Serial.print(F("the message type issssssssssssssssss:"));
+		 Serial.println(msg.messageType);
 		switch (msg.messageType) {
 			case CommonValues::policyChange:
 				switch (msg.sensorType) {
 					case CommonValues::soilHumidityType:
-						Serial.print(F("lowersIds.size() ------------"));
-						Serial.println(lowersIds.size(), DEC);
+						/*Serial.print(F("lowersIds.size() ------------"));
+						Serial.println(lowersIds.size());*/
 						//if it's soil Humidity policy changes, send it to the lower layers
 						for (int i = 0; i<lowersIds.size() ; ++i) {
 							if (lowersIds.get(i) != CommonValues::lowerLayerConsumptionAdress) {
@@ -212,21 +216,34 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 				break;
 			case CommonValues::ACTION_TYPE:
 				switch (msg.action) {
-				case PUMP1:
-					prepareMessage(msg, lowersIds.get(0));
-					sendMessage(msg);
+					case PUMP1:
+						prepareMessage(msg, lowersIds.get(0));
+						sendMessage(msg);
+						break;
+					case PUMP2:
+						prepareMessage(msg, lowersIds.get(1));
+						sendMessage(msg);
+						break;
+					case FAN:
+						actuate(CommonValues::fanPin,msg.flag); 
 					break;
-				case PUMP2:
-					prepareMessage(msg, lowersIds.get(1));
-					sendMessage(msg);
+					case LIGHT:
+						actuate(CommonValues::lampPin,msg.flag);
 					break;
-				case FAN:actuate(CommonValues::fanPin,msg.flag); break;
-				case LIGHT:actuate(CommonValues::lampPin,msg.flag);break;
-				case HEATER:actuate(CommonValues::heatPin,msg.flag);break;
-				case VENT:actuate(CommonValues::ventPin,msg.flag);break;
-				case STEAMER:actuate(CommonValues::steamPin,msg.flag);break;
-				case NONE://TODO
-				default://TODO
+					case HEATER:
+						actuate(CommonValues::heatPin,msg.flag);
+					break;
+					case VENT:
+						actuate(CommonValues::ventPin,msg.flag);
+					break;
+					case STEAMER:
+						actuate(CommonValues::steamPin,msg.flag);
+					break;
+					case NONE:
+						//TODO
+					break;
+					default:
+						//TODO
 					break;
 				}
 					
@@ -284,7 +301,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 	}//end of if (msg.source >= CommonValues::lowerLayerMinAddress && msg.source < CommonValues::lowerLayerMaxAddress)
 }
 
-bool GreenHouseMiddleLayer::isTimeConsistency(LinkedList<Message>& data, int minutes) {
+boolean GreenHouseMiddleLayer::isTimeConsistency(LinkedList<Message>& data, int minutes) {
 	/*unsigned long interval = minutes*CommonValues::minute;
 	for (int i = 0; i<data.size(); ++i) {
 		for (int j = 1; j<data.size(); j++) {
@@ -302,7 +319,7 @@ unsigned long GreenHouseMiddleLayer::convertDateTimeToMillis(DateTime dateTime) 
 	return millis;
 }
 
-Actions GreenHouseMiddleLayer::actuate(int pin_,bool on) {
+Actions GreenHouseMiddleLayer::actuate(int pin_,boolean on) {
 	Serial.print(F("actuate pin :"));
 	Serial.println(pin_);
 

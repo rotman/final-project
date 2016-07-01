@@ -1,6 +1,6 @@
 #include <GreenHouseLowerLayer.h>
 
-bool GreenHouseLowerLayer::sendMessage(Message& message) {
+boolean GreenHouseLowerLayer::sendMessage(Message& message) {
 	Serial.println("GreenHouseLowerLayer::sendMessage");
 	return (communicationList.get(0)->sendMessage(message));
 }

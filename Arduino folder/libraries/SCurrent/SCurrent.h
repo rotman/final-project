@@ -9,7 +9,7 @@
 class SCurrent: public Sensor {
 public:
 	SCurrent(int, int);
-	Message readSensorData(bool isHumidity = false);
+	Message readSensorData(boolean isHumidity = false);
 private:
 	int pin;
 	int sensorValue;

@@ -2,7 +2,7 @@
 
 #define MIN_INTERVAL 2000
 
-boolean STemptureHumidity::read(bool force) {
+booleanean STemptureHumidity::read(boolean force) {
 	// Check if sensor was read less than two seconds ago and return early
 	// to use last reading.
 	uint32_t currenttime = millis();
@@ -116,7 +116,7 @@ boolean STemptureHumidity::read(bool force) {
 // This is adapted from Arduino's pulseInLong function (which is only available
 // in the very latest IDE versions):
 //   https://github.com/arduino/Arduino/blob/master/hardware/arduino/avr/cores/arduino/wiring_pulse.c
-uint32_t STemptureHumidity::expectPulse(bool level) {
+uint32_t STemptureHumidity::expectPulse(boolean level) {
 	uint32_t count = 0;
 	// On AVR platforms use direct GPIO port access as it's much faster and better
 	// for catching pulses that are 10's of microseconds in length:
@@ -160,7 +160,7 @@ STemptureHumidity::STemptureHumidity(int id, int pin) : Sensor(id){
 }												   // basd on the speed of the processor.
 
 
-Message STemptureHumidity::readSensorData(bool isHumidity) {
+Message STemptureHumidity::readSensorData(boolean isHumidity) {
 	float result = NAN;
 	Message message;
 	if (isHumidity){

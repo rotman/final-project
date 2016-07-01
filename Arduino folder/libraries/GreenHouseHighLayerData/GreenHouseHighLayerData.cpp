@@ -14,7 +14,7 @@ GreenHouseHighLayerData::GreenHouseHighLayerData(int id) {
 
 void GreenHouseHighLayerData::updateValue(String name, float value, DateTime dateTime) {
   int i;
-  bool found = false;
+  boolean found = false;
   for (i = 0 ; i < values.size() ; i++) {
     if (values.get(i).name == name) {
       DataValue data = values.get(i);
@@ -58,10 +58,10 @@ void GreenHouseHighLayerData::setLastChecked(unsigned long lastChecked) {
   this->lastChecked = lastChecked;
 }
 
- bool GreenHouseHighLayerData::getWorking() {
+ boolean GreenHouseHighLayerData::getWorking() {
   return working;
 }
 
-void GreenHouseHighLayerData::setWorking(bool working) {
+void GreenHouseHighLayerData::setWorking(boolean working) {
   this->working = working;
 }

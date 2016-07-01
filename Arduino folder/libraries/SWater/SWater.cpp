@@ -23,7 +23,7 @@ SWater::SWater(int id, int pin) : Sensor(id) {
 	attachInterrupt(digitalPinToInterrupt(pin), pulseCounter, FALLING);
 }
 
-Message SWater::readSensorData(bool isHumidity) {
+Message SWater::readSensorData(boolean isHumidity) {
 	if ((millis() - oldTime) > 1000)    // Only process counters once per second
 	{
 		// Disable the interrupt while calculating flow rate and sending the value to

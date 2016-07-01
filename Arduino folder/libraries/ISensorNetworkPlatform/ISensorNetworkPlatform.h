@@ -14,7 +14,7 @@ class ISensorNetworkPlatform {
 		virtual LinkedList<E> readSensorsData() = 0;
 		virtual void sendMessage(T&, E&) = 0;
 		virtual E receiveMessage(T&) = 0;
-		virtual void actuate(S*, bool) = 0;
+		virtual void actuate(S*, boolean) = 0;
 		virtual void onSensorFail() = 0;
 };
 

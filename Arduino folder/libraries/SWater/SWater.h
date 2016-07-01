@@ -10,7 +10,7 @@
 class SWater : public Sensor {
 public:
 	SWater(int, int);
-	Message readSensorData(bool isHumidity = false);
+	Message readSensorData(boolean isHumidity = false);
 	//void pulseCounter();
 
 private:

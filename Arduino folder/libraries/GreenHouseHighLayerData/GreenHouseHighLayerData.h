@@ -16,7 +16,7 @@ private:
   int id;
   LinkedList<DataValue> values;
   unsigned long lastChecked;
-  bool working;
+  boolean working;
 public:
   GreenHouseHighLayerData();
   GreenHouseHighLayerData(int);
@@ -27,8 +27,8 @@ public:
   DataValue getValue(int i);
   unsigned long getLastChecked();
   void setLastChecked(unsigned long);
-  bool getWorking();
-  void setWorking(bool);
+  boolean getWorking();
+  void setWorking(boolean);
 };
 
 #endif
