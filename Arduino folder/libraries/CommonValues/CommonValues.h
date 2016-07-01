@@ -13,7 +13,7 @@ class CommonValues {
 		static const int lowerLayerAddress1			 = 1;
 		static const int lowerLayerAddress2			 = 2;
 		static const int lowerLayerConsumptionAdress = 3;
-		static const uint64_t middleLayerAddress 	 = 0xABCDABCD71LL;
+		static const int middleLayerAddress 		 = 101;
 		static const int fakeMiddleLayerAddress		 = 102;
 		static const int highLayerAddress 			 = 201;
 
