@@ -12,7 +12,7 @@ class Radio : public ICommunicationable{
 public:
 	Radio(int, int);
 	void initCommunication (int, int);
-	bool sendMessage(Message);
+	boolean sendMessage(Message);
 	void receiveMessages(LinkedList<Message>&);
 	static int sendCounter;//TEST
 	static int receiveCounter; //TEST

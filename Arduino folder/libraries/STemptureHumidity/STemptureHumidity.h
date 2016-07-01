@@ -30,9 +30,9 @@
 class STemptureHumidity : public Sensor {
 public:
 	STemptureHumidity(int, int);
-	Message readSensorData(bool);
-	boolean read(bool force = false);
-	uint32_t expectPulse(bool);
+	Message readSensorData(boolean);
+	booleanean read(boolean force = false);
+	uint32_t expectPulse(boolean);
 private:
 	byte dat[5];
 	float data;
@@ -43,7 +43,7 @@ private:
 	uint8_t _bit, _port;
 #endif
 	uint32_t _lastreadtime, _maxcycles;
-	bool _lastresult;
+	boolean _lastresult;
 };
 
 

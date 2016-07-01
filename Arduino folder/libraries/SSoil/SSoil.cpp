@@ -5,7 +5,7 @@ SSoil::SSoil(int id, int pin) : Sensor(id){
 	sensorValue = 0;
 }
 
-Message SSoil::readSensorData(bool isHumidity){
+Message SSoil::readSensorData(boolean isHumidity){
 	Message message;					//create new message
 	Serial.println("readSensorData called");
 	sensorValue = analogRead(pin	);

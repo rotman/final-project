@@ -11,7 +11,7 @@ GreenHouseHighLayerThresholds::GreenHouseHighLayerThresholds(int id) {
 
 void GreenHouseHighLayerThresholds::updateValue(String name , float minValue , float maxValue, String last_updated) {
   int i;
-  bool found = false;
+  boolean found = false;
   ThresholdsValue data;
   for (i = 0 ; i < values.size() ; i++) {
     if (values.get(i).name == name) {
@@ -52,7 +52,7 @@ ThresholdsValue GreenHouseHighLayerThresholds::getValue(int i) {
 ThresholdsValue GreenHouseHighLayerThresholds::getValueByName(String name) {
     int i;
     ThresholdsValue tValue;
-    bool found = false;
+    boolean found = false;
     for (i = 0 ; i < values.size() ; i++) {
         if (values.get(i).name == name) {
             tValue = values.get(i);

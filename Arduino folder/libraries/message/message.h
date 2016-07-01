@@ -6,13 +6,13 @@
 struct Message {
 	char sensorType;
 	char messageType;
-	uint64_t source;
-	uint64_t dest;
+	short int source;
+	short int dest;
 	DateTime dateTime;
 	float data;
 	float additionalData;
 	Actions action;
-	bool flag;
+	boolean flag;
 };
 
 

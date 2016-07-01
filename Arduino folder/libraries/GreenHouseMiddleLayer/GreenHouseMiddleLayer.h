@@ -15,9 +15,9 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 
 		void initDataArrays();
 		float doAverage(LinkedList<Message>&);
-		bool isTimeConsistency(LinkedList<Message>&, int);
-		bool updateDataAndCheckIfFull(LinkedList<Message>&, Message&,int);
-		Actions actuate(int,bool);
+		boolean isTimeConsistency(LinkedList<Message>&, int);
+		boolean updateDataAndCheckIfFull(LinkedList<Message>&, Message&,int);
+		Actions actuate(int,boolean);
 		Actions handleThresholds(float, int, int, int, int);
 
 		//MiddleLayer implementation
@@ -25,7 +25,7 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 		void analyze();
 		void decodeMessage(Message&);
 		void prepareMessage(Message&, int);
-		bool sendMessage(Message&);
+		boolean sendMessage(Message&);
 		void receiveMessages(LinkedList<Message>&);
 		unsigned long convertDateTimeToMillis(DateTime);
 		
@@ -43,9 +43,9 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 		LinkedList<Message> waterData;
 
 		//variable to know if specific sensor is ready to analyze
-		bool isTemperatureReadyToAnalyze = false;
-		bool isHumidityReadyToAnalyze = false;
-		bool isLightReadyToAnalyze = false;
+		boolean isTemperatureReadyToAnalyze = false;
+		boolean isHumidityReadyToAnalyze = false;
+		boolean isLightReadyToAnalyze = false;
 
 };
 

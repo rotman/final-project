@@ -10,7 +10,7 @@ class Actuator {
 			pinMode(_pin,OUTPUT);
 		}
 		int getPin() { return pin; }
-		virtual Actions actuate(bool) = 0;
+		virtual Actions actuate(boolean) = 0;
 	protected:
 		int pin;
 };

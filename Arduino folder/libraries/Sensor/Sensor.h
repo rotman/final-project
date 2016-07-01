@@ -16,7 +16,7 @@ class Sensor {
 		
         //read function must be implemented
         //this is called a pure virtual function
-        virtual Message readSensorData(bool) = 0; 
+        virtual Message readSensorData(boolean) = 0; 
 	protected:
 		int id;
 };

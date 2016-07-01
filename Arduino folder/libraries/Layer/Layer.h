@@ -58,7 +58,7 @@ class Layer {
 
 				/*Serial.print(F("resending message to--------------- "));
 				Serial.println(unsentImportantMessages.get(i).dest);*/
-				bool isSent = communicationList.get(0)->sendMessage(unsentImportantMessages.get(i));
+				boolean isSent = communicationList.get(0)->sendMessage(unsentImportantMessages.get(i));
 				Serial.print(F("isSent ???????????????????????????????????     "));
 				Serial.println(isSent);
 				if (isSent) {

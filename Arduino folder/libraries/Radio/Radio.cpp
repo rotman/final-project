@@ -14,10 +14,10 @@ void Radio::initCommunication(int readingAddress, int writingAddress) {
 	radio->startListening();
 }
 
-bool Radio::sendMessage(Message message) {
+boolean Radio::sendMessage(Message message) {
 	radio->stopListening();							     //if you listen , you cant talk...
 	radio->openWritingPipe(message.dest);				// open pipe for current destination
-    bool ok = false;
+    boolean ok = false;
 	int sendMaxRetries = CommonValues::sendMaxRetries;
 	for (int i = 0; i < sendMaxRetries; ++i) {
 		ok = radio->write(&message, sizeof(message));

@@ -12,9 +12,11 @@ GreenHouseActuator::GreenHouseActuator(int pin):Actuator(pin){
 }
 
 
-Actions GreenHouseActuator::actuate(bool on) {
+Actions GreenHouseActuator::actuate(boolean on) {
 	Actions action;
+
 	if(on) {
+
 		// the second relay is working the opposite way. HIGH is off and LOW is on
 		if (CommonValues::pumpPin == pin) {
 			digitalWrite(this->pin, LOW);
@@ -50,6 +52,7 @@ Actions GreenHouseActuator::actuate(bool on) {
 			}
 		}
 	}
+
 	if (CommonValues::pumpPin == pin)// the second relay is working the opposite way. HIGH is off and LOW is on
 		digitalWrite(this->pin, HIGH);
 	else if(CommonValues::lampPin != pin) // light does not turn off with intervals

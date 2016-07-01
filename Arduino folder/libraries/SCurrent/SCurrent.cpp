@@ -5,7 +5,7 @@ SCurrent::SCurrent(int id, int pin) : Sensor(id){
 	sensorValue = 0;
 }
 
-Message SCurrent::readSensorData(bool isHumidity){
+Message SCurrent::readSensorData(boolean isHumidity){
 	//create new message
 	Message message;
 	message.sensorType = CommonValues::currentType;

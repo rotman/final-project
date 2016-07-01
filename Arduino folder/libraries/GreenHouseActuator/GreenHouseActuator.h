@@ -9,7 +9,7 @@
 class GreenHouseActuator :public Actuator{
 	public:	
 		GreenHouseActuator(int);
-		Actions actuate(bool);
+		Actions actuate(boolean);
 };
 
 
