@@ -10,12 +10,12 @@ class CommonValues {
 		static const int middleLayerMaxAddress		 = 199;
 		static const int highLayerMinAddress		 = 200;
 		static const int highLayerMaxAddress		 = 299;
-		static const uint64_t lowerLayerAddress1	 = 0xABCDABCD71AA;
-		static const uint64_t lowerLayerAddress2	 = 0xABCDABCD71BB;
+		static const int lowerLayerAddress1			 = 1;
+		static const int lowerLayerAddress2			 = 2;
 		static const int lowerLayerConsumptionAdress = 3;
 		static const uint64_t middleLayerAddress 	 = 0xABCDABCD71LL;
 		static const int fakeMiddleLayerAddress		 = 102;
-		static const uint64_t highLayerAddress 		 = 0xABCDABCD71CC;
+		static const int highLayerAddress 			 = 201;
 
 		//sensors id
 		static const int humidityTemperatureSensorId = 1;
