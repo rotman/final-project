@@ -10,7 +10,7 @@ unsigned long lastTimeCheckedForNewSettings = 0;
 void setup() {
   Serial.begin(115200);
   delay(10);
-  layer.initLayer(0);
+  layer.initLayer(CommonValues::highLayerAddress);
   layer.setLoopTime(2000);
 }
 
@@ -18,10 +18,9 @@ void loop() {
     Serial.println("loop start");
     LinkedList<Message> messages;
     int i;
-    delay(layer.getLoopTime());
     StaticJsonBuffer<2000> jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
-
+    layer.checkActionPerformed();
     unsigned long now = millis();
 
     layer.recieveRFMessages(messages);
@@ -45,8 +44,10 @@ void loop() {
     //if it passeed xxx seconds from the last time we checked for new settings
     if (now - lastTimeCheckedForNewSettings >= CommonValues::checkedForNewSettingsInterval ) {
       lastTimeCheckedForNewSettings = now;
-      layer.getNewSettings();
+      //layer.getNewSettings();
     }
 
     layer.sendUnsentImportantMessages();
+
+    delay(layer.getLoopTime());
 }
