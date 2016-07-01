@@ -212,21 +212,34 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 				break;
 			case CommonValues::ACTION_TYPE:
 				switch (msg.action) {
-				case PUMP1:
-					prepareMessage(msg, lowersIds.get(0));
-					sendMessage(msg);
+					case PUMP1:
+						prepareMessage(msg, lowersIds.get(0));
+						sendMessage(msg);
+						break;
+					case PUMP2:
+						prepareMessage(msg, lowersIds.get(1));
+						sendMessage(msg);
+						break;
+					case FAN:
+						actuate(CommonValues::fanPin,msg.flag); 
 					break;
-				case PUMP2:
-					prepareMessage(msg, lowersIds.get(1));
-					sendMessage(msg);
+					case LIGHT:
+						actuate(CommonValues::lampPin,msg.flag);
 					break;
-				case FAN:actuate(CommonValues::fanPin,msg.flag); break;
-				case LIGHT:actuate(CommonValues::lampPin,msg.flag);break;
-				case HEATER:actuate(CommonValues::heatPin,msg.flag);break;
-				case VENT:actuate(CommonValues::ventPin,msg.flag);break;
-				case STEAMER:actuate(CommonValues::steamPin,msg.flag);break;
-				case NONE://TODO
-				default://TODO
+					case HEATER:
+						actuate(CommonValues::heatPin,msg.flag);
+					break;
+					case VENT:
+						actuate(CommonValues::ventPin,msg.flag);
+					break;
+					case STEAMER:
+						actuate(CommonValues::steamPin,msg.flag);
+					break;
+					case NONE:
+						//TODO
+					break;
+					default:
+						//TODO
 					break;
 				}
 					
