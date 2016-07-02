@@ -325,8 +325,7 @@ Actions GreenHouseMiddleLayer::actuate(int pin_,boolean on) {
 
 	for (int i = 0; i<actuatorsList.size() ; ++i) {
 		if (actuatorsList.get(i)->getPin() == pin_) {
-			actuatorsList.get(i)->actuate(on);
-			break;
+			return actuatorsList.get(i)->actuate(on);
 		}
 	}	
 }
