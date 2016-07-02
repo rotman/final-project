@@ -2,7 +2,7 @@
 
 #define MIN_INTERVAL 2000
 
-booleanean STemptureHumidity::read(boolean force) {
+boolean STemptureHumidity::read(boolean force) {
 	// Check if sensor was read less than two seconds ago and return early
 	// to use last reading.
 	uint32_t currenttime = millis();

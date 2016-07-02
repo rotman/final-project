@@ -37,6 +37,7 @@ public:
 		void sendDataToServer(JsonObject& json);
 		void getNewSettings();
 		void checkMiddleLayer();
+		void checkActionPerformed();
 		String dateTimeToString(DateTime);
 
 };

@@ -2,11 +2,11 @@
 
 boolean GreenHouseLowerLayer::sendMessage(Message& message) {
 	Serial.println("GreenHouseLowerLayer::sendMessage");
-	return (communicationList.get(0)->sendMessage(message));
+	return (communicationList.get(CommonValues::radioIndex)->sendMessage(message));
 }
 
 void GreenHouseLowerLayer::receiveMessages(LinkedList<Message>& messages) {
-	communicationList.get(0)->receiveMessages(messages);
+	communicationList.get(CommonValues::radioIndex)->receiveMessages(messages);
 }
 
 void GreenHouseLowerLayer::initLayer(int address) {
@@ -151,9 +151,10 @@ void GreenHouseLowerLayer::analyze(){
 					lightData.clear();
 				}
 				break;
-			default: Serial.println("default");
-				break;
-				}
+			default: 
+				Serial.println("default");
+			break;
+			}
 		}//and of for loop
 		
 	}//end of regular plant lower layer treatment
@@ -180,16 +181,15 @@ float GreenHouseLowerLayer::doAverage(LinkedList<float>& data) {
 	return average;
 }	
 
-void GreenHouseLowerLayer::decodeMessage(Message& message){
+void GreenHouseLowerLayer::decodeMessage(Message& message) {
 	if (CommonValues::emptyMessage == message.sensorType) {
 		//do nothing the message is empty
 		return;
 	}
 	if (this->address != message.dest) {
 		//not for me, resend the message to it's original destination
-		if (!(sendMessage(message))) {
-		}
-			return;
+		if (!(sendMessage(message))) {}
+		return;
 	}
 	//means we got new policy from upper layer
 	if (message.messageType == CommonValues::policyChange) {

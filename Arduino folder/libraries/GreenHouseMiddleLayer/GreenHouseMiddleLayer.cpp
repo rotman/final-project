@@ -9,7 +9,7 @@ Actions GreenHouseMiddleLayer:: handleThresholds(float value, int min, int max, 
 	else if (value <= min) {
 		//if its the light threshold, we dont want to actuate in intervals,we want on,or off.
 		//TODO check time of light
-			action = actuate(minPin, true);
+		action = actuate(minPin, true);
 	}
 	else return NONE; //no action performed
 }
@@ -64,11 +64,11 @@ void GreenHouseMiddleLayer::initLayer(int address) {
 boolean GreenHouseMiddleLayer::sendMessage(Message& message) {
 	Serial.print("sending : ");
 	Serial.println(message.data);
-	return communicationList.get(0)->sendMessage(message);
+	return communicationList.get(CommonValues::radioIndex)->sendMessage(message);
 };
 
 void GreenHouseMiddleLayer::receiveMessages(LinkedList<Message>& messages) {
-	 communicationList.get(0)->receiveMessages(messages);
+	 communicationList.get(CommonValues::radioIndex)->receiveMessages(messages);
 };
 
 void GreenHouseMiddleLayer::prepareMessage(Message& message, int add) {
@@ -104,7 +104,7 @@ void GreenHouseMiddleLayer::analyze() {
 		//calculate average
 		temperatureAverage = doAverage(temperatureData);
 		//check thresholds
-		handleThresholds(temperatureAverage, CommonValues::temperatureThresholdMin,
+		newMessage.action = handleThresholds(temperatureAverage, CommonValues::temperatureThresholdMin,
 			CommonValues::temperatureThresholdMax, CommonValues::heatPin,CommonValues::fanPin);
 			//todo assign action
 		newMessage.data = temperatureAverage;
@@ -123,7 +123,7 @@ void GreenHouseMiddleLayer::analyze() {
 		//calculate average
 		airHumidityAverage = doAverage(humidityData);
 		//check thresholds
-		handleThresholds(airHumidityAverage, CommonValues::airHumidityThresholdMin,
+		newMessage.action = handleThresholds(airHumidityAverage, CommonValues::airHumidityThresholdMin,
 			CommonValues::airHumidityThresholdMax, CommonValues::steamPin, CommonValues::ventPin);
 		newMessage.data = airHumidityAverage;
 		newMessage.messageType = CommonValues::dataType;
@@ -142,7 +142,7 @@ void GreenHouseMiddleLayer::analyze() {
 		//calculate average
 		lightAverage = doAverage(lightData);
 		//TODO decide what to do with light thresholds
-		handleThresholds(lightAverage, CommonValues::lightThresholdMin,
+		newMessage.action = handleThresholds(lightAverage, CommonValues::lightThresholdMin,
 			CommonValues::lightThresholdMax, CommonValues::lampPin, CommonValues::lampPin);
 		newMessage.data = lightAverage;
 		newMessage.messageType = CommonValues::dataType;
@@ -213,7 +213,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 				
 			break;
 			case CommonValues::yourAddressChange:
-				break;
+			break;
 			case CommonValues::ACTION_TYPE:
 				switch (msg.action) {
 					case PUMP1:
