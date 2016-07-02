@@ -225,19 +225,19 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						sendMessage(msg);
 						break;
 					case FAN:
-						actuate(CommonValues::fanPin,msg.flag); 
+						actuate(CommonValues::fanPin,msg.data); 
 					break;
 					case LIGHT:
-						actuate(CommonValues::lampPin,msg.flag);
+						actuate(CommonValues::lampPin, msg.data);
 					break;
 					case HEATER:
-						actuate(CommonValues::heatPin,msg.flag);
+						actuate(CommonValues::heatPin,msg.data);
 					break;
 					case VENT:
-						actuate(CommonValues::ventPin,msg.flag);
+						actuate(CommonValues::ventPin,msg.data);
 					break;
 					case STEAMER:
-						actuate(CommonValues::steamPin,msg.flag);
+						actuate(CommonValues::steamPin,msg.data);
 					break;
 					case NONE:
 						//TODO

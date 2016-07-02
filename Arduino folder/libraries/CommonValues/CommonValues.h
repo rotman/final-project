@@ -84,7 +84,7 @@ class CommonValues {
 		static const unsigned long fanTime   = 10 * second;
 		static const unsigned long ventTime  = 8 * second;
 		static const unsigned long heatTime  = 5 * second;
-		static const unsigned long steamTime = 7 * second;
+		static const unsigned long steamTime = 12 * second;
 		static const unsigned long pumpTime  = 3 * second;
 		static const unsigned long lampTime  = 3 * second;
 

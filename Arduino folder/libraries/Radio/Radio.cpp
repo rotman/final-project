@@ -70,7 +70,7 @@ void Radio::receiveMessages(LinkedList<Message>& messages) {
 			 receiveCounter++; //TODO its a test
 			 radio->read(&message, sizeof(message));
 			 Serial.print(F("recived message: from and type and data is:"));
-			 //Serial.println(message.source);
+			 Serial.println(message.source);
 			 Serial.println(message.sensorType);
 			 Serial.println(message.data);
 			 if (isnan(message.data)) {

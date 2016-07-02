@@ -9,34 +9,13 @@ class Actuatorable {
 	public:
 		virtual ~Actuatorable() {}
 
-		void addActuator(Actuator* actuator) {
-			actuatorsList.add(actuator);
-		}
+		void addActuator(Actuator* actuator);
 
-		void removeActuator(int pin) {
-			int size = actuatorsList.size();
-			for (int i = 0; i < size; i++) {
-				if (actuatorsList.get(i)->getPin() == pin) {
-					actuatorsList.remove(i);
-					break;
-				}
-			}
-		}
+		void removeActuator(int);
 
-		Actuator* findActuatorById(int pin) {
-			int size = actuatorsList.size();
-			for (int i = 0; i < size; ++i) {
-				if (actuatorsList.get(i)->getPin() == pin) {
-					return actuatorsList.get(i);
-				}
-			}
-		}
-		LinkedList<Actuator*>& getActuatorsList() {
-			return this->actuatorsList;
-		}
-		
-	protected:
-		LinkedList<Actuator*> actuatorsList;
+		Actuator* findActuatorById();
+	
+		LinkedList<Actuator*>& getActuatorsList();
 
 };
 
