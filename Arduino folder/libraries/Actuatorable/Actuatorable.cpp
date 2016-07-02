@@ -26,7 +26,7 @@ Actuator* Actuatorable::findActuatorById(int pin) {
 	}
 }
 
-LinkedList<Actuator*>& getActuatorsList() {
+LinkedList<Actuator*>& Actuatorable::getActuatorsList() {
 	return this->actuatorsList;
 }
 

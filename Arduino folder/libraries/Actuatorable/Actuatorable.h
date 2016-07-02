@@ -13,7 +13,7 @@ class Actuatorable {
 
 		void removeActuator(int);
 
-		Actuator* findActuatorById();
+		Actuator* findActuatorById(int);
 	
 		LinkedList<Actuator*>& getActuatorsList();
 	
