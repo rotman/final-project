@@ -104,7 +104,7 @@ void GreenHouseMiddleLayer::analyze() {
 		//calculate average
 		temperatureAverage = doAverage(temperatureData);
 		//check thresholds
-		handleThresholds(temperatureAverage, CommonValues::temperatureThresholdMin,
+		newMessage.action = handleThresholds(temperatureAverage, CommonValues::temperatureThresholdMin,
 			CommonValues::temperatureThresholdMax, CommonValues::heatPin,CommonValues::fanPin);
 			//todo assign action
 		newMessage.data = temperatureAverage;
@@ -123,7 +123,7 @@ void GreenHouseMiddleLayer::analyze() {
 		//calculate average
 		airHumidityAverage = doAverage(humidityData);
 		//check thresholds
-		handleThresholds(airHumidityAverage, CommonValues::airHumidityThresholdMin,
+		newMessage.action = handleThresholds(airHumidityAverage, CommonValues::airHumidityThresholdMin,
 			CommonValues::airHumidityThresholdMax, CommonValues::steamPin, CommonValues::ventPin);
 		newMessage.data = airHumidityAverage;
 		newMessage.messageType = CommonValues::dataType;
@@ -142,7 +142,7 @@ void GreenHouseMiddleLayer::analyze() {
 		//calculate average
 		lightAverage = doAverage(lightData);
 		//TODO decide what to do with light thresholds
-		handleThresholds(lightAverage, CommonValues::lightThresholdMin,
+		newMessage.action = handleThresholds(lightAverage, CommonValues::lightThresholdMin,
 			CommonValues::lightThresholdMax, CommonValues::lampPin, CommonValues::lampPin);
 		newMessage.data = lightAverage;
 		newMessage.messageType = CommonValues::dataType;
