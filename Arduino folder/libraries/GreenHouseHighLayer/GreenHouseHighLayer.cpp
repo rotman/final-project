@@ -13,7 +13,7 @@ void GreenHouseHighLayer::initLayer(int address) {
 
 	//initialize communication
 
-	ICommunicationable* radioPtr = new Radio(4,15);
+	ICommunicationable* radioPtr = new Radio(CommonValues::higherLayerRadioPin1, CommonValues::higherLayerRadioPin2);
 	radioPtr->initCommunication(address,CommonValues::middleLayerAddress);
 	this->addCommunication(radioPtr);
 
@@ -46,7 +46,7 @@ int GreenHouseHighLayer::findGreenHouseThresholdsIndex(int id) {
 
 void GreenHouseHighLayer::decodeMessage(Message & message) {
 
-	if ('z' != message.sensorType && 201 == message.dest) {
+	if (CommonValues::emptyMessage != message.sensorType && CommonValues::highLayerAddress == message.dest) {
 		Serial.println("message was not for me");
 		return;
 	}
@@ -109,7 +109,7 @@ void GreenHouseHighLayer::decodeMessage(Message & message) {
 
 			if (action != 0) {
 				Serial.println("updating action in server");
-				this->communicationList.get(1)->sendMessage(root,"/api/action");
+				this->communicationList.get(CommonValues::wifiIndex)->sendMessage(root,"/api/action");
 			}
 		}
 
@@ -154,12 +154,12 @@ void GreenHouseHighLayer::prepareMessage(Message & message, int address) {
 }
 
 void GreenHouseHighLayer::recieveRFMessages(LinkedList<Message>& messages) {
-	this->communicationList.get(0)->receiveMessages(messages);
-};
+	this->communicationList.get(CommonValues::radioIndex)->receiveMessages(messages);
+}
 
 void GreenHouseHighLayer::sendRFMessage(Message message) {
 	//if message was not send
-	if (!(this->communicationList.get(0)->sendMessage(message))) {
+	if (!(this->communicationList.get(CommonValues::radioIndex)->sendMessage(message))) {
 		this->unsentImportantMessages.add(message);
 	}
 }
@@ -190,7 +190,7 @@ void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
 		}
 
 		Serial.println("sending data to server");
-		this->communicationList.get(1)->sendMessage(json,"/api/data");
+		this->communicationList.get(CommonValues::wifiIndex)->sendMessage(json,"/api/data");
 
 	}
 }
@@ -274,14 +274,14 @@ void GreenHouseHighLayer::checkMiddleLayer() {
 			//set it to not working state
 			greenHouseData[i].setWorking(false);
 			Serial.println("updating status");
-			this->communicationList.get(1)->sendMessage(root, "/api/status");
+			this->communicationList.get(CommonValues::wifiIndex)->sendMessage(root, "/api/status");
 		}
 		else {
 			if (!greenHouseData[i].getWorking()) {
 				//set it back to working state
 				greenHouseData[i].setWorking(true);
 				Serial.println("updating status");
-				this->communicationList.get(1)->sendMessage(root, "/api/status");
+				this->communicationList.get(CommonValues::wifiIndex)->sendMessage(root, "/api/status");
 			}
 		}
 	}
@@ -302,7 +302,7 @@ void GreenHouseHighLayer::checkActionPerformed() {
 		url += greenhouse;
 
 		//get the actions to perform
-		response = this->communicationList.get(1)->receiveMessage(url);
+		response = this->communicationList.get(CommonValues::wifiIndex)->receiveMessage(url);
 		JsonArray& root = jsonBuffer.parseArray(response);
 
 		for(JsonArray::iterator it=root.begin(); it!=root.end(); ++it) {
@@ -360,7 +360,7 @@ void GreenHouseHighLayer::checkActionPerformed() {
 			url += greenhouse;
 			StaticJsonBuffer<10> jsonBuffer;
 			JsonObject& root = jsonBuffer.createObject();
-			this->communicationList.get(1)->sendMessage(root,url);
+			this->communicationList.get(CommonValues::wifiIndex)->sendMessage(root,url);
 		}
 
 	}
