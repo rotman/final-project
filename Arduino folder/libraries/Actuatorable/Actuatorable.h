@@ -16,6 +16,10 @@ class Actuatorable {
 		Actuator* findActuatorById();
 	
 		LinkedList<Actuator*>& getActuatorsList();
+	
+		
+	protected:
+		LinkedList<Actuator*> actuatorsList;
 
 };
 

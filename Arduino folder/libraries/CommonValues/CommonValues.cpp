@@ -6,7 +6,7 @@ float CommonValues::soilHumidityThresholdMax = 1024;
 float CommonValues::airHumidityThresholdMin = 50;
 float CommonValues::airHumidityThresholdMax = 60;
 
-float CommonValues::temperatureThresholdMin = 24;
+float CommonValues::temperatureThresholdMin = 22;
 float CommonValues::temperatureThresholdMax = 28;
 
 float CommonValues::lightThresholdMin = 60; 
