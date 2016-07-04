@@ -22,10 +22,13 @@ boolean Radio::sendMessage(Message message) {
 	for (int i = 0; i < sendMaxRetries; ++i) {
 		ok = radio->write(&message, sizeof(message));
 		if (ok) {
-			Serial.print(F("send success i sent id data and type:"));
-			//Serial.println(message.source);
+			Serial.print(F("send success i sent id data and type and action:"));
+			Serial.println(message.source);
 			Serial.println(message.data);
-			Serial.println(message.sensorType);
+			Serial.println(message.sensorType);	
+			Serial.println(message.action);
+
+
 			radio->startListening();
 			sendCounter++;
 			return true;
