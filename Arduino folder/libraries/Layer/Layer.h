@@ -13,14 +13,13 @@ template <class T>
 class Layer {
 	public:
 		virtual ~Layer() {}
+		Layer() {
+			watchDog.enable(CommonValues::watchDogSecondsUntilReset);
+		}
 		virtual void initLayer(int) = 0;
 		virtual void analyze() = 0;
 		virtual void decodeMessage(T&) = 0;
 		virtual void prepareMessage(T&, int) = 0;
-		Layer() {
-			watchDog.enable(CommonValues::watchDogSecondsUntilReset);
-		}
-		
 		void addCommunication(ICommunicationable* type) {
 			communicationList.add(type);
 		}
@@ -31,20 +30,18 @@ class Layer {
 					break;
 				}
 			}
-		}
-		
+		}	
 		LinkedList<ICommunicationable*>& getCommunicationList() {
 			return communicationList;
 		}
-
 		int getLoopTime() {
 			return this->loopTime;
 		}
 		WatchDog& getWatchDog() {
-			return this->watchDog;
+			return this->watchDog;	
 		}
 		void setLoopTime(int time) {
-			this->loopTime = time;
+			this->loopTime = time;	
 		}
 		void sendUnsentImportantMessages() {
 			Serial.print(F("unsentImportantMessages.size() &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"));
@@ -55,10 +52,9 @@ class Layer {
 				Serial.println(unsentImportantMessages.get(i).source);
 				Serial.println(unsentImportantMessages.get(i).messageType);
 				Serial.println(unsentImportantMessages.get(i).data);*/
-
 				/*Serial.print(F("resending message to--------------- "));
 				Serial.println(unsentImportantMessages.get(i).dest);*/
-				boolean isSent = communicationList.get(0)->sendMessage(unsentImportantMessages.get(i));
+				boolean isSent = communicationList.get(CommonValues::radioIndex)->sendMessage(unsentImportantMessages.get(i));
 				Serial.print(F("isSent ???????????????????????????????????     "));
 				Serial.println(isSent);
 				if (isSent) {

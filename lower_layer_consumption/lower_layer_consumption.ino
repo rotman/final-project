@@ -47,13 +47,17 @@ void loop() {
   //analyze the data from all the sensors
   lowerLayer.analyze();
 
-  //handle with received messages
+ //handle with received messages
   LinkedList<Message> messages;
   lowerLayer.receiveMessages(messages);
-  for (int i = 0; i<messages.size(); i++) {
-    lowerLayer.decodeMessage(message);
+  
+  int mSize = messages.size();
+  Message* messagesArray = new Message[mSize];
+  for (int i = 0; i<mSize; i++) {
+    messagesArray[i] = messages.get(i);
+    lowerLayer.decodeMessage(messagesArray[i]);
   }
-
+  delete messagesArray;
   Serial.print(F("Radio::sendCounter::::::::::::::::::"));
   Serial.println(Radio::sendCounter, DEC);
   Serial.print(F("Radio::receiveCounter::::::::::::::::::"));

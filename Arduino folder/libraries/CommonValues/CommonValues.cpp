@@ -1,14 +1,13 @@
 #include <CommonValues.h>
 
-float CommonValues::soilHumidityThresholdMin = 100;
+float CommonValues::soilHumidityThresholdMin = 300;
 float CommonValues::soilHumidityThresholdMax = 1024;
 
-float CommonValues::airHumidityThresholdMin = 50;
-float CommonValues::airHumidityThresholdMax = 60;
+float CommonValues::airHumidityThresholdMin = 0;
+float CommonValues::airHumidityThresholdMax = 100;
 
-float CommonValues::temperatureThresholdMin = 24;
-float CommonValues::temperatureThresholdMax = 28;
-
+float CommonValues::temperatureThresholdMin = 18;
+float CommonValues::temperatureThresholdMax = 35;
 float CommonValues::lightThresholdMin = 60; 
 float CommonValues::lightThresholdMax = 100;
 

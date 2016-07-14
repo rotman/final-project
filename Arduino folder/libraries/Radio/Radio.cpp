@@ -22,10 +22,13 @@ boolean Radio::sendMessage(Message message) {
 	for (int i = 0; i < sendMaxRetries; ++i) {
 		ok = radio->write(&message, sizeof(message));
 		if (ok) {
-			Serial.print(F("send success i sent id data and type:"));
-			//Serial.println(message.source);
+			Serial.print(F("send success i sent id data and type and action:"));
+			Serial.println(message.source);
 			Serial.println(message.data);
-			Serial.println(message.sensorType);
+			Serial.println(message.sensorType);	
+			Serial.println(message.action);
+
+
 			radio->startListening();
 			sendCounter++;
 			return true;
@@ -70,7 +73,7 @@ void Radio::receiveMessages(LinkedList<Message>& messages) {
 			 receiveCounter++; //TODO its a test
 			 radio->read(&message, sizeof(message));
 			 Serial.print(F("recived message: from and type and data is:"));
-			 //Serial.println(message.source);
+			 Serial.println(message.source);
 			 Serial.println(message.sensorType);
 			 Serial.println(message.data);
 			 if (isnan(message.data)) {

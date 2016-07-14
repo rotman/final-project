@@ -19,7 +19,7 @@ class GreenHouseMiddleLayer :  public MiddleLayer<Message> {
 		boolean updateDataAndCheckIfFull(LinkedList<Message>&, Message&,int);
 		Actions actuate(int,boolean);
 		Actions handleThresholds(float, int, int, int, int);
-
+		int getMyAddress();
 		//MiddleLayer implementation
 		void initLayer(int);
 		void analyze();

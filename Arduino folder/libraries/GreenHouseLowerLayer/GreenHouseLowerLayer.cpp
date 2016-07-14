@@ -2,11 +2,11 @@
 
 boolean GreenHouseLowerLayer::sendMessage(Message& message) {
 	Serial.println("GreenHouseLowerLayer::sendMessage");
-	return (communicationList.get(0)->sendMessage(message));
+	return (communicationList.get(CommonValues::radioIndex)->sendMessage(message));
 }
 
 void GreenHouseLowerLayer::receiveMessages(LinkedList<Message>& messages) {
-	communicationList.get(0)->receiveMessages(messages);
+	communicationList.get(CommonValues::radioIndex)->receiveMessages(messages);
 }
 
 void GreenHouseLowerLayer::initLayer(int address) {
@@ -73,14 +73,14 @@ void GreenHouseLowerLayer::analyze(){
 			Serial.print("sensor type:");
 			Serial.println(sensorsData.get(i).sensorType);
 			switch (sensorsData.get(i).sensorType) {
-			case CommonValues::temperatureType:
-				//this is emergency state - send message to middle layer immidietly
-				if (sensorsData.get(i).data >= CommonValues::EMERGENCY_TEMPERATURE) {
-					Message newMessage;
-					prepareDataMessage(newMessage, sensorsData.get(i).data, CommonValues::emergencyType);
-					if (!(sendMessage(newMessage))) {
+				case CommonValues::temperatureType:
+					//this is emergency state - send message to middle layer immidietly
+					if (sensorsData.get(i).data >= CommonValues::EMERGENCY_TEMPERATURE) {
+						Message newMessage;
+						prepareDataMessage(newMessage, sensorsData.get(i).data, CommonValues::emergencyType);
+						if (!(sendMessage(newMessage))) {
+						}
 					}
-				}
 					//add data to data array for average
 					temperatureData.add(sensorsData.get(i).data);
 					if (temperatureData.size() == CommonValues::producersSize) {
@@ -91,69 +91,71 @@ void GreenHouseLowerLayer::analyze(){
 						if (!(sendMessage(newMessage))) {
 						}
 					}
+				break;
+				case CommonValues::humidityType:
+					//add data to data array for average
+					airHumidityData.add(sensorsData.get(i).data);
+					if (airHumidityData.size() == CommonValues::producersSize) {
+						float average = doAverage(airHumidityData);
+						Message newMessage;
+						prepareDataMessage(newMessage, average, CommonValues::humidityType);
+						if (!(sendMessage(newMessage))) {
+						}
+						//clear array after doing average
+						airHumidityData.clear();
+					}
 					break;
-			case CommonValues::humidityType:
-				//add data to data array for average
-				airHumidityData.add(sensorsData.get(i).data);
-				if (airHumidityData.size() == CommonValues::producersSize) {
-					float average = doAverage(airHumidityData);
-					Message newMessage;
-					prepareDataMessage(newMessage, average, CommonValues::humidityType);
-					if (!(sendMessage(newMessage))) {
-					}
-					//clear array after doing average
-					airHumidityData.clear();
-				}
-				break;
-			case CommonValues::soilHumidityType:
-				//add data to data array for average
-				soilHumidityData.add(sensorsData.get(i).data);
-				//check if we can do avarage
-				if (soilHumidityData.size() == CommonValues::producersSize) {
-					float average = doAverage(soilHumidityData);
-					Message newMessage;
-					//check if need to actuate TODO move to function
-					if (sensorsData.get(i).data <= CommonValues::soilHumidityThresholdMin) {
-						for (int i = 0; i < getActuatorsList().size(); ++i) {
-							if (getActuatorsList().get(i)->getPin() == CommonValues::pumpPin) {
-								getActuatorsList().get(i)->actuate(true);
-								// put in message which pump was activated. 
-								//since both lower layers use the same code.
-								if (this->address == CommonValues::lowerLayerAddress1) {
-									newMessage.action = PUMP1;
-								}
-								else if (this->address == CommonValues::lowerLayerAddress2) {
-									newMessage.action = PUMP2;
-								}
-								break;
-							}//end of if(CommonValues::pumpPin)
-						}//end of for loop
-					}//end of soilHumidityThresholdMin check
-					else newMessage.action = NONE;
-					prepareDataMessage(newMessage, average, CommonValues::soilHumidityType);
+				case CommonValues::soilHumidityType:
+					//add data to data array for average
+					soilHumidityData.add(sensorsData.get(i).data);
+					//check if we can do avarage
+					if (soilHumidityData.size() == CommonValues::producersSize) {
+						float average = doAverage(soilHumidityData);
+						Message newMessage;
+						//check if need to actuate TODO move to function
+						if (sensorsData.get(i).data <= CommonValues::soilHumidityThresholdMin) {
+							for (int i = 0; i < getActuatorsList().size(); ++i) {
+								if (getActuatorsList().get(i)->getPin() == CommonValues::pumpPin) {
+									getActuatorsList().get(i)->actuate(true);
+									// put in message which pump was activated. 
+									//since both lower layers use the same code.
+									if (this->address == CommonValues::lowerLayerAddress1) {
+										newMessage.action = PUMP1;
+									}
+									else if (this->address == CommonValues::lowerLayerAddress2) {
+										newMessage.action = PUMP2;
+									}
+									break;
+								}//end of if(CommonValues::pumpPin)
+							}//end of for loop
+						}//end of soilHumidityThresholdMin check
+						else 
+							newMessage.action = NONE;
+						prepareDataMessage(newMessage, average, CommonValues::soilHumidityType);
 
-					if (!(sendMessage(newMessage))) {
+						if (!(sendMessage(newMessage))) {
+						}
+						//clear array after doing average
+						soilHumidityData.clear();
 					}
-					//clear array after doing average
-					soilHumidityData.clear();
-				}
-				break;
-			case CommonValues::lightType:
-				//add data to data array for average
-				lightData.add(sensorsData.get(i).data);
-				if (lightData.size() == CommonValues::producersSize) {
-					float average = doAverage(lightData);
-					Message newMessage;
-					prepareDataMessage(newMessage, average, CommonValues::lightType);
-					if (!(sendMessage(newMessage))) {
+					break;
+				case CommonValues::lightType:
+					//add data to data array for average
+					lightData.add(sensorsData.get(i).data);
+					if (lightData.size() == CommonValues::producersSize) {
+						float average = doAverage(lightData);
+						Message newMessage;
+						prepareDataMessage(newMessage, average, CommonValues::lightType);
+						if (!(sendMessage(newMessage))) {
+						}
+						//clear array after doing average
+						lightData.clear();
 					}
-					//clear array after doing average
-					lightData.clear();
-				}
+					break;
+				default: 
+					Serial.println("default");
 				break;
-			default: Serial.println("default");
-				break;
-				}
+			}
 		}//and of for loop
 		
 	}//end of regular plant lower layer treatment
@@ -180,16 +182,15 @@ float GreenHouseLowerLayer::doAverage(LinkedList<float>& data) {
 	return average;
 }	
 
-void GreenHouseLowerLayer::decodeMessage(Message& message){
+void GreenHouseLowerLayer::decodeMessage(Message& message) {
 	if (CommonValues::emptyMessage == message.sensorType) {
 		//do nothing the message is empty
 		return;
 	}
 	if (this->address != message.dest) {
 		//not for me, resend the message to it's original destination
-		if (!(sendMessage(message))) {
-		}
-			return;
+		if (!(sendMessage(message))) {}
+		return;
 	}
 	//means we got new policy from upper layer
 	if (message.messageType == CommonValues::policyChange) {

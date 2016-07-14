@@ -37,7 +37,7 @@ class CommonValues {
 		static const int currentConsumptionPin = A5;
 		static const int waterConsumptionPin1  = 2;
 		static const int waterConsumptionPin2  = 3;
-		static const int higherLayerRadioPin1  = 2;
+		static const int higherLayerRadioPin1  = 4;
 		static const int higherLayerRadioPin2  = 15;
 
 		//actuators pins
@@ -66,6 +66,10 @@ class CommonValues {
 		static const char lightType		   = 'L';
 		static const char currentType	   = 'C';
 		static const char waterType		   = 'W';
+		
+		//indexes
+		static const int radioIndex = 0;
+		static const int wifiIndex  = 1;
 
 		static const int exponentialBackoffMaxRetries = 7;
 		static const int sendMaxRetries				  = 10;
@@ -84,7 +88,7 @@ class CommonValues {
 		static const unsigned long fanTime   = 10 * second;
 		static const unsigned long ventTime  = 8 * second;
 		static const unsigned long heatTime  = 5 * second;
-		static const unsigned long steamTime = 7 * second;
+		static const unsigned long steamTime = 12 * second;
 		static const unsigned long pumpTime  = 3 * second;
 		static const unsigned long lampTime  = 3 * second;
 

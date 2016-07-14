@@ -21,7 +21,6 @@ Actions GreenHouseActuator::actuate(boolean on) {
 		if (CommonValues::pumpPin == pin) {
 			digitalWrite(this->pin, LOW);
 			delay(CommonValues::pumpTime);
-			//action = //TODO
 		}
 		else {
 			digitalWrite(this->pin, HIGH); //turn on pin on relay
