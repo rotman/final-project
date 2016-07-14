@@ -1,6 +1,7 @@
 #include "GreenHouseHighLayer.h"
 
 void GreenHouseHighLayer::initLayer(int address) {
+
 	int i;
 
 	this->address = address;
@@ -13,7 +14,7 @@ void GreenHouseHighLayer::initLayer(int address) {
 
 	//initialize communication
 
-	ICommunicationable* radioPtr = new Radio(CommonValues::higherLayerRadioPin1, CommonValues::higherLayerRadioPin2);
+	ICommunicationable* radioPtr = new Radio(CommonValues::higherLayerRadioPin1,CommonValues::higherLayerRadioPin2);
 	radioPtr->initCommunication(address,CommonValues::middleLayerAddress);
 	this->addCommunication(radioPtr);
 
@@ -46,17 +47,17 @@ int GreenHouseHighLayer::findGreenHouseThresholdsIndex(int id) {
 
 void GreenHouseHighLayer::decodeMessage(Message & message) {
 
-	if (CommonValues::emptyMessage != message.sensorType && CommonValues::highLayerAddress == message.dest) {
-		Serial.println("message was not for me");
+	if (CommonValues::emptyMessage == message.sensorType || CommonValues::highLayerAddress != message.dest) {
 		return;
 	}
 
-	int action = 0, greenhouseId;
+	Serial.println("decoding message");
+
+	int defaultAction = 0, greenhouseId;
 	String soilHumidityKey = "soilHumidity";
 	soilHumidityKey += message.source;
 	if (message.messageType == CommonValues::dataType && message.sensorType == CommonValues::soilHumidityType) {
 		greenhouseId = message.additionalData;
-
 	}
 	else {
 		greenhouseId = message.source;
@@ -72,6 +73,7 @@ void GreenHouseHighLayer::decodeMessage(Message & message) {
 	case CommonValues::emergencyType:
 		break;
 	case CommonValues::dataType:
+		//if message has action
 		if (message.action != NONE) {
 			StaticJsonBuffer<500> jsonBuffer;
 			JsonObject& root = jsonBuffer.createObject();
@@ -84,63 +86,72 @@ void GreenHouseHighLayer::decodeMessage(Message & message) {
 			dateTime["minutes"] = message.dateTime.minutes;
 			dateTime["seconds"] = message.dateTime.seconds;
 
-			switch(message.action) {
-			case PUMP1:
-				root["action"] = "pump1";
-				break;
-			case PUMP2:
-				root["action"] = "pump2";
-				break;
-			case FAN:
-				root["action"] = "fan";
-				break;
-			case LIGHT:
-				root["action"] = "light";
-				break;
-			case HEATER:
-				root["action"] = "heater";
-				break;
-			case STEAMER:
-				root["action"] = "steamer";
-				break;
-			default:
-				action = 0;
+			defaultAction = 1;
+			Actions action = message.action;
+			Serial.println("is action");
+			Serial.println(action);
+			switch(action) {
+				case PUMP1:
+					root["action"] = "pump1";
+					break;
+				case PUMP2:
+					root["action"] = "pump2";
+					break;
+				case FAN:
+					root["action"] = "fan";
+					break;
+				case LIGHT:
+					root["action"] = "light";
+					break;
+				case HEATER:
+					root["action"] = "heater";
+					break;
+				case STEAMER:
+					root["action"] = "steamer";
+					break;
+				default:
+					Serial.println("default");
+					defaultAction = 0;
 			}
 
-			if (action != 0) {
-				Serial.println("updating action in server");
-				this->communicationList.get(CommonValues::wifiIndex)->sendMessage(root,"/api/action");
+			if (defaultAction != 0) {
+				this->communicationList.get(1)->sendMessage(root,"/api/action");
 			}
-		}
+
+		} //end if message has action
+
+
 
 		DateTime dateTime = message.dateTime;
+
+		//update value by sensor type
 		switch(message.sensorType) {
-		case CommonValues::temperatureType:
-			data = message.data;
-			greenHouseData[i].updateValue("temperature",data,dateTime);
-			break;
-		case CommonValues::humidityType:
-			data = message.data;
-			greenHouseData[i].updateValue("airHumidity",data,dateTime);
-			break;
-		case CommonValues::lightType:
-			data = message.data;
-			greenHouseData[i].updateValue("luminance",data,dateTime);
-			break;
-		case CommonValues::soilHumidityType:
-			data = message.data;
-			greenHouseData[i].updateValue(soilHumidityKey,data,dateTime);
-			break;
-		case CommonValues::currentType:
-			data = message.data;
-			greenHouseData[i].updateValue("current",data,dateTime);
-			break;
-		case CommonValues::waterType:
-			data = message.data;
-			greenHouseData[i].updateValue("water",data,dateTime);
-			break;
-		default:
-			break;
+			case CommonValues::temperatureType:
+				data = message.data;
+				greenHouseData[i].updateValue("temperature",data,dateTime);
+				break;
+			case CommonValues::humidityType:
+				data = message.data;
+				greenHouseData[i].updateValue("airHumidity",data,dateTime);
+				break;
+			case CommonValues::lightType:
+				data = message.data;
+				greenHouseData[i].updateValue("luminance",data,dateTime);
+				break;
+			case CommonValues::soilHumidityType:
+				data = message.data;
+				greenHouseData[i].updateValue(soilHumidityKey,data,dateTime);
+				break;
+			case CommonValues::currentType:
+				data = message.data;
+				greenHouseData[i].updateValue("current",data,dateTime);
+				break;
+			case CommonValues::waterType:
+				data = message.data;
+				greenHouseData[i].updateValue("water",data,dateTime);
+				break;
+			default:
+				break;
 		}
 		greenHouseData[i].setLastChecked(millis());
 		break;
@@ -154,12 +165,12 @@ void GreenHouseHighLayer::prepareMessage(Message & message, int address) {
 }
 
 void GreenHouseHighLayer::recieveRFMessages(LinkedList<Message>& messages) {
-	this->communicationList.get(CommonValues::radioIndex)->receiveMessages(messages);
-}
+	this->communicationList.get(0)->receiveMessages(messages);
+};
 
 void GreenHouseHighLayer::sendRFMessage(Message message) {
 	//if message was not send
-	if (!(this->communicationList.get(CommonValues::radioIndex)->sendMessage(message))) {
+	if (!(this->communicationList.get(0)->sendMessage(message))) {
 		this->unsentImportantMessages.add(message);
 	}
 }
@@ -189,12 +200,15 @@ void GreenHouseHighLayer::sendDataToServer(JsonObject& json) {
 
 		}
 
-		Serial.println("sending data to server");
-		this->communicationList.get(CommonValues::wifiIndex)->sendMessage(json,"/api/data");
+		if (j > 0) {
+			Serial.println("sending data to server");
+			this->communicationList.get(1)->sendMessage(json,"/api/data");
+		}
 
 	}
 }
 
+//get new settings from server and send it to middle layer
 void GreenHouseHighLayer::getNewSettings() {
 	int i,j;
 	Message message;
@@ -208,10 +222,15 @@ void GreenHouseHighLayer::getNewSettings() {
 		String response;
 		String url = "/api/options/";
 		url += greenhouse;
+
+		//get the current thresholds from the server
 		response = this->communicationList.get(1)->receiveMessage(url);
+
+		//parse respone to json
 		DynamicJsonBuffer jsonBuffer;
 		JsonObject& root = jsonBuffer.parseObject(response);
 
+		//if not a valid json
 		if (!root.success()) {
 			Serial.println("parseObject() failed");
 			return;
@@ -219,24 +238,22 @@ void GreenHouseHighLayer::getNewSettings() {
 
 		JsonArray& options = root["options"];
 
-		//check if values has changed
+		//iterate over the thresholds we got
 		for(JsonArray::iterator it=options.begin(); it!=options.end(); ++it) {
+
 			JsonObject& itValue = *it;
 			String updated_at = itValue["updated_at"];
 
+			//get the current threshold object stored
 			ThresholdsValue tValue = this->greenHouseThresholds[index].getValueByName(itValue["key"]);
+
+			//
 			if (tValue.last_updated != updated_at) {
 				String key = itValue["key"];
 				float minValue = itValue["minValue"];
 				float maxValue = itValue["maxValue"];
 
-				Serial.println("updating thresholds: ");
-				Serial.println("key: ");
-				Serial.println(key);
-				Serial.println("min value: ");
-				Serial.println(minValue);
-				Serial.println("max value: ");
-				Serial.println(maxValue);
+				Serial.println("updating threshold");
 				this->greenHouseThresholds[index].updateValue(key,minValue,maxValue,updated_at);
 
 				message.data = minValue;
@@ -274,14 +291,14 @@ void GreenHouseHighLayer::checkMiddleLayer() {
 			//set it to not working state
 			greenHouseData[i].setWorking(false);
 			Serial.println("updating status");
-			this->communicationList.get(CommonValues::wifiIndex)->sendMessage(root, "/api/status");
+			this->communicationList.get(1)->sendMessage(root, "/api/status");
 		}
 		else {
 			if (!greenHouseData[i].getWorking()) {
 				//set it back to working state
 				greenHouseData[i].setWorking(true);
 				Serial.println("updating status");
-				this->communicationList.get(CommonValues::wifiIndex)->sendMessage(root, "/api/status");
+				this->communicationList.get(1)->sendMessage(root, "/api/status");
 			}
 		}
 	}
@@ -302,7 +319,7 @@ void GreenHouseHighLayer::checkActionPerformed() {
 		url += greenhouse;
 
 		//get the actions to perform
-		response = this->communicationList.get(CommonValues::wifiIndex)->receiveMessage(url);
+		response = this->communicationList.get(1)->receiveMessage(url);
 		JsonArray& root = jsonBuffer.parseArray(response);
 
 		for(JsonArray::iterator it=root.begin(); it!=root.end(); ++it) {
@@ -335,16 +352,17 @@ void GreenHouseHighLayer::checkActionPerformed() {
 				else if (action == "steamer") {
 					message.action = STEAMER;
 				}
+				else if (action == "vent") {
+					message.action = VENT;
+				}
 
 				//set on or off
 				if (on == "2" && action == "light") {
-					message.flag = false;
+					message.data = 0;
 				}
 				else {
-					message.flag = true;
+					message.data = 1;
 				}
-
-
 
 				//send rf message to the middle layer
 				this->prepareMessage(message,greenhouse);
@@ -360,7 +378,7 @@ void GreenHouseHighLayer::checkActionPerformed() {
 			url += greenhouse;
 			StaticJsonBuffer<10> jsonBuffer;
 			JsonObject& root = jsonBuffer.createObject();
-			this->communicationList.get(CommonValues::wifiIndex)->sendMessage(root,url);
+			this->communicationList.get(1)->sendMessage(root,url);
 		}
 
 	}
