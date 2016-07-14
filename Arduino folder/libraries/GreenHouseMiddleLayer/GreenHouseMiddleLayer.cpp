@@ -131,8 +131,8 @@ void GreenHouseMiddleLayer::analyze() {
 		newMessage.messageType = CommonValues::dataType;
 		newMessage.sensorType = CommonValues::humidityType;
 		if (!(sendMessage(newMessage))) {
-			Serial.println(F("fffffpoooooooooooootttttttttttt"));
-			unsentImportantMessages.add(newMessage);
+		//	Serial.println(F("message failed, adding to unsent"));
+		//	unsentImportantMessages.add(newMessage);
 		}
 		//clear the array after done
 		isHumidityReadyToAnalyze = false;
@@ -187,7 +187,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 							if (lowersIds.get(i) != CommonValues::lowerLayerConsumptionAdress) {
 								prepareMessage(msg, lowersIds.get(i));
 								if (!sendMessage(msg)) {
-									unsentImportantMessages.add(msg);
+									//unsentImportantMessages.add(msg);
 								}
 							}
 						}			
@@ -218,13 +218,13 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 					case PUMP1:
 						prepareMessage(msg, lowersIds.get(0));
 						if (!sendMessage(msg)) {
-							unsentImportantMessages.add(msg);
+							//unsentImportantMessages.add(msg);
 						}
 						break;
 					case PUMP2:
 						prepareMessage(msg, lowersIds.get(1));
 						if (!sendMessage(msg)) {
-							unsentImportantMessages.add(msg);
+							//unsentImportantMessages.add(msg);
 						}
 						break;
 					case FAN:
@@ -232,7 +232,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						msg.action = actuate(CommonValues::fanPin,msg.data);
 						prepareMessage(msg, CommonValues::highLayerAddress);
 						if (!sendMessage(msg)) {
-							unsentImportantMessages.add(msg);
+							//unsentImportantMessages.add(msg);
 						}
 					break;
 					case LIGHT:
@@ -240,7 +240,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						msg.action = actuate(CommonValues::lampPin, msg.data);
 						prepareMessage(msg, CommonValues::highLayerAddress);
 						if (!sendMessage(msg)) {
-							unsentImportantMessages.add(msg);
+							//unsentImportantMessages.add(msg);
 						}
 						break;
 					case HEATER:
@@ -248,7 +248,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						msg.action = actuate(CommonValues::heatPin,msg.data);
 						prepareMessage(msg, CommonValues::highLayerAddress);
 						if (!sendMessage(msg)) {
-							unsentImportantMessages.add(msg);
+							//unsentImportantMessages.add(msg);
 						}
 						break;
 					case VENT:
@@ -256,7 +256,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						msg.action = actuate(CommonValues::ventPin,msg.data);
 						prepareMessage(msg, CommonValues::highLayerAddress);
 						if (!sendMessage(msg)) {
-							unsentImportantMessages.add(msg);
+							//unsentImportantMessages.add(msg);
 						}
 					break;
 					case STEAMER:
@@ -264,7 +264,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						msg.action = actuate(CommonValues::steamPin,msg.data);
 						prepareMessage(msg, CommonValues::highLayerAddress);
 						if (!sendMessage(msg)) {
-							unsentImportantMessages.add(msg);
+							//unsentImportantMessages.add(msg);
 						}
 					break;
 					case NONE:
@@ -291,7 +291,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 				actuate(CommonValues::ventPin, true);
 				prepareMessage(msg, CommonValues::highLayerAddress); // prepare to send to high
 				if (!sendMessage(msg)) {
-					unsentImportantMessages.add(msg);
+					//unsentImportantMessages.add(msg);
 				}
 				break;
 			case CommonValues::dataType:
@@ -303,7 +303,7 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 						 //check if the message is important (action performed),and add to unsentImportantMessages if not sent
 						 if (NONE != msg.action) {
 							 if (!sendMessage(msg)) {
-								 unsentImportantMessages.add(msg);
+								// unsentImportantMessages.add(msg);
 							 }
 						 }
 						 else

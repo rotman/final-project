@@ -74,7 +74,7 @@ class CommonValues {
 		static const int exponentialBackoffMaxRetries = 7;
 		static const int sendMaxRetries				  = 10;
 		static const int defaultLoopTime			  = 2000;
-		static const int producersSize				  = 4;
+		static const int producersSize				  = 2;
 		static const int lowerLayerRegisteredNum	  = 2;
 		static const int EMERGENCY_TEMPERATURE		  = 40;
 
@@ -87,9 +87,9 @@ class CommonValues {
 		//actuators intervals
 		static const unsigned long fanTime   = 10 * second;
 		static const unsigned long ventTime  = 8 * second;
-		static const unsigned long heatTime  = 5 * second;
-		static const unsigned long steamTime = 12 * second;
-		static const unsigned long pumpTime  = 3 * second;
+		static const unsigned long heatTime  = 7 * second;
+		static const unsigned long steamTime = 10 * second;
+		static const unsigned long pumpTime  = 5 * second;
 		static const unsigned long lampTime  = 3 * second;
 
 		//thresholds - not consts!
