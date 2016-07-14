@@ -44,7 +44,7 @@ void loop() {
     //if it passeed xxx seconds from the last time we checked for new settings
     if (now - lastTimeCheckedForNewSettings >= CommonValues::checkedForNewSettingsInterval ) {
       lastTimeCheckedForNewSettings = now;
-      //layer.getNewSettings();
+      layer.getNewSettings();
     }
 
     layer.sendUnsentImportantMessages();
