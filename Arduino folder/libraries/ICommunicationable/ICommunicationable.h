@@ -5,7 +5,9 @@
 #include <Message.h>
 #include <ArduinoJson.h>
 #include <LinkedList.h>
-
+/*
+base class that represent a behaviour of comunicationable module. (a module that has comunicate)
+*/
 class ICommunicationable {
 	public:
 		virtual ~ICommunicationable() {}

@@ -2,7 +2,7 @@
 #define ACTIONS_H
 
 /*
-these are the actions that the actuators do.
+this represent the actions that can be done done.
 */
 enum Actions {
 	PUMP1,

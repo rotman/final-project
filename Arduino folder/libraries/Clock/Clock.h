@@ -6,12 +6,14 @@
 #include <DateTime.h>
 
 #define DS3231_I2C_ADDRESS 104
-
-// SCL - pin A5
-// SDA - pin A4
-// To set the clock, run the sketch and use the serial monitor.
-// Enter T0000174140516; the code will read this and set the clock. See the code for full details.
-//
+/*
+this is the class that deels with the clock module DS1307
+connections:
+SCL - pin A5
+SDA - pin A4
+To set the clock, run the sketch and use the serial monitor.
+Enter T0000174140516; the code will read this and set the clock. See the code for full details.
+*/
 class Clock {
 //private:
 public:

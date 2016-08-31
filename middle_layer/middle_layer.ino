@@ -21,7 +21,7 @@ int lampPin = CommonValues::lampPin;
 int heatPin = CommonValues::heatPin;
 int steamPin = CommonValues::steamPin;
 
-
+//inits the console for debugging
 void initConsole() {
   while (!Serial);  
   Serial.begin(9600);
@@ -55,21 +55,21 @@ void loop() {
   //handle with received messages
   LinkedList<Message> messages;
   middleLayer.receiveMessages(messages);
-  
+
+  //decode all messages
   int mSize = messages.size();
   Message* messagesArray = new Message[mSize];
   for (int i = 0; i<mSize; i++) {
     messagesArray[i] = messages.get(i);
     middleLayer.decodeMessage(messagesArray[i]);
   }
-
   delete messagesArray;
-
-  Serial.print(F("Radio::sendCounter::::::::::::::::::"));
-  Serial.println(Radio::sendCounter, DEC);
-  Serial.print(F("Radio::receiveCounter::::::::::::::::::"));
-  Serial.println(Radio::receiveCounter, DEC);
-  middleLayer.sendUnsentImportantMessages();
   
-  middleLayer.getWatchDog().reset();
+  //if there was messages that did not get sent, send them now.
+  middleLayer.sendUnsentImportantMessages(); 
+  
+  // reset the watch dog every time finish loop.
+  middleLayer.getWatchDog().reset();        
+
+  delay(lowerLayer.getLoopTime());
 }

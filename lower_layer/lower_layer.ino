@@ -20,7 +20,8 @@ int tempHumidityPin = CommonValues::tempHumidityPin;
 int soilPin = CommonValues::soilPin;
 int lightPin = CommonValues::lightPin;
 int pumpPin = CommonValues::pumpPin;
-          
+
+//inits the console for debugging
 void initConsole() {
   Serial.println("initConsole()");
   while (!Serial);
@@ -29,17 +30,12 @@ void initConsole() {
 
 void createAndAddSensors() {
   Serial.println("createAndAddSensors()");
- 
   tempHumidity= new STemptureHumidity(CommonValues::humidityTemperatureSensorId, tempHumidityPin);              //create new temperature sensor instanse
   Serial.println("STemptureHumidity created");
-
   light= new SLight(CommonValues::lightSensorId, lightPin);              //create new light sensor instanse
   Serial.println("Slight created");
-
   soil= new SSoil(CommonValues::soil1SensorId, soilPin);              //create new soil sensor instanse
   Serial.println("Ssoil created");
-
-    
   lowerLayer.addSensor(tempHumidity);
   lowerLayer.addSensor(soil);
   lowerLayer.addSensor(light);
@@ -59,7 +55,6 @@ void setup() {
   lowerLayer.initLayer(CommonValues::lowerLayerAddress1);
   createAndAddSensors();
   createAndAddActuators();
- 
 }
 
 void loop() {
@@ -72,6 +67,7 @@ void loop() {
   LinkedList<Message> messages;
   lowerLayer.receiveMessages(messages);
   
+  //decode all messages
   int mSize = messages.size();
   Message* messagesArray = new Message[mSize];
   for (int i = 0; i<mSize; i++) {
@@ -79,15 +75,9 @@ void loop() {
     lowerLayer.decodeMessage(messagesArray[i]);
   }
   delete messagesArray;
-  Serial.print(F("Radio::sendCounter::::::::::::::::::"));
-  Serial.println(Radio::sendCounter, DEC);
-  Serial.print(F("Radio::receiveCounter::::::::::::::::::"));
-  Serial.println(Radio::receiveCounter, DEC);
-  Serial.print(F("soil threshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh:"));
-  Serial.println(CommonValues::soilHumidityThresholdMin, DEC);
   
+  // reset the watch dog every time finish loop.
   lowerLayer.getWatchDog().reset();
-   
-  //TODO maybe we donf need delay
- // delay(lowerLayer.getLoopTime());
+
+  delay(lowerLayer.getLoopTime());
 }

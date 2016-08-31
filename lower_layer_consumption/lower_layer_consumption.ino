@@ -17,6 +17,7 @@ int currentPin = CommonValues::currentConsumptionPin;
 int waterPin1 = CommonValues::waterConsumptionPin1;
 int waterPin2 = CommonValues::waterConsumptionPin2;
 
+//inits the console for debugging
 void initConsole() {
   Serial.println("initConsole()");
   while (!Serial);
@@ -50,7 +51,8 @@ void loop() {
  //handle with received messages
   LinkedList<Message> messages;
   lowerLayer.receiveMessages(messages);
-  
+
+  //decode all messages
   int mSize = messages.size();
   Message* messagesArray = new Message[mSize];
   for (int i = 0; i<mSize; i++) {
@@ -58,13 +60,9 @@ void loop() {
     lowerLayer.decodeMessage(messagesArray[i]);
   }
   delete messagesArray;
-  Serial.print(F("Radio::sendCounter::::::::::::::::::"));
-  Serial.println(Radio::sendCounter, DEC);
-  Serial.print(F("Radio::receiveCounter::::::::::::::::::"));
-  Serial.println(Radio::receiveCounter, DEC);
-
+  
+ // reset the watch dog every time finish loop.
   lowerLayer.getWatchDog().reset();
 
-  //TODO maybe we donf need delay
   delay(lowerLayer.getLoopTime());
 }

@@ -340,14 +340,14 @@ void GreenHouseMiddleLayer::decodeMessage(Message& msg) {
 }
 
 boolean GreenHouseMiddleLayer::isTimeConsistency(LinkedList<Message>& data, int minutes) {
-	/*unsigned long interval = minutes*CommonValues::minute;
+	unsigned long interval = minutes*CommonValues::minute;
 	for (int i = 0; i<data.size(); ++i) {
 		for (int j = 1; j<data.size(); j++) {
 			if ((GreenHouseMiddleLayer::convertDateTimeToMillis(data.get(i).dateTime) - convertDateTimeToMillis(data.get(j).dateTime)) > interval) {
 				return false;
 			}
 		}
-	}*/
+	}
 	return true;
 }
 

@@ -2,6 +2,7 @@
 #define DATETIME
 #include <Arduino.h>
 
+//struct that represents the time and date
 struct DateTime
 {
 	byte seconds;

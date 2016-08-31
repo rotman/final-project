@@ -12,11 +12,15 @@ class GreenHouseLowerLayer : public LowerLayer<Message>{
 		/*LowerLayer methods*/
 		~GreenHouseLowerLayer(){}
 		 void initLayer(int);
+		 //analyze the current state
 		 void analyze();
+		 //decode a given message by our protocol (know what the message contains and act by it)
 		 void decodeMessage(Message&);
+		 //preparing the message is all about updating the senser and receivers address to the message 
 		 void prepareMessage(Message&, int);
 	
 		 void initDataArrays();
+		 //avarage the data that has ben collected in a measuring cycle
 		 float doAverage(LinkedList<float>&);
 		 void prepareDataMessage(Message&, float, char);
 		 boolean sendMessage(Message&);

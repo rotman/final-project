@@ -7,6 +7,7 @@ void Actuatorable::addActuator(Actuator* actuator) {
 	actuatorsList.add(actuator);
 }
 
+//remove an actuator from actuators list , with a given pin number.
 void Actuatorable::removeActuator(int pin) {
 	int size = actuatorsList.size();
 	for (int i = 0; i < size; i++) {

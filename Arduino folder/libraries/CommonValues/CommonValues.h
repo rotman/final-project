@@ -2,7 +2,9 @@
 #define COMMON_VALUES
 
 #include <Arduino.h>
-
+/*
+all frequently used variables in the project in one place.
+*/
 class CommonValues {
 	public:
 	
@@ -92,7 +94,19 @@ class CommonValues {
 		static const unsigned long pumpTime  = 5 * second;
 		static const unsigned long lampTime  = 3 * second;
 
-		//thresholds - not consts!
+		static const char* ssid;
+		static const char* password;
+		static const char* host;
+		static const char* key;
+
+		static const unsigned long lastTimeSentToServer = 0;
+		static const long sendToServerInterval = 5000;
+		static const unsigned long lastTimeCheckedForNewSettings = 0;
+		static const long checkedForNewSettingsInterval = 10000;
+		static const int amountOfGreenHouses = 1;
+		static const int MiddleLayerLostConnectionTime = 50000;
+
+		//thresholds - not consts! implemented at CommonValues.cpp
 		static float soilHumidityThresholdMin;
 		static float soilHumidityThresholdMax;
 
@@ -109,17 +123,7 @@ class CommonValues {
 		static int minutesInInterval;
 		static int watchDogSecondsUntilReset;
 
-		static const char* ssid;
-		static const char* password;
-		static const char* host;
-		static const char* key;
 		
-		static const unsigned long lastTimeSentToServer 		 = 0;
-		static const long sendToServerInterval					 = 5000;
-		static const unsigned long lastTimeCheckedForNewSettings = 0;
-		static const long checkedForNewSettingsInterval			 = 10000;
-		static const int amountOfGreenHouses					 = 1;
-		static const int MiddleLayerLostConnectionTime			 = 50000;
 
 };
 

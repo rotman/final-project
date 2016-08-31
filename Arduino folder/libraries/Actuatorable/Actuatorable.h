@@ -5,6 +5,10 @@
 #include <Actuator.h>
 #include <LinkedList.h>
 
+
+/*
+base class that represent a behaviour of Actuatorable module. (a module that has actuators)
+*/
 class Actuatorable {
 	public:
 		virtual ~Actuatorable() {}

@@ -1,5 +1,9 @@
 #include <CommonValues.h>
 
+/*
+values that can change at run time.
+*/
+
 float CommonValues::soilHumidityThresholdMin = 300;
 float CommonValues::soilHumidityThresholdMax = 1024;
 
